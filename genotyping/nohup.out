@@ -1,0 +1,641 @@
+Error in open left fastq file /home3/scc20x/Desktop/GriffithProject/081118/Reads/Trimmed_noHuman/WTCG_081118_2_2_val_1.fq for read!
+WTCG_081118_2_2_val_1
+WTCG_081118_2_2_val_2
+Performing deduplication....
+Done!
+Reading fastq file....
+Collecting sequence from first fastq file....
+Traceback (most recent call last):
+  File "hcmvGenotyping.py", line 83, in <module>
+    for seq_record in SeqIO.parse(read1,"fastq"):
+  File "/usr/local/lib/python2.7/dist-packages/biopython-1.69-py2.7-linux-x86_64.egg/Bio/SeqIO/__init__.py", line 590, in parse
+    with as_handle(handle, mode) as fp:
+  File "/usr/lib/python2.7/contextlib.py", line 17, in __enter__
+    return self.gen.next()
+  File "/usr/local/lib/python2.7/dist-packages/biopython-1.69-py2.7-linux-x86_64.egg/Bio/File.py", line 88, in as_handle
+    with open(handleish, mode, **kwargs) as fp:
+IOError: [Errno 2] No such file or directory: '/home3/scc20x/Desktop/GriffithProject/081118/Reads/Trimmed_noHuman/WTCG_081118_2_2_val_1.fq'
+WTCG_081118_1_1_val_1
+WTCG_081118_1_2_val_2
+Performing deduplication....
+Done!
+Reading fastq file....
+Collecting sequence from first fastq file....
+Collecting sequence from second fastq file....
+Genotyping gene rl5a
+For group G5 there are 7 matched kmers over a total of 175 . Number of matches: 58
+For group G3 there are 1 matched kmers over a total of 173 . Number of matches: 1
+For group G2 there are 2 matched kmers over a total of 285 . Number of matches: 3
+Genotyping gene rl6
+For group G1 there are 13 matched kmers over a total of 62 . Number of matches: 191
+Genotyping gene rl12
+For group G7 there are 6 matched kmers over a total of 385 . Number of matches: 124
+For group G4A there are 1 matched kmers over a total of 591 . Number of matches: 11
+For group G5 there are 1 matched kmers over a total of 1148 . Number of matches: 1
+For group G2 there are 2 matched kmers over a total of 914 . Number of matches: 19
+For group G1A there are 1 matched kmers over a total of 272 . Number of matches: 1
+For group G9 there are 2 matched kmers over a total of 838 . Number of matches: 2
+For group G10 there are 1 matched kmers over a total of 703 . Number of matches: 1
+Genotyping gene rl13
+For group G7 there are 1 matched kmers over a total of 445 . Number of matches: 12
+For group G4A there are 1 matched kmers over a total of 376 . Number of matches: 1
+For group G3 there are 1 matched kmers over a total of 690 . Number of matches: 1
+For group G2 there are 2 matched kmers over a total of 670 . Number of matches: 2
+For group G6 there are 1 matched kmers over a total of 257 . Number of matches: 1
+For group G5 there are 2 matched kmers over a total of 757 . Number of matches: 2
+Genotyping gene ul1
+For group G10 there are 2 matched kmers over a total of 255 . Number of matches: 4
+Genotyping gene ul9
+For group G8 there are 2 matched kmers over a total of 343 . Number of matches: 3
+Genotyping gene ul11
+For group G7 there are 1 matched kmers over a total of 106 . Number of matches: 4
+For group G5 there are 2 matched kmers over a total of 259 . Number of matches: 2
+For group G4 there are 1 matched kmers over a total of 228 . Number of matches: 1
+For group G2 there are 3 matched kmers over a total of 405 . Number of matches: 4
+For group G1 there are 8 matched kmers over a total of 59 . Number of matches: 319
+Genotyping gene ul20
+For group G6 there are 2 matched kmers over a total of 203 . Number of matches: 24
+Genotyping gene ul73
+For group G3A there are 9 matched kmers over a total of 44 . Number of matches: 240
+Genotyping gene ul74
+For group G5 there are 1 matched kmers over a total of 633 . Number of matches: 1
+For group G1B there are 25 matched kmers over a total of 426 . Number of matches: 471
+For group G2B there are 5 matched kmers over a total of 480 . Number of matches: 125
+For group G2A there are 3 matched kmers over a total of 424 . Number of matches: 6
+Genotyping gene ul120
+For group G4A there are 2 matched kmers over a total of 107 . Number of matches: 2
+For group G4B there are 2 matched kmers over a total of 98 . Number of matches: 3
+For group G3B there are 10 matched kmers over a total of 128 . Number of matches: 170
+Genotyping gene ul139
+For group G7 there are 4 matched kmers over a total of 49 . Number of matches: 68
+For group G1A there are 1 matched kmers over a total of 34 . Number of matches: 1
+Genotyping gene ul146
+For group G6 there are 1 matched kmers over a total of 277 . Number of matches: 1
+For group G3 there are 2 matched kmers over a total of 245 . Number of matches: 2
+For group G13 there are 8 matched kmers over a total of 140 . Number of matches: 146
+WTCG_081118_2_2_val_2
+WTCG_081118_2_2_val_2
+Performing deduplication....
+Done!
+Reading fastq file....
+Collecting sequence from first fastq file....
+Collecting sequence from second fastq file....
+Genotyping gene rl5a
+For group G5 there are 10 matched kmers over a total of 175 . Number of matches: 288
+For group G3 there are 1 matched kmers over a total of 173 . Number of matches: 2
+For group G2 there are 9 matched kmers over a total of 285 . Number of matches: 196
+Genotyping gene rl6
+For group G6 there are 1 matched kmers over a total of 281 . Number of matches: 2
+For group G4 there are 5 matched kmers over a total of 191 . Number of matches: 132
+For group G1 there are 7 matched kmers over a total of 62 . Number of matches: 126
+Genotyping gene rl12
+For group G7 there are 10 matched kmers over a total of 385 . Number of matches: 140
+For group G5 there are 1 matched kmers over a total of 1148 . Number of matches: 2
+For group G3 there are 1 matched kmers over a total of 807 . Number of matches: 2
+For group G2 there are 1 matched kmers over a total of 914 . Number of matches: 10
+For group G8 there are 1 matched kmers over a total of 844 . Number of matches: 2
+For group G9 there are 1 matched kmers over a total of 838 . Number of matches: 2
+For group G10 there are 8 matched kmers over a total of 703 . Number of matches: 182
+Genotyping gene rl13
+For group G7 there are 7 matched kmers over a total of 445 . Number of matches: 98
+For group G3 there are 1 matched kmers over a total of 690 . Number of matches: 2
+For group G2 there are 2 matched kmers over a total of 670 . Number of matches: 30
+For group G5 there are 1 matched kmers over a total of 757 . Number of matches: 2
+For group G10 there are 5 matched kmers over a total of 495 . Number of matches: 66
+Genotyping gene ul1
+For group G7 there are 4 matched kmers over a total of 449 . Number of matches: 56
+For group G5 there are 1 matched kmers over a total of 420 . Number of matches: 2
+For group G9 there are 1 matched kmers over a total of 369 . Number of matches: 20
+For group G10 there are 8 matched kmers over a total of 255 . Number of matches: 186
+Genotyping gene ul9
+For group G5 there are 1 matched kmers over a total of 380 . Number of matches: 36
+For group G3 there are 1 matched kmers over a total of 503 . Number of matches: 2
+For group G1 there are 2 matched kmers over a total of 52 . Number of matches: 40
+Genotyping gene ul11
+For group G7 there are 4 matched kmers over a total of 106 . Number of matches: 32
+For group G4 there are 3 matched kmers over a total of 228 . Number of matches: 106
+For group G2 there are 2 matched kmers over a total of 405 . Number of matches: 6
+For group G1 there are 9 matched kmers over a total of 59 . Number of matches: 712
+Genotyping gene ul20
+For group G7 there are 4 matched kmers over a total of 153 . Number of matches: 56
+For group G6 there are 4 matched kmers over a total of 203 . Number of matches: 160
+For group G4 there are 1 matched kmers over a total of 255 . Number of matches: 2
+Genotyping gene ul73
+For group G4A there are 1 matched kmers over a total of 63 . Number of matches: 2
+For group G2 there are 4 matched kmers over a total of 108 . Number of matches: 114
+For group G1 there are 1 matched kmers over a total of 66 . Number of matches: 2
+For group G3A there are 7 matched kmers over a total of 44 . Number of matches: 358
+Genotyping gene ul74
+For group G4 there are 1 matched kmers over a total of 585 . Number of matches: 4
+For group G1B there are 24 matched kmers over a total of 426 . Number of matches: 746
+For group G2B there are 10 matched kmers over a total of 480 . Number of matches: 174
+For group G2A there are 2 matched kmers over a total of 424 . Number of matches: 24
+Genotyping gene ul120
+For group G1A there are 6 matched kmers over a total of 75 . Number of matches: 106
+For group G3B there are 12 matched kmers over a total of 128 . Number of matches: 356
+Genotyping gene ul139
+For group G7 there are 4 matched kmers over a total of 49 . Number of matches: 12
+For group G2 there are 1 matched kmers over a total of 18 . Number of matches: 62
+For group G1A there are 2 matched kmers over a total of 34 . Number of matches: 66
+Genotyping gene ul146
+For group G7 there are 1 matched kmers over a total of 80 . Number of matches: 2
+For group G6 there are 2 matched kmers over a total of 277 . Number of matches: 4
+For group G1 there are 1 matched kmers over a total of 123 . Number of matches: 4
+For group G14 there are 1 matched kmers over a total of 286 . Number of matches: 2
+For group G13 there are 8 matched kmers over a total of 140 . Number of matches: 236
+For group G11 there are 5 matched kmers over a total of 164 . Number of matches: 112
+WTCG_081118_6_1_val_1
+WTCG_081118_6_2_val_2
+Performing deduplication....
+Done!
+Reading fastq file....
+Collecting sequence from first fastq file....
+Collecting sequence from second fastq file....
+Genotyping gene rl5a
+For group G5 there are 1 matched kmers over a total of 175 . Number of matches: 1
+For group G2 there are 26 matched kmers over a total of 285 . Number of matches: 539
+Genotyping gene rl6
+For group G4 there are 15 matched kmers over a total of 191 . Number of matches: 467
+Genotyping gene rl12
+For group G7 there are 1 matched kmers over a total of 385 . Number of matches: 1
+For group G4B there are 2 matched kmers over a total of 442 . Number of matches: 3
+For group G5 there are 3 matched kmers over a total of 1148 . Number of matches: 3
+For group G3 there are 2 matched kmers over a total of 807 . Number of matches: 2
+For group G2 there are 4 matched kmers over a total of 914 . Number of matches: 8
+For group G1B there are 1 matched kmers over a total of 336 . Number of matches: 4
+For group G1A there are 21 matched kmers over a total of 272 . Number of matches: 881
+For group G8 there are 3 matched kmers over a total of 844 . Number of matches: 3
+For group G9 there are 3 matched kmers over a total of 838 . Number of matches: 3
+For group G10 there are 1 matched kmers over a total of 703 . Number of matches: 1
+Genotyping gene rl13
+For group G3 there are 2 matched kmers over a total of 690 . Number of matches: 2
+For group G2 there are 3 matched kmers over a total of 670 . Number of matches: 3
+For group G1 there are 26 matched kmers over a total of 235 . Number of matches: 1633
+For group G10 there are 1 matched kmers over a total of 495 . Number of matches: 1
+Genotyping gene ul1
+For group G5 there are 1 matched kmers over a total of 420 . Number of matches: 1
+For group G3 there are 1 matched kmers over a total of 340 . Number of matches: 2
+For group G2 there are 1 matched kmers over a total of 512 . Number of matches: 1
+For group G1 there are 22 matched kmers over a total of 147 . Number of matches: 801
+For group G8 there are 1 matched kmers over a total of 381 . Number of matches: 7
+Genotyping gene ul9
+For group G5 there are 2 matched kmers over a total of 380 . Number of matches: 2
+For group G4 there are 14 matched kmers over a total of 117 . Number of matches: 464
+For group G9 there are 1 matched kmers over a total of 78 . Number of matches: 1
+For group G8 there are 1 matched kmers over a total of 343 . Number of matches: 1
+Genotyping gene ul11
+For group G7 there are 3 matched kmers over a total of 106 . Number of matches: 24
+For group G5 there are 4 matched kmers over a total of 259 . Number of matches: 4
+For group G4 there are 1 matched kmers over a total of 228 . Number of matches: 1
+For group G2 there are 3 matched kmers over a total of 405 . Number of matches: 3
+For group G1 there are 14 matched kmers over a total of 59 . Number of matches: 923
+Genotyping gene ul20
+For group G7 there are 17 matched kmers over a total of 153 . Number of matches: 833
+For group G6 there are 2 matched kmers over a total of 203 . Number of matches: 2
+For group G5 there are 1 matched kmers over a total of 135 . Number of matches: 1
+For group G4 there are 1 matched kmers over a total of 255 . Number of matches: 1
+Genotyping gene ul73
+For group G3A there are 10 matched kmers over a total of 44 . Number of matches: 344
+For group G3B there are 1 matched kmers over a total of 151 . Number of matches: 1
+Genotyping gene ul74
+For group G5 there are 2 matched kmers over a total of 633 . Number of matches: 2
+For group G4 there are 1 matched kmers over a total of 585 . Number of matches: 1
+For group G1C there are 1 matched kmers over a total of 205 . Number of matches: 1
+For group G1B there are 44 matched kmers over a total of 426 . Number of matches: 1937
+For group G2B there are 1 matched kmers over a total of 480 . Number of matches: 1
+For group G2A there are 3 matched kmers over a total of 424 . Number of matches: 15
+Genotyping gene ul120
+For group G1A there are 7 matched kmers over a total of 75 . Number of matches: 300
+For group G3A there are 1 matched kmers over a total of 230 . Number of matches: 1
+For group G3B there are 1 matched kmers over a total of 128 . Number of matches: 1
+Genotyping gene ul139
+For group G7 there are 17 matched kmers over a total of 49 . Number of matches: 534
+For group G3 there are 1 matched kmers over a total of 78 . Number of matches: 1
+Genotyping gene ul146
+For group G5 there are 1 matched kmers over a total of 265 . Number of matches: 1
+For group G3 there are 2 matched kmers over a total of 245 . Number of matches: 2
+For group G13 there are 1 matched kmers over a total of 140 . Number of matches: 1
+For group G12 there are 17 matched kmers over a total of 60 . Number of matches: 463
+For group G11 there are 1 matched kmers over a total of 164 . Number of matches: 5
+WTCG_081118_4_1_val_1
+WTCG_081118_4_2_val_2
+Performing deduplication....
+Done!
+Reading fastq file....
+Collecting sequence from first fastq file....
+Collecting sequence from second fastq file....
+Genotyping gene rl5a
+For group G5 there are 1 matched kmers over a total of 175 . Number of matches: 1
+For group G2 there are 2 matched kmers over a total of 285 . Number of matches: 2
+For group G1 there are 4 matched kmers over a total of 5 . Number of matches: 683
+Genotyping gene rl6
+For group G2 there are 12 matched kmers over a total of 29 . Number of matches: 681
+Genotyping gene rl12
+For group G7 there are 2 matched kmers over a total of 385 . Number of matches: 2
+For group G4A there are 2 matched kmers over a total of 591 . Number of matches: 2
+For group G2 there are 2 matched kmers over a total of 914 . Number of matches: 3
+For group G6 there are 1 matched kmers over a total of 198 . Number of matches: 2
+For group G1A there are 11 matched kmers over a total of 272 . Number of matches: 124
+For group G8 there are 1 matched kmers over a total of 844 . Number of matches: 1
+For group G9 there are 49 matched kmers over a total of 838 . Number of matches: 2824
+For group G10 there are 1 matched kmers over a total of 703 . Number of matches: 1
+Genotyping gene rl13
+For group G7 there are 1 matched kmers over a total of 445 . Number of matches: 1
+For group G4A there are 1 matched kmers over a total of 376 . Number of matches: 1
+For group G3 there are 3 matched kmers over a total of 690 . Number of matches: 8
+For group G2 there are 1 matched kmers over a total of 670 . Number of matches: 1
+For group G1 there are 18 matched kmers over a total of 235 . Number of matches: 352
+For group G5 there are 1 matched kmers over a total of 757 . Number of matches: 2
+For group G9 there are 40 matched kmers over a total of 658 . Number of matches: 2448
+For group G8 there are 1 matched kmers over a total of 512 . Number of matches: 6
+Genotyping gene ul1
+For group G5 there are 1 matched kmers over a total of 420 . Number of matches: 1
+For group G4 there are 1 matched kmers over a total of 97 . Number of matches: 1
+For group G3 there are 1 matched kmers over a total of 340 . Number of matches: 1
+For group G1 there are 12 matched kmers over a total of 147 . Number of matches: 255
+For group G9 there are 25 matched kmers over a total of 369 . Number of matches: 879
+For group G8 there are 1 matched kmers over a total of 381 . Number of matches: 2
+For group G10 there are 2 matched kmers over a total of 255 . Number of matches: 2
+Genotyping gene ul9
+For group G4 there are 10 matched kmers over a total of 117 . Number of matches: 154
+For group G2 there are 1 matched kmers over a total of 149 . Number of matches: 2
+For group G1 there are 7 matched kmers over a total of 52 . Number of matches: 180
+For group G9 there are 1 matched kmers over a total of 78 . Number of matches: 1
+For group G8 there are 2 matched kmers over a total of 343 . Number of matches: 31
+Genotyping gene ul11
+For group G7 there are 5 matched kmers over a total of 106 . Number of matches: 15
+For group G6 there are 1 matched kmers over a total of 110 . Number of matches: 1
+For group G5 there are 4 matched kmers over a total of 259 . Number of matches: 8
+For group G4 there are 1 matched kmers over a total of 228 . Number of matches: 1
+For group G3 there are 1 matched kmers over a total of 190 . Number of matches: 1
+For group G2 there are 5 matched kmers over a total of 405 . Number of matches: 12
+For group G1 there are 17 matched kmers over a total of 59 . Number of matches: 1783
+Genotyping gene ul20
+For group G6 there are 17 matched kmers over a total of 203 . Number of matches: 474
+For group G4 there are 2 matched kmers over a total of 255 . Number of matches: 2
+For group G2 there are 1 matched kmers over a total of 14 . Number of matches: 3
+Genotyping gene ul73
+For group G4A there are 2 matched kmers over a total of 63 . Number of matches: 2
+For group G1 there are 2 matched kmers over a total of 66 . Number of matches: 3
+For group G3A there are 14 matched kmers over a total of 44 . Number ofWTCG_081118_3_1_val_1
+WTCG_081118_3_2_val_2
+Performing deduplication....
+Done!
+Reading fastq file....
+Collecting sequence from first fastq file....
+Collecting sequence from second fastq file....
+Genotyping gene rl5a
+For group G5 there are 4 matched kmers over a total of 175 . Number of matches: 5
+For group G2 there are 2 matched kmers over a total of 285 . Number of matches: 3
+For group G1 there are 2 matched kmers over a total of 5 . Number of matches: 303
+Genotyping gene rl6
+For group G6 there are 3 matched kmers over a total of 281 . Number of matches: 3
+For group G2 there are 14 matched kmers over a total of 29 . Number of matches: 861
+Genotyping gene rl12
+For group G4B there are 3 matched kmers over a total of 442 . Number of matches: 3
+For group G5 there are 1 matched kmers over a total of 1148 . Number of matches: 1
+For group G3 there are 4 matched kmers over a total of 807 . Number of matches: 4
+For group G2 there are 5 matched kmers over a total of 914 . Number of matches: 22
+For group G1B there are 1 matched kmers over a total of 336 . Number of matches: 1
+For group G1A there are 4 matched kmers over a total of 272 . Number of matches: 70
+For group G8 there are 2 matched kmers over a total of 844 . Number of matches: 2
+For group G9 there are 41 matched kmers over a total of 838 . Number of matches: 2776
+Genotyping gene rl13
+For group G4A there are 3 matched kmers over a total of 376 . Number of matches: 3
+For group G2 there are 2 matched kmers over a total of 670 . Number of matches: 3
+For group G1 there are 5 matched kmers over a total of 235 . Number of matches: 39
+For group G6 there are 4 matched kmers over a total of 257 . Number of matches: 5
+For group G5 there are 1 matched kmers over a total of 757 . Number of matches: 7
+For group G9 there are 39 matched kmers over a total of 658 . Number of matches: 1804
+Genotyping gene ul1
+For group G6 there are 1 matched kmers over a total of 118 . Number of matches: 1
+For group G5 there are 2 matched kmers over a total of 420 . Number of matches: 2
+For group G1 there are 6 matched kmers over a total of 147 . Number of matches: 88
+For group G9 there are 17 matched kmers over a total of 369 . Number of matches: 819
+For group G10 there are 3 matched kmers over a total of 255 . Number of matches: 13
+Genotyping gene ul9
+For group G7 there are 1 matched kmers over a total of 394 . Number of matches: 1
+For group G4 there are 4 matched kmers over a total of 117 . Number of matches: 62
+For group G1 there are 7 matched kmers over a total of 52 . Number of matches: 247
+For group G9 there are 2 matched kmers over a total of 78 . Number of matches: 2
+For group G8 there are 1 matched kmers over a total of 343 . Number of matches: 1
+Genotyping gene ul11
+For group G7 there are 3 matched kmers over a total of 106 . Number of matches: 13
+For group G5 there are 4 matched kmers over a total of 259 . Number of matches: 5
+For group G4 there are 2 matched kmers over a total of 228 . Number of matches: 2
+For group G2 there are 9 matched kmers over a total of 405 . Number of matches: 15
+For group G1 there are 14 matched kmers over a total of 59 . Number of matches: 1814
+Genotyping gene ul20
+For group G7 there are 1 matched kmers over a total of 153 . Number of matches: 1
+For group G6 there are 18 matched kmers over a total of 203 . Number of matches: 722
+For group G4 there are 2 matched kmers over a total of 255 . Number of matches: 3
+For group G3 there are 1 matched kmers over a total of 66 . Number of matches: 14
+Genotyping gene ul73
+For group G4A there are 3 matched kmers over a total of 63 . Number of matches: 5
+For group G2 there are 1 matched kmers over a total of 108 . Number of matches: 1
+For group G1 there are 2 matched kmers over a total of 66 . Number of matches: 2
+For group G3A there are 14 matched kmers over a total of 44 . Number of matches: 2209
+For group G3B there are 3 matched kmers over a total of 151 . Number of matches: 5
+Genotyping gene ul74
+For group G5 there are 3 matched kmers over a total of 633 . Number of matches: 3
+For group G4 there are 3 matched kmers over a tot matches: 890
+For group G3B there are 2 matched kmers over a total of 151 . Number of matches: 2
+Genotyping gene ul74
+For group G5 there are 5 matched kmers over a total of 633 . Number of matches: 5
+For group G4 there are 3 matched kmers over a total of 585 . Number of matches: 29
+For group G3 there are 12 matched kmers over a total of 460 . Number of matches: 192
+For group G1B there are 47 matched kmers over a total of 426 . Number of matches: 3298
+For group G1A there are 1 matched kmers over a total of 170 . Number of matches: 1
+For group G2B there are 3 matched kmers over a total of 480 . Number of matches: 14
+For group G2A there are 3 matched kmers over a total of 424 . Number of matches: 13
+Genotyping gene ul120
+For group G4A there are 16 matched kmers over a total of 107 . Number of matches: 1488
+For group G1B there are 1 matched kmers over a total of 255 . Number of matches: 1
+For group G3A there are 1 matched kmers over a total of 230 . Number of matches: 2
+For group G2B there are 1 matched kmers over a total of 195 . Number of matches: 1
+Genotyping gene ul139
+For group G7 there are 3 matched kmers over a total of 49 . Number of matches: 12
+For group G4 there are 6 matched kmers over a total of 17 . Number of matches: 91
+For group G3 there are 1 matched kmers over a total of 78 . Number of matches: 1
+For group G1B there are 7 matched kmers over a total of 22 . Number of matches: 491
+For group G1A there are 1 matched kmers over a total of 34 . Number of matches: 1
+Genotyping gene ul146
+For group G6 there are 1 matched kmers over a total of 277 . Number of matches: 1
+For group G2 there are 1 matched kmers over a total of 288 . Number of matches: 2
+For group G1 there are 1 matched kmers over a total of 123 . Number of matches: 6
+For group G12 there are 17 matched kmers over a total of 60 . Number of matches: 1160
+For group G11 there are 1 matched kmers over a total of 164 . Number of matches: 1
+WTCG_081118_7_1_val_1
+WTCG_081118_7_2_val_2
+Performing deduplication....
+Done!
+Reading fastq file....
+Collecting sequence from first fastq file....
+Collecting sequence from second fastq file....
+Genotyping gene rl5a
+For group G2 there are 33 matched kmers over a total of 285 . Number of matches: 1443
+Genotyping gene rl6
+For group G7 there are 1 matched kmers over a total of 214 . Number of matches: 2
+For group G6 there are 2 matched kmers over a total of 281 . Number of matches: 2
+For group G4 there are 26 matched kmers over a total of 191 . Number of matches: 1428
+For group G1 there are 1 matched kmers over a total of 62 . Number of matches: 2
+Genotyping gene rl12
+For group G4A there are 4 matched kmers over a total of 591 . Number of matches: 5
+For group G4B there are 3 matched kmers over a total of 442 . Number of matches: 7
+For group G5 there are 1 matched kmers over a total of 1148 . Number of matches: 1
+For group G3 there are 7 matched kmers over a total of 807 . Number of matches: 8
+For group G2 there are 4 matched kmers over a total of 914 . Number of matches: 4
+For group G1B there are 4 matched kmers over a total of 336 . Number of matches: 4
+For group G1A there are 41 matched kmers over a total of 272 . Number of matches: 3445
+For group G8 there are 2 matched kmers over a total of 844 . Number of matches: 5
+For group G9 there are 3 matched kmers over a total of 838 . Number of matches: 3
+Genotyping gene rl13
+For group G7 there are 2 matched kmers over a total of 445 . Number of matches: 13
+For group G4A there are 2 matched kmers over a total of 376 . Number of matches: 3
+For group G3 there are 4 matched kmers over a total of 690 . Number of matches: 4
+For group G2 there are 5 matched kmers over a total of 670 . Number of matches: 6
+For group G1 there are 41 matched kmers over a total of 235 . Number of matches: 4626
+For group G6 there are 1 matched kmers over a total of 257 . Number of matches: 2
+For group G5 there are 2 matched kmers over a total of 757 . Number of matches: 3
+For group G8 there are 1 matched kmers over a total of 512 . Number of matches: 1
+Genotyping gene ul1
+For group G7 there are 1 matched kmers over a total of 449 . Number of matches: 1
+For group G5 there are 2 matched kmers over a total of 420 . Number of matches: 2
+For group G3 there are 3 matched kmers over a total of 340 . Number of matches: 6
+For group G2 there are 3 matched kmers over a total of 512 . Number of matches: 4
+For group G1 there are 31 matched kmers over a total of 147 . Number of matches: 3336
+For group G10 there are 2 matched kmers over a total of 255 . Number of matches: 2
+Genotyping gene ul9
+For group G6 there are 1 matched kmers over a total of 43 . Number of matches: 1
+For group G4 there are 28 matched kmers over a total of 117 . Number of matches: 1908
+For group G3 there are 2 matched kmers over a total of 503 . Number of matches: 2
+For group G2 there are 1 matched kmers over a total of 149 . Number of matches: 1
+For group G8 there are 1 matched kmers over a total of 343 . Number of matches: 2
+Genotyping gene ul11
+For group G7 there are 2 matched kmers over a total of 106 . Number of matches: 11
+For group G5 there are 2 matched kmers over a total of 259 . Number of matches: 3
+For group G4 there are 2 matched kmers over a total of 228 . Number of matches: 2
+For group G2 there are 5 matched kmers over a total of 405 . Number of matches: 9
+For group G1 there are 18 matched kmers over a total of 59 . Number of matches: 3040
+Genotyping gene ul20
+For group G7 there are 24 matched kmers over a total of 153 . Number of matches: 2431
+For group G5 there are 1 matched kmers over a total of 135 . Number of matches: 1
+For group G4 there are 2 matched kmers over a total of 255 . Number of matches: 2
+For group G1 there are 1 matched kmers over a total of 112 . Number of matches: 1
+Genotyping gene ul73
+For group G1 there are 1 matched kmers over a total of 66 . Number of matches: 2
+For group G3A there are 14 matched kmers over a total of 44 . Number of matches: 2176
+For group G3B there are 1 matched kmers over a total of 151 . NumbWTCG_081118_5_1_val_1
+WTCG_081118_5_2_val_2
+Performing deduplication....
+Done!
+Reading fastq file....
+Collecting sequence from first fastq file....
+Collecting sequence from second fastq file....
+Genotyping gene rl5a
+For group G6 there are 3 matched kmers over a total of 74 . Number of matches: 5
+For group G5 there are 2 matched kmers over a total of 175 . Number of matches: 2
+For group G1 there are 4 matched kmers over a total of 5 . Number of matches: 825
+Genotyping gene rl6
+For group G6 there are 1 matched kmers over a total of 281 . Number of matches: 2
+For group G2 there are 12 matched kmers over a total of 29 . Number of matches: 1650
+Genotyping gene rl12
+For group G4A there are 3 matched kmers over a total of 591 . Number of matches: 10
+For group G4B there are 3 matched kmers over a total of 442 . Number of matches: 8
+For group G5 there are 2 matched kmers over a total of 1148 . Number of matches: 2
+For group G3 there are 8 matched kmers over a total of 807 . Number of matches: 11
+For group G2 there are 5 matched kmers over a total of 914 . Number of matches: 7
+For group G1B there are 4 matched kmers over a total of 336 . Number of matches: 4
+For group G1A there are 42 matched kmers over a total of 272 . Number of matches: 3765
+For group G8 there are 3 matched kmers over a total of 844 . Number of matches: 3
+For group G9 there are 37 matched kmers over a total of 838 . Number of matches: 1053
+For group G10 there are 5 matched kmers over a total of 703 . Number of matches: 5
+Genotyping gene rl13
+For group G3 there are 5 matched kmers over a total of 690 . Number of matches: 6
+For group G2 there are 10 matched kmers over a total of 670 . Number of matches: 15
+For group G1 there are 39 matched kmers over a total of 235 . Number of matches: 4160
+For group G6 there are 2 matched kmers over a total of 257 . Number of matches: 2
+For group G5 there are 2 matched kmers over a total of 757 . Number of matches: 10
+For group G9 there are 30 matched kmers over a total of 658 . Number of matches: 901
+Genotyping gene ul1
+For group G5 there are 1 matched kmers over a total of 420 . Number of matches: 1
+For group G2 there are 5 matched kmers over a total of 512 . Number of matches: 6
+For group G1 there are 27 matched kmers over a total of 147 . Number of matches: 3072
+For group G9 there are 10 matched kmers over a total of 369 . Number of matches: 273
+For group G8 there are 1 matched kmers over a total of 381 . Number of matches: 1
+For group G10 there are 3 matched kmers over a total of 255 . Number of matches: 8
+Genotyping gene ul9
+For group G7 there are 1 matched kmers over a total of 394 . Number of matches: 1
+For group G5 there are 2 matched kmers over a total of 380 . Number of matches: 3
+For group G4 there are 22 matched kmers over a total of 117 . Number of matches: 2033
+For group G3 there are 1 matched kmers over a total of 503 . Number of matches: 2
+For group G1 there are 6 matched kmers over a total of 52 . Number of matches: 45
+Genotyping gene ul11
+For group G7 there are 2 matched kmers over a total of 106 . Number of matches: 7
+For group G6 there are 1 matched kmers over a total of 110 . Number of matches: 1
+For group G5 there are 5 matched kmers over a total of 259 . Number of matches: 8
+For group G4 there are 1 matched kmers over a total of 228 . Number of matches: 1
+For group G2 there are 8 matched kmers over a total of 405 . Number of matches: 27
+For group G1 there are 22 matched kmers over a total of 59 . Number of matches: 3390
+Genotyping gene ul20
+For group G6 there are 11 matched kmers over a total of 203 . Number of matches: 198
+For group G5 there are 2 matched kmers over a total of 135 . Number of matches: 3
+For group G4 there are 5 matched kmers over a total of 255 . Number of matches: 7
+For group G2 there are 6 matched kmers over a total of 14 . Number of matches: 393
+Genotyping gene ul73
+For group G4A there are 12 matched kmers over a total of 63 . Number of matches: 596
+For group G3A there are 10 matched kmers over a total of 44 . Number of matches: 273
+For group G3B there are 1 matched kmers over a total al of 585 . Number of matches: 3
+For group G3 there are 7 matched kmers over a total of 460 . Number of matches: 43
+For group G1C there are 2 matched kmers over a total of 205 . Number of matches: 2
+For group G1B there are 70 matched kmers over a total of 426 . Number of matches: 7784
+For group G1A there are 2 matched kmers over a total of 170 . Number of matches: 2
+For group G2B there are 8 matched kmers over a total of 480 . Number of matches: 10
+For group G2A there are 5 matched kmers over a total of 424 . Number of matches: 10
+Genotyping gene ul120
+For group G4A there are 16 matched kmers over a total of 107 . Number of matches: 1390
+For group G4B there are 1 matched kmers over a total of 98 . Number of matches: 2
+For group G3A there are 1 matched kmers over a total of 230 . Number of matches: 1
+For group G2A there are 1 matched kmers over a total of 62 . Number of matches: 1
+Genotyping gene ul139
+For group G7 there are 3 matched kmers over a total of 49 . Number of matches: 6
+For group G3 there are 1 matched kmers over a total of 78 . Number of matches: 1
+For group G1B there are 5 matched kmers over a total of 22 . Number of matches: 366
+Genotyping gene ul146
+For group G3 there are 2 matched kmers over a total of 245 . Number of matches: 2
+For group G2 there are 1 matched kmers over a total of 288 . Number of matches: 1
+For group G1 there are 1 matched kmers over a total of 123 . Number of matches: 2
+For group G13 there are 1 matched kmers over a total of 140 . Number of matches: 1
+For group G12 there are 12 matched kmers over a total of 60 . Number of matches: 828
+WTCG_081118_8_1_val_1
+WTCG_081118_8_2_val_2
+Performing deduplication....
+Done!
+Reading fastq file....
+Collecting sequence from first fastq file....
+Collecting sequence from second fastq file....
+Genotyping gene rl5a
+For group G3 there are 1 matched kmers over a total of 173 . Number of matches: 1
+For group G2 there are 32 matched kmers over a total of 285 . Number of matches: 1471
+Genotyping gene rl6
+For group G7 there are 1 matched kmers over a total of 214 . Number of matches: 1
+For group G6 there are 2 matched kmers over a total of 281 . Number of matches: 2
+For group G4 there are 25 matched kmers over a total of 191 . Number of matches: 1390
+For group G3 there are 1 matched kmers over a total of 109 . Number of matches: 1
+Genotyping gene rl12
+For group G4B there are 2 matched kmers over a total of 442 . Number of matches: 2
+For group G3 there are 3 matched kmers over a total of 807 . Number of matches: 4
+For group G2 there are 3 matched kmers over a total of 914 . Number of matches: 7
+For group G1B there are 4 matched kmers over a total of 336 . Number of matches: 4
+For group G1A there are 31 matched kmers over a total of 272 . Number of matches: 2780
+For group G8 there are 2 matched kmers over a total of 844 . Number of matches: 7
+Genotyping gene rl13
+For group G7 there are 1 matched kmers over a total of 445 . Number of matches: 1
+For group G4A there are 1 matched kmers over a total of 376 . Number of matches: 1
+For group G3 there are 2 matched kmers over a total of 690 . Number of matches: 3
+For group G2 there are 4 matched kmers over a total of 670 . Number of matches: 5
+For group G1 there are 38 matched kmers over a total of 235 . Number of matches: 4227
+For group G5 there are 2 matched kmers over a total of 757 . Number of matches: 13
+Genotyping gene ul1
+For group G5 there are 1 matched kmers over a total of 420 . Number of matches: 1
+For group G3 there are 2 matched kmers over a total of 340 . Number of matches: 3
+For group G2 there are 3 matched kmers over a total of 512 . Number of matches: 3
+For group G1 there are 26 matched kmers over a total of 147 . Number of matches: 2300
+For group G9 there are 1 matched kmers over a total of 369 . Number of matches: 2
+For group G10 there are 1 matched kmers over a total of 255 . Number of matches: 1
+Genotyping gene ul9
+For group G4 there are 24 matched kmers over a total of 117 . Number of matches: 2284
+For group G3 there are 1 matched kmers over a total of 503 . Number of matches: 1
+Genotyping gene ul11
+For group G7 there are 1 matched kmers over a total of 106 . Number of matches: 2
+For group G5 there are 5 matched kmers over a total of 259 . Number of matches: 6
+For group G4 there are 1 matched kmers over a total of 228 . Number of matches: 1
+For group G3 there are 1 matched kmers over a total of 190 . Number of matches: 1
+For group G2 there are 6 matched kmers over a total of 405 . Number of matches: 16
+For group G1 there are 18 matched kmers over a total of 59 . Number of matches: 2892
+Genotyping gene ul20
+For group G7 there are 27 matched kmers over a total of 153 . Number of matches: 2964
+For group G6 there are 2 matched kmers over a total of 203 . Number of matches: 2
+For group G5 there are 1 matched kmers over a total of 135 . Number of matches: 1
+For group G4 there are 2 matched kmers over a total of 255 . Number of matches: 2
+Genotyping gene ul73
+For group G4A there are 14 matched kmers over a total of 63 . Number of matches: 1739
+For group G4B there are 2 matched kmers over a total of 60 . Number of matches: 2
+For group G3B there are 1 matched kmers over a total of 151 . Number of matches: 2
+Genotyping gene ul74
+For group G5 there are 2 matched kmers over a total of 633 . Number of matches: 2
+For group G4 there are 2 matched kmers over a total of 585 . Number of matches: 4
+For group G3 there are 43 matched kmers over a total of 460 . Number of matches: 3990
+For group G1B there are 2 matched kmers over a total of 426 . Number of matches: 2
+For group G2B there are 5 matched kmers over a total of 480 . Number of matches: 12
+For group G2A there are 4 matched kmer of matches: 1
+Genotyping gene ul74
+For group G5 there are 4 matched kmers over a total of 633 . Number of matches: 9
+For group G4 there are 3 matched kmers over a total of 585 . Number of matches: 4
+For group G3 there are 2 matched kmers over a total of 460 . Number of matches: 2
+For group G1C there are 2 matched kmers over a total of 205 . Number of matches: 33
+For group G1B there are 64 matched kmers over a total of 426 . Number of matches: 6789
+For group G1A there are 1 matched kmers over a total of 170 . Number of matches: 1
+For group G2B there are 3 matched kmers over a total of 480 . Number of matches: 6
+For group G2A there are 1 matched kmers over a total of 424 . Number of matches: 5
+Genotyping gene ul120
+For group G4A there are 3 matched kmers over a total of 107 . Number of matches: 3
+For group G1B there are 2 matched kmers over a total of 255 . Number of matches: 3
+For group G1A there are 19 matched kmers over a total of 75 . Number of matches: 1556
+For group G3A there are 2 matched kmers over a total of 230 . Number of matches: 2
+For group G3B there are 1 matched kmers over a total of 128 . Number of matches: 1
+For group G2B there are 2 matched kmers over a total of 195 . Number of matches: 4
+For group G2A there are 1 matched kmers over a total of 62 . Number of matches: 2
+Genotyping gene ul139
+For group G7 there are 22 matched kmers over a total of 49 . Number of matches: 1418
+For group G6 there are 1 matched kmers over a total of 80 . Number of matches: 1
+For group G5 there are 1 matched kmers over a total of 91 . Number of matches: 1
+For group G4 there are 1 matched kmers over a total of 17 . Number of matches: 1
+For group G3 there are 1 matched kmers over a total of 78 . Number of matches: 1
+For group G2 there are 2 matched kmers over a total of 18 . Number of matches: 3
+Genotyping gene ul146
+For group G5 there are 1 matched kmers over a total of 265 . Number of matches: 1
+For group G3 there are 1 matched kmers over a total of 245 . Number of matches: 1
+For group G2 there are 1 matched kmers over a total of 288 . Number of matches: 1
+For group G8 there are 1 matched kmers over a total of 196 . Number of matches: 1
+For group G14 there are 1 matched kmers over a total of 286 . Number of matches: 1
+For group G13 there are 1 matched kmers over a total of 140 . Number of matches: 1
+For group G12 there are 18 matched kmers over a total of 60 . Number of matches: 1838
+For group G11 there are 1 matched kmers over a total of 164 . Number of matches: 2
+of 151 . Number of matches: 2
+Genotyping gene ul74
+For group G5 there are 1 matched kmers over a total of 633 . Number of matches: 1
+For group G4 there are 2 matched kmers over a total of 585 . Number of matches: 3
+For group G3 there are 35 matched kmers over a total of 460 . Number of matches: 1723
+For group G1B there are 32 matched kmers over a total of 426 . Number of matches: 858
+For group G1A there are 1 matched kmers over a total of 170 . Number of matches: 1
+For group G2B there are 4 matched kmers over a total of 480 . Number of matches: 4
+For group G2A there are 2 matched kmers over a total of 424 . Number of matches: 6
+Genotyping gene ul120
+For group G4A there are 18 matched kmers over a total of 107 . Number of matches: 2701
+For group G4B there are 2 matched kmers over a total of 98 . Number of matches: 2
+For group G3A there are 2 matched kmers over a total of 230 . Number of matches: 4
+Genotyping gene ul139
+For group G7 there are 2 matched kmers over a total of 49 . Number of matches: 2
+For group G5 there are 1 matched kmers over a total of 91 . Number of matches: 1
+For group G4 there are 10 matched kmers over a total of 17 . Number of matches: 529
+For group G1B there are 3 matched kmers over a total of 22 . Number of matches: 86
+Genotyping gene ul146
+For group G6 there are 1 matched kmers over a total of 277 . Number of matches: 1
+For group G2 there are 2 matched kmers over a total of 288 . Number of matches: 5
+For group G13 there are 1 matched kmers over a total of 140 . Number of matches: 1
+For group G12 there are 20 matched kmers over a total of 60 . Number of matches: 2030
+ers over a total of 424 . Number of matches: 6
+Genotyping gene ul120
+For group G1B there are 2 matched kmers over a total of 255 . Number of matches: 2
+For group G3A there are 4 matched kmers over a total of 230 . Number of matches: 6
+For group G2B there are 26 matched kmers over a total of 195 . Number of matches: 2609
+For group G2A there are 1 matched kmers over a total of 62 . Number of matches: 1
+Genotyping gene ul139
+For group G7 there are 2 matched kmers over a total of 49 . Number of matches: 3
+For group G5 there are 13 matched kmers over a total of 91 . Number of matches: 1460
+Genotyping gene ul146
+For group G3 there are 1 matched kmers over a total of 245 . Number of matches: 1
+For group G13 there are 16 matched kmers over a total of 140 . Number of matches: 1409
+For group G11 there are 1 matched kmers over a total of 164 . Number of matches: 1
+For group G10 there are 1 matched kmers over a total of 216 . Number of matches: 6

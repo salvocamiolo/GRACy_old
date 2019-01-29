@@ -1,0 +1,1 @@
+lib1 bwa ../1_cleanReads/qualityFiltered_1.fq ../1_cleanReads/qualityFiltered_2.fq 300 0.25 FR
