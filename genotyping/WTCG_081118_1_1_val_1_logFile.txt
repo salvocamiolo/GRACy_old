@@ -1,1 +1,9 @@
-Genotyping sample WTCG_081118_1_1_val_1  started at 10:47
+Genotyping sample WTCG_081118_1_1_val_1  started at 21:41
+Deduplication for dataset WTCG_081118_1_1_val_1  started at 21:41
+Deduplication for dataset WTCG_081118_1_1_val_1  ended at 21:41
+
+Reference coverage calculation for dataset WTCG_081118_1_1_val_1  started at 21:41
+Reference coverage calculation for dataset WTCG_081118_1_1_val_1  ended at 21:42
+
+Genotyping for dataset WTCG_081118_1_1_val_1  started at 21:42
+For group G5 there are 1 matched kmers over a total of 175. Number of matches: 0For group G1 there are 2 matched kmers over a total of 62. Number of matches: 3For group G7 there are 2 matched kmers over a total of 385. Number of matches: 4For group G4A there are 1 matched kmers over a total of 591. Number of matches: 0For group G8 there are 1 matched kmers over a total of 343. Number of matches: 0For group G7 there are 1 matched kmers over a total of 106. Number of matches: 0For group G1 there are 3 matched kmers over a total of 59. Number of matches: 6For group G1B there are 3 matched kmers over a total of 426. Number of matches: 6For group G3B there are 1 matched kmers over a total of 128. Number of matches: 0For group G7 there are 2 matched kmers over a total of 49. Number of matches: 3Genotyping sample WTCG_081118_1_1_val_1  ended at 21:43

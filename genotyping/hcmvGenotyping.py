@@ -8,7 +8,7 @@ import os
 import datetime
 import random as rd
 
-
+#Initialize variables
 orderedHyperLoci = ["rl5a","rl6","rl12","rl13","ul1","ul9","ul11","ul20","ul73","ul74","ul120","ul139","ul146"]
 allGroups = set()
 
@@ -20,6 +20,11 @@ numReads = int(sys.argv[3])
 dbfile = installationFolder+"/"+sys.argv[4]
 
 NumThreads = sys.argv[5]
+
+
+
+
+
 
 
 

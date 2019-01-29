@@ -1,2 +1,13 @@
-rl5a	G5	14.5	G3	0.25	G2	0.75
-rl6
+rl5a
+rl6	G1	1.0
+rl12	G7	1.0
+rl13
+ul1
+ul9
+ul11	G1	1.0
+ul20
+ul73
+ul74	G1B	1.0
+ul120
+ul139	G7	1.0
+ul146
