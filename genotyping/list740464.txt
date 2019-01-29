@@ -1,2 +1,0 @@
-/home3/scc20x/Desktop/GriffithProject/081118/Reads/Trimmed_noHuman/WTCG_081118_1_1_val_1.fq
-/home3/scc20x/Desktop/GriffithProject/081118/Reads/Trimmed_noHuman/WTCG_081118_1_2_val_2.fq
