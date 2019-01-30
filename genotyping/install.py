@@ -11,8 +11,8 @@ outfile.write("installationFolder = \""+instFolder+"\"\n")
 outfile.close()
 
 
-os.system("sed '1,2d' hcmvGenotyping.py > temp.py")
+os.system("sed '1,2d' hcmvGenotypingGUI.py > temp.py")
 os.system("cat header  temp.py >installedVersion.py")
-os.system("mv installedVersion.py hcmvGenotyping.py")
-os.system("chmod +x hcmvGenotyping.py")
+os.system("mv installedVersion.py hcmvGenotypingGUI.py")
+os.system("chmod +x hcmvGenotypingGUI.py")
 os.system("rm header installationFolder temp.py -f")
