@@ -20,6 +20,12 @@ import datetime
 import random as rd
 from Bio import SeqIO
 import os
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.patches as patches
+from Bio.Graphics import GenomeDiagram
+from reportlab.lib import colors
+from Bio.SeqFeature import SeqFeature, FeatureLocation
 
 
 
@@ -73,7 +79,7 @@ class Toplevel1:
             self.dbEntry.insert(0,dbfile)
 
         #**************************************************************************
-        #***************** Main Algorithm Start ***********************************
+        #***************** Main Genotyping   Algorithm Start **********************
         #**************************************************************************
 
         def runGenotyping():
@@ -149,7 +155,7 @@ class Toplevel1:
                 self.logArea.configure(state='disabled')
                 self.logArea.update()
 
-                print "Performing deduplication...."
+                #print "Performing deduplication...."
                 dedupFile1 = fileRoot1+"_noDup_1.fq"
                 dedupFile2 = fileRoot2+"_noDup_2.fq"
                 os.system("fastuniq -i "+fileList+" -t q -o "+dedupFile1+" -p "+dedupFile2)
@@ -383,8 +389,92 @@ class Toplevel1:
                 outfile.close()
 
         #**************************************************************************
-        #***************** Main Algorithm End *************************************
+        #***************** Main Genotyping   Algorithm End * **********************
         #**************************************************************************
+
+
+
+        #**************************************************************************
+        #***************** Main Plotting Algorithm Start  *************************
+        #**************************************************************************
+        def plotGenotypes():
+            inputFiles = tkFileDialog.askopenfilenames(initialdir = "./",title = "Select an input file")
+            
+            
+            #Initialize variables
+            orderedHyperLoci = ["rl5a","rl6","rl12","rl13","ul1","ul9","ul11","ul20","ul73","ul74","ul120","ul139","ul146"]
+            genotypeColors = {}
+            allGenotypes = ["G1","G10","G11","G12","G13","G14","G1A","G1B","G1C","G2","G2A","G2B","G3","G3A","G3B","G4","G4A","G4B","G4C","G4D","G5","G6","G6^2","G7","G8","G9"]
+            
+            #Assign colour to genotypes
+            rd.seed(1100)
+            for g in allGenotypes:
+                if not g in genotypeColors:
+                    r = lambda: rd.randint(0,100)
+                    genotypeColors[g]=(float(r())/100.0,float(r())/100.0,float(r())/100)
+
+            #Print hypervariable genes ideogram
+            numHyper = len(orderedHyperLoci)
+            maxLen = numHyper*1200
+            gd_diagram = GenomeDiagram.Diagram("hcmv genotyping")
+            gd_track_for_features = gd_diagram.new_track(1, name="Ideogram",height=0.02,scale=0)
+            gd_feature_set = gd_track_for_features.new_set()
+            for a in range(len(orderedHyperLoci)):
+                feature = SeqFeature(FeatureLocation(1200*a+100, 1200*a+1000+100), type=orderedHyperLoci[a],strand=+1)
+                gd_feature_set.add_feature(feature, color=colors.gray, label=True,label_size=15, label_angle=-45,label_position="middle")
+
+
+            #Collect data to plot
+            samplesToPlot = {}
+            for sample in inputFiles:
+                if not sample in samplesToPlot:
+                    samplesToPlot[sample] = {}
+            
+            for sample in inputFiles:
+                genotypes = open(sample)
+                while True:
+                    line = genotypes.readline().rstrip()
+                    if not line:
+                        break
+                    fields = line.split("\t")
+                    if not fields[0] in samplesToPlot[sample]:
+                        samplesToPlot[sample][fields[0]] = [] 
+                        for item in fields[1:]:
+                            samplesToPlot[sample][fields[0]].append(item)
+                genotypes.close()
+
+            
+
+            #Add plot to final diagram
+            for sample in samplesToPlot:
+                gd_track_for_genotypes = gd_diagram.new_track(1, name=sample,height=0.2, scale=0)
+                gd_genotype_set = gd_track_for_genotypes.new_set()
+                for a in range(len(orderedHyperLoci)):
+                    start = a*1200
+                    for b in range(0,len(samplesToPlot[sample][orderedHyperLoci[a]]),+2):
+                        #print orderedHyperLoci[a], samplesToPlot[sample][orderedHyperLoci[a]]
+
+                        feature = SeqFeature(FeatureLocation(start+100, start+100+int(float(samplesToPlot[sample][orderedHyperLoci[a]][b+1])*1000) ), type=samplesToPlot[sample][orderedHyperLoci[a]][b],strand=+1)
+                        gd_genotype_set.add_feature(feature,color = genotypeColors[    samplesToPlot[sample][orderedHyperLoci[a]][b] ])
+                        #print start+100, start+100+int(float(samplesToPlot[sample][orderedHyperLoci[a]][b+1])*1000)
+                        start=start+int(float(samplesToPlot[sample][orderedHyperLoci[a]][b+1])*1000)
+
+
+
+
+            #Print plot on file
+            gd_track_for_fake = gd_diagram.new_track(1, name="first genotype",height=0.6,scale=0)
+            gd_diagram.draw(format="cicular",orientation="landscape", pagesize='A4', start=0, end=maxLen, circle_core=0.4, tracklines=0, track_size=1,x=0.2)
+            gd_diagram.write("plot.pdf", "PDF",dpi=300)
+
+            
+
+
+            
+
+
+
+
 
         def exitProgram():
             exit()
@@ -449,15 +539,15 @@ class Toplevel1:
         self.numReadsLabel.configure(text="Number of reads")
 
         self.numReadsEntry = tk.Entry(top, justify='right')
-        self.numReadsEntry.place(x=20, y=120,height=30, width=200)
+        self.numReadsEntry.place(x=20, y=120,height=30, width=150)
         self.numReadsEntry.insert(0,"1000000")
 
         self.CutoffLabel = tk.Label(top)
-        self.CutoffLabel.place(x=260, y=100,height=20, width=120)
+        self.CutoffLabel.place(x=200, y=100,height=20, width=120)
         self.CutoffLabel.configure(text="Detection treshold")
 
         self.CutoffText = tk.Entry(top, justify='right')
-        self.CutoffText.place(x=260, y=120,height=30, width=200)
+        self.CutoffText.place(x=200, y=120,height=30, width=150)
         self.CutoffText.insert(0,"0.2")
 
         self.logFileLabel = tk.Label(top)
@@ -480,19 +570,23 @@ class Toplevel1:
         self.progressbar['maximum'] = 100
 
         self.numThreadsLabel = tk.Label(top)
-        self.numThreadsLabel.place(x=480,y=100,height=20, width=100)
+        self.numThreadsLabel.place(x=380,y=100,height=20, width=100)
         self.numThreadsLabel.configure(text="Num. threads")
 
         self.numThreadsEntry = tk.Entry(top, justify='right')
-        self.numThreadsEntry.place(x=480, y=120,height=30, width=200)
+        self.numThreadsEntry.place(x=380, y=120,height=30, width=150)
         self.numThreadsEntry.insert(0,"8")
 
         self.runButton = tk.Button(top,command=runGenotyping)
-        self.runButton.place(x=700,y=120,height=30,width=100)
-        self.runButton.configure(text="Run")
+        self.runButton.place(x=560,y=120,height=30,width=130)
+        self.runButton.configure(text="Genotype!")
+
+        self.plotButton = tk.Button(top,command=plotGenotypes)
+        self.plotButton.place(x=700,y=120,height=30,width=130)
+        self.plotButton.configure(text="Plot")
 
         self.exitButton = tk.Button(top,command=exitProgram)
-        self.exitButton.place(x=820,y=120,height=30,width=100)
+        self.exitButton.place(x=840,y=120,height=30,width=80)
         self.exitButton.configure(text="Exit")
 
 
