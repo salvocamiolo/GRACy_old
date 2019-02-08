@@ -1,11 +1,11 @@
-Genotyping sample WTCG_081118_5_1_val_1  started at 15:43
-Deduplication for dataset WTCG_081118_5_1_val_1  started at 15:43
-Deduplication for dataset WTCG_081118_5_1_val_1  ended at 15:43
+Genotyping sample WTCG_081118_5_1_val_1  started at 16:00
+Deduplication for dataset WTCG_081118_5_1_val_1  started at 16:00
+Deduplication for dataset WTCG_081118_5_1_val_1  ended at 16:00
 
-Reference coverage calculation for dataset WTCG_081118_5_1_val_1  started at 15:43
-Reference coverage calculation for dataset WTCG_081118_5_1_val_1  ended at 15:45
+Reference coverage calculation for dataset WTCG_081118_5_1_val_1  started at 16:00
+Reference coverage calculation for dataset WTCG_081118_5_1_val_1  ended at 16:02
 
-Genotyping for dataset WTCG_081118_5_1_val_1  started at 15:49
+Genotyping for dataset WTCG_081118_5_1_val_1  started at 16:09
 rl5a	For genotype G6 there are 3 reads matching
 rl5a	For genotype G5 there are 1 reads matching
 rl5a	For genotype G4 there are 0 reads matching
@@ -122,4 +122,4 @@ ul146	For genotype G13 there are 1 reads matching
 ul146	For genotype G12 there are 685 reads matching
 ul146	For genotype G11 there are 0 reads matching
 ul146	For genotype G10 there are 0 reads matching
-Genotyping sample WTCG_081118_5_1_val_1  ended at 15:50
+Genotyping sample WTCG_081118_5_1_val_1  ended at 16:13
