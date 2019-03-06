@@ -7,10 +7,10 @@ import time
 
 
 
-inputFolder = "/home3/scc20x/Desktop/NicoCollectionReads/UGompelsReads" #Change from Gui
+inputFolder = "/home3/scc20x/Desktop/NicoCollectionReads/UGompelsReads/UrsulaResubmission" #Change from Gui
 filesToSubmit = "./toSubmit.txt" #Change from Gui
-createProject = "yes" #Change from Gui it may be no and be present in the readsInfo file
-createSample = "yes" #Change from Gui. It may be no and be present in the readsInfo file
+createProject = "no" #Change from Gui it may be no and be present in the readsInfo file
+createSample = "no" #Change from Gui. It may be no and be present in the readsInfo file
 projectInfo = "projectInfo.txt"
 sampleInfo = "samplesInfo.txt"
 readsInfo = "readsInfo.txt"
@@ -199,7 +199,7 @@ while True:
 
             manifest = open(sampleName+"_manifestFile.txt","w",buffering=0)
             manifest.write("INSTRUMENT\t"+instrument+"\nINSERT_SIZE\t"+insertSize+"\nLIBRARY_SOURCE\t"+librarySource+"\nLIBRARY_SELECTION\t"+librarySelection+"\n")
-            manifest.write("STUDY\t"+projectAccessionField+"\nSAMPLE\t"+sampleAccessionField+"\nNAME\t"+sampleName+"\n")
+            manifest.write("STUDY\t"+projectAccessionField+"\nSAMPLE\t"+sampleAccessionField+"\nNAME\t"+sampleName+"_hcmv\n")
             manifest.write("LIBRARY_STRATEGY\t"+libraryStrategy+"\nFASTQ\t"+fq1+"\nFASTQ\t"+fq2+"\n")
             manifest.close()
             os.system("~/Software/jre1.8.0_191/bin/java -jar ./webin-cli-1.6.0.jar -context reads -userName Webin-50760 -password Elisaegizia14  -manifest "+sampleName+"_manifestFile.txt -submit >fastqReceipt")

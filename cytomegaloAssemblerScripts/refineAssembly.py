@@ -25,7 +25,7 @@ while True and eof == 0:
     for seq_record in SeqIO.parse("newReference.fasta","fasta"):
             reference = str(seq_record.seq)
     print "Performing Alignment...."
-    os.system("./bwaPE newReference.fasta "+reads1+".fastq "+reads2+".fastq test 10 0.02 ")
+    os.system("./bwaPE newReference.fasta "+reads1+" "+reads2+"  test 10 0.02 ")
     os.system("samtools faidx newReference.fasta >null 2>&1")
     print "Calculating coverage on assembly...."
     os.system("samtools mpileup -f newReference.fasta test_sorted.bam >finalPileup.txt 2>null")
@@ -60,10 +60,10 @@ while True and eof == 0:
             if numTries ==2:
                 break
             print "Performing joinScaffold_careful algorithm on range",line,"...."
-            os.system(" python joinScaffolds_careful.py join "+reads1+".fastq "+reads2+".fastq finalScaffold_"+str(int(fields[0])-1500)+"_"+str(int(fields[0])-500)+"_f.txt f finalScaffold_"+str(int(fields[1])+500)+"_"+str(int(fields[1])+1500)+"_f.txt f ")
+            os.system(" python joinScaffolds_careful.py join "+reads1+"  "+reads2+"  finalScaffold_"+str(int(fields[0])-1500)+"_"+str(int(fields[0])-500)+"_f.txt f finalScaffold_"+str(int(fields[1])+500)+"_"+str(int(fields[1])+1500)+"_f.txt f ")
             if os.path.isfile("joined_finalScaffold_"+str(int(fields[0])-1500)+"_"+str(int(fields[0])-500)+"_f.txt_finalScaffold_"+str(int(fields[1])+500)+"_"+str(int(fields[1])+1500)+"_f.txt")==False:
                 print "Refining range",fields[0],fields[1],"with joinScaffold_careful failed. Now trying joinScaffold on range",line,"...."
-                os.system("python joinScaffolds.py join "+reads1+".fastq "+reads2+".fastq finalScaffold_"+str(int(fields[0])-1500)+"_"+str(int(fields[0])-500)+"_f.txt f finalScaffold_"+str(int(fields[1])+500)+"_"+str(int(fields[1])+1500)+"_f.txt f")
+                os.system("python joinScaffolds.py join "+reads1+"  "+reads2+"  finalScaffold_"+str(int(fields[0])-1500)+"_"+str(int(fields[0])-500)+"_f.txt f finalScaffold_"+str(int(fields[1])+500)+"_"+str(int(fields[1])+1500)+"_f.txt f")
                 if os.path.isfile("joined_finalScaffold_"+str(int(fields[0])-1500)+"_"+str(int(fields[0])-500)+"_f.txt_finalScaffold_"+str(int(fields[1])+500)+"_"+str(int(fields[1])+1500)+"_f.txt")==False:
                     print  "Both alogrithms failed on range,",line
                     print "Now performing 30 steps of joinScaffold trivial in both directions and recording the output"

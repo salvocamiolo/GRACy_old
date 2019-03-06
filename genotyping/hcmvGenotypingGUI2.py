@@ -2,6 +2,12 @@
 installationFolder = "/home3/scc20x/Software/mySoftware/GRACy/genotyping"
 
 
+from pyPdf import PdfFileWriter, PdfFileReader
+import StringIO
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import letter
+
+
 try:
     import Tkinter as tk
 except ImportError:
@@ -240,7 +246,7 @@ class Toplevel1:
                 avCovFile = open("avCoverage.txt")
                 avCov = float(avCovFile.readline().rstrip())
                 avCovFile.close()
-                detectionTreshold = int(avCov*float(self.CutoffText.get()))  
+                detectionTreshold = float(avCov*float(self.CutoffText.get()))  
                 self.logArea.configure(state='normal')
                 self.logArea.insert(tk.END, "Average coverage for deduplicated reads: "+str(avCov)+"\n")
                 self.logArea.see(tk.END)
@@ -412,6 +418,7 @@ class Toplevel1:
 
                     countSeq = {}
                     totCount = 0
+                    numMatchedKmers = {}
                     for gr in specificKmerGroup:
 
 
@@ -420,6 +427,9 @@ class Toplevel1:
 
                         if not gr in matchedReads:
                             matchedReads[gr] = set()
+
+                        if not gr in numMatchedKmers:
+                            numMatchedKmers[gr] = 0
                         
                         command = "jellyfish query mer_counts_merged.jf "
                         for querySeq in specificKmerGroup[gr]:
@@ -438,12 +448,12 @@ class Toplevel1:
                                 break
                             countFields = countLine.split(" ")
                             if int(countFields[1])>0:
+                                numMatchedKmers[gr] +=1
                                 for item in readsKmer[countFields[0]]:
                                     matchedReads[gr].add(item)
                         countFile.close()
                         logFile.write(gene+"\t"+"For genotype "+gr+" there are "+str(len(matchedReads[gr]))+" reads matching\n")
                         if len(matchedReads[gr])>=detectionTreshold:
-                            #print "For genotype",gr,"there are",len(matchedReads[gr]),"reads mapping kmers belonging to the genotype"
                             countSeq[gr] = len(matchedReads[gr])
                             totCount = totCount + len(matchedReads[gr])
 
@@ -459,7 +469,7 @@ class Toplevel1:
                     for gr in countSeq:
                         if countSeq[gr]>0:
                             percentage = float(countSeq[gr])/float(totCount)
-                            outfile.write("\t"+gr+"\t"+str(percentage))
+                            outfile.write("\t"+gr+"\t"+str(percentage)+"\t"+str(totCount)+"\t"+str(numMatchedKmers[gr]))
                             self.logArea.configure(state='normal')
                             self.logArea.insert(tk.END, "Found signature for genotype "+gr+" with a percentage of "+(str(percentage*100))[:5]+"%\n")
                             self.logArea.see(tk.END)
@@ -487,20 +497,44 @@ class Toplevel1:
         #***************** Main Plotting Algorithm Start  *************************
         #**************************************************************************
         def plotGenotypes():
+            packet = StringIO.StringIO()
             inputFiles = tkFileDialog.askopenfilenames(initialdir = "./",title = "Select an input file")
             
             
             #Initialize variables
             orderedHyperLoci = ["rl5a","rl6","rl12","rl13","ul1","ul9","ul11","ul20","ul73","ul74","ul120","ul139","ul146"]
             genotypeColors = {}
-            allGenotypes = ["G1","G10","G11","G12","G13","G14","G1A","G1B","G1C","G2","G2A","G2B","G3","G3A","G3B","G4","G4A","G4B","G4C","G4D","G5","G6","G6^2","G7","G8","G9"]
+            allGenotypes = ["G1","G10","G11","G12","G13","G14","G1A","G1B","G1C","G2","G2A","G2B","G3","G3A","G3B","G4","G4A","G4B","G4C","G4D","G5","G6","G7","G8","G9"]
             
+            legColour = ["#8b8989","#fffaf0","#faebd7","#eed5b7","#9932cc","#cdcdc1","#c1cdc1","#32cd32","#ffe4e1","#2f4f4f","#778899","#000080","#6495ed","#8470ff","#00bfff","#00ffff","#66cdaa","#006400","#8fbc8f","#7fff00","#cd5c5c","#a0522d","#f4a460","#b22222","#ff0000"]
             #Assign colour to genotypes
-            rd.seed(1100)
+            rd.seed(1200)
+            colorStep = 0
             for g in allGenotypes:
+                colorStep +=1
                 if not g in genotypeColors:
                     r = lambda: rd.randint(0,100)
-                    genotypeColors[g]=(float(r())/100.0,float(r())/100.0,float(r())/100)
+                    genotypeColors[g] = legColour[colorStep-1]
+                    #genotypeColors[g]=(float(r())/100.0,float(r())/100.0,float(r())/100)
+                    #genotypeColors[g]=(float(colorStep)/100.0,float(90-colorStep+7)/100.0,float(colorStep+21)/100)
+            
+            #Plot legend
+            numLeg = 0
+            for gr in genotypeColors:
+                numLeg += 1
+                plt.rc('figure', figsize=(5, 5))
+                
+                plt.subplot(len(genotypeColors),1,numLeg)
+                plt.axis('equal')
+                plt.pie([100],labels=[gr],colors=[genotypeColors[gr]])
+                plt.axis('equal')
+                #plt.text(-5,0,"Ciao2",verticalalignment='center',horizontalalignment='left')
+                if numLeg == 1:
+                    plt.title("Colour legend")
+
+            plt.savefig('legend.pdf',format='pdf',dpi=600, bbox_inches = 'tight')
+
+
 
             #Print hypervariable genes ideogram
             numHyper = len(orderedHyperLoci)
@@ -513,30 +547,43 @@ class Toplevel1:
                 gd_feature_set.add_feature(feature, color=colors.gray, label=True,label_size=15, label_angle=-45,label_position="middle")
 
 
+            inputDirectory = "/".join(inputFiles[0].split("/")[:-1])
+
             #Collect data to plot
             samplesToPlot = {}
             for sample in inputFiles:
-                if not sample in samplesToPlot:
-                    samplesToPlot[sample] = {}
-            
+                sampleName = (sample.split("/"))[-1]
+                if not sampleName in samplesToPlot:
+                    samplesToPlot[sampleName] = {}
+            sampleList = []
             for sample in inputFiles:
+                sampleList.append(sample.split("/")[-1]) 
+                sampleName = (sample.split("/"))[-1]
                 genotypes = open(sample)
                 while True:
                     line = genotypes.readline().rstrip()
                     if not line:
                         break
                     fields = line.split("\t")
-                    if not fields[0] in samplesToPlot[sample]:
-                        samplesToPlot[sample][fields[0]] = [] 
-                        for item in fields[1:]:
-                            samplesToPlot[sample][fields[0]].append(item)
+                    if not fields[0] in samplesToPlot[sampleName]:
+                        samplesToPlot[sampleName][fields[0]] = [] 
+                        for a in range(1,len(fields)-1,+4):
+                            samplesToPlot[sampleName][fields[0]].append(fields[a])
+                            samplesToPlot[sampleName][fields[0]].append(fields[a+1])
+                            print fields[a],fields[a+1]
+
+                        #for item in fields[1:]:
+                        #    samplesToPlot[sample][fields[0]].append(item)
                 genotypes.close()
                 
 
             
-
+            print "samplesToPlot"
+            print samplesToPlot
+            print "sampleList"
+            print sampleList
             #Add plot to final diagram
-            for sample in samplesToPlot:
+            for sample in sampleList:
                 gd_track_for_genotypes = gd_diagram.new_track(1, name=sample,height=0.2, scale=0)
                 gd_genotype_set = gd_track_for_genotypes.new_set()
                 for a in range(len(orderedHyperLoci)):
@@ -558,7 +605,30 @@ class Toplevel1:
             gd_diagram.write("plot.pdf", "PDF",dpi=300)
 
             
+            can = canvas.Canvas(packet, pagesize=letter)
+            startY = 400
+            for sample in sampleList:
+                startY -= 20
+                can.drawString(300,startY, sample)
+            can.save()
+            packet.seek(0)
+            new_pdf = PdfFileReader(packet)
+            existing_pdf = PdfFileReader(file("plot.pdf", "rb"))
+ 
+            output = PdfFileWriter()
+            page = existing_pdf.getPage(0)
+            page.mergePage(new_pdf.getPage(0))
+            output.addPage(page)
+            outputStream = file("plot2.pdf", "wb")
+            output.write(outputStream)
+            outputStream.close()
 
+            can = None
+            new_pdf = None
+            existing_pdf = None
+            output = None
+            page = None
+            outputStream = None
 
             
 

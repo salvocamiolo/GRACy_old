@@ -17,6 +17,8 @@ from os import listdir
 from os.path import isfile, join
 import os
 import time
+import numpy as nm
+import matplotlib.pyplot as plt
 
 
 def vp_start_gui():
@@ -68,6 +70,48 @@ class Toplevel1:
             recodingFile = tkFileDialog.askopenfilename(initialdir = "~",title = "Select file")
             self.recodingFileEntry.delete(0,tk.END)
             self.recodingFileEntry.insert(0,recodingFile)
+
+
+        def plotCoveragePlot(covFile,expName):
+            position = []
+            coverage = []
+            windowSize = 0
+            avPos = 0
+            covFile = open(covFile)
+            coverageToPlot = []
+            positionToPlot = []
+            while True:
+                line = covFile.readline().rstrip()
+                if not line:
+                    break
+                fields = line.split("\t")
+                position.append(int(fields[1])) 
+                coverage.append(int(fields[2])) 
+                windowSize +=1
+                if windowSize == 200:
+                    avPos += 200
+                    positionToPlot.append(avPos)
+                    avCoverage = nm.mean(coverage)
+                    coverageToPlot.append(int(avCoverage))
+                    position = []
+                    coverage = []
+                    windowSize = 0
+
+            plt.figure(figsize=(20,10))
+            plt.plot(positionToPlot,coverageToPlot,linewidth=0.3)
+            plt.xticks(nm.arange(0,235000,10000))
+            plt.xlabel("Position (bp)")
+            plt.ylabel("Coverage")
+            plt.text(1000,950,expName)
+            plt.savefig(expName+"_covPlot.png")
+
+
+
+
+
+
+
+
 
 #*******************************************************
 #********************* Main algorithm start ************
@@ -126,21 +170,34 @@ class Toplevel1:
             numTasks = 1
             if self.removeHumanChkValue.get() == True:
                 numTasks += 4
-                statisticsToReport.append("Reads after host reads removal")
+                statisticsToReport.append("Number Reads after host reads removal")
+                statisticsToReport.append("Percentage Reads after host reads removal")
             if self.removeAdaptersChkValue.get() == True:
                 numTasks += 2
-                statisticsToReport.append("Reads after adaptor trimming")
+                statisticsToReport.append("Number Reads after adaptor trimming")
+                statisticsToReport.append("Percentage Reads after adaptor trimming")
             if self.deduplicateChkValue.get() == True:
                 numTasks += 2
-                statisticsToReport.append("Reads after deduplication")
+                statisticsToReport.append("Number Reads after deduplication")
+                statisticsToReport.append("Percentage Reads after deduplication")
             if self.al2RefChkValue.get() == True:
                 numTasks += 5
                 statisticsToReport.append("Merlin coverage for original reads")
-                statisticsToReport.append("Original reads mapping to Merlin")
+                statisticsToReport.append("Number Original reads mapping to Merlin")
+                statisticsToReport.append("Percentage Original reads mapping to Merlin")
+                statisticsToReport.append("Number of bases covered by original reads")
+                statisticsToReport.append("Percentage of bases covered by original reads")
+
+
                 if self.deduplicateChkValue.get() == True:
                     numTasks += 5
                     statisticsToReport.append("Merlin coverage for deduplicated reads")
-                    statisticsToReport.append("Original reads mapping to Merlin")
+                    statisticsToReport.append("Number of deduplicated reads mapping to Merlin")
+                    statisticsToReport.append("Percentage of deduplicated reads mapping to Merlin")
+                    statisticsToReport.append("Number of bases covered by deduplicated reads")
+                    statisticsToReport.append("Percentage of bases covered by deduplicated reads")
+
+
 
 
             numTasks = numTasks*len(paired2filter)
@@ -247,7 +304,8 @@ class Toplevel1:
                         self.progressbar.update()
                         numreads = open("numReads")
                         numberOfReads = int(((numreads.readline().rstrip()).split(" "))[0])/2
-                        datasetStatistics[dataset].append(str(numberOfReads)+"("+str(numberOfReads*100/originalReadsNumber)[:4]+"%)")
+                        datasetStatistics[dataset].append(str(numberOfReads))
+                        datasetStatistics[dataset].append(str(numberOfReads*100/originalReadsNumber)[:4])
                         numreads.close()
                         os.system("rm -f numReads")
                         self.logArea.configure(state='normal')
@@ -304,7 +362,8 @@ class Toplevel1:
                         self.progressbar.update()
                         numreads = open("numReads")
                         numberOfReads = int(((numreads.readline().rstrip()).split(" "))[0])/2
-                        datasetStatistics[dataset].append(str(numberOfReads)+"("+str(numberOfReads*100/originalReadsNumber)[:4]+"%)")
+                        datasetStatistics[dataset].append(str(numberOfReads))
+                        datasetStatistics[dataset].append(str(numberOfReads*100/originalReadsNumber)[:4])
                         numreads.close()
                         os.system("rm -f numReads")
                         self.logArea.configure(state='normal')
@@ -345,7 +404,8 @@ class Toplevel1:
                         self.progressbar.update()
                         numreads = open("numReads")
                         numberOfReads = int(((numreads.readline().rstrip()).split(" "))[0])/2
-                        datasetStatistics[dataset].append(str(numberOfReads)+"("+str(numberOfReads*100/originalReadsNumber)[:4]+"%)")
+                        datasetStatistics[dataset].append(str(numberOfReads))
+                        datasetStatistics[dataset].append(str(numberOfReads*100/originalReadsNumber)[:4])
                         numreads.close()
                         os.system("rm -f numReads")
                         self.logArea.configure(state='normal')
@@ -409,7 +469,10 @@ class Toplevel1:
                         self.logArea.see(tk.END)
                         self.logArea.configure(state='disabled')
                         self.logArea.update()
-                        os.system("samtools depth  alignment_sorted.bam  |  awk '{sum+=$3} END { print sum/NR}' >avCoverage.txt")
+                        os.system("samtools depth -d 10000000 alignment_sorted.bam  |  awk '{sum+=$3} END { print sum/NR}' >avCoverage.txt")
+                        os.system("samtools depth -a -d 10000000 alignment_sorted.bam >coverage.txt")
+                        plotCoveragePlot("coverage.txt",codes[dataset+"_1.fastq"].replace("_1.fastq","")+"_nh_tr")
+                        os.system("samtools depth -d 10000000 alignment_sorted.bam  | wc -l >breadth.txt")
                         step+=1
                         self.progressbar['value']= int( (step*progressBarIncrement) )
                         self.progressbar.update()
@@ -435,7 +498,16 @@ class Toplevel1:
                         readsMapping = float(readsMappingFile.readline().rstrip())
                         readsMappingFile.close()
                         
-                        datasetStatistics[dataset].append(str(readsMapping)+"("+str(readsMapping*100/originalReadsNumber)[:4]+"%)")
+                        datasetStatistics[dataset].append(str(readsMapping))
+                        datasetStatistics[dataset].append(str(readsMapping*100/originalReadsNumber)[:4])
+
+                        bfile = open("breadth.txt")
+                        breadthValue = float(bfile.readline().rstrip())
+                        bfile.close()
+
+                        datasetStatistics[dataset].append(str(breadthValue))
+                        datasetStatistics[dataset].append(str( breadthValue / 235646.0 )[:4])
+
 
 
                         if self.deduplicateChkValue.get() == True:
@@ -489,7 +561,10 @@ class Toplevel1:
                             self.logArea.see(tk.END)
                             self.logArea.configure(state='disabled')
                             self.logArea.update()
-                            os.system("samtools depth  alignment_sorted.bam  |  awk '{sum+=$3} END { print sum/NR}' >avCoverage.txt")
+                            os.system("samtools depth -d 10000000 alignment_sorted.bam  |  awk '{sum+=$3} END { print sum/NR}' >avCoverage.txt")
+                            os.system("samtools depth -a -d 10000000 alignment_sorted.bam   >coverage.txt")
+                            plotCoveragePlot("coverage.txt",codes[dataset+"_1.fastq"].replace("_1.fastq","")+"_nh_tr_dd")
+                            os.system("samtools depth -d 10000000 alignment_sorted.bam  | wc -l >breadth.txt")
                             step+=1
                             self.progressbar['value']= int( (step*progressBarIncrement) )
                             self.progressbar.update()
@@ -514,9 +589,15 @@ class Toplevel1:
                             readsMapping = float(readsMappingFile.readline().rstrip())
                             readsMappingFile.close()
                             
-                            datasetStatistics[dataset].append(str(readsMapping)+"("+str(readsMapping*100/originalReadsNumber)[:4]+"%)")
+                            datasetStatistics[dataset].append(str(readsMapping))
+                            datasetStatistics[dataset].append(str(readsMapping*100/originalReadsNumber)[:4])
 
-                        
+                            bfile = open("breadth.txt")
+                            breadthValue = float(bfile.readline().rstrip())
+                            bfile.close()
+
+                            datasetStatistics[dataset].append(str(breadthValue))
+                            datasetStatistics[dataset].append(str( breadthValue / 235646.0 )[:4])
 
 
 
@@ -528,12 +609,12 @@ class Toplevel1:
                     if self.deduplicateChkValue.get() == True:
                         os.system("mv "+dedupFileName1+" "+outputFolder+"/")
                         os.system("mv "+dedupFileName2+" "+outputFolder+"/")
-                    
+                    os.system("mv "+codes[dataset+"_1.fastq"].replace("_1.fastq","")+"* "+outputFolder+"/")
                     
                     for a in range(len(statisticsToReport)):
                         print statisticsToReport[a],datasetStatistics[dataset][a]
 
-                    os.system("rm -f *.sam *.bam readsMapping avCoverage.txt")
+                    os.system("rm -f *.sam *.bam readsMapping avCoverage.txt breadth.txt")
 
 
 
