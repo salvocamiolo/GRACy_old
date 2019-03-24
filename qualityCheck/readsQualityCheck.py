@@ -245,7 +245,7 @@ class Toplevel1:
                         self.logArea.see(tk.END)
                         self.logArea.configure(state='disabled')
                         self.logArea.update()
-                        os.system("bowtie2 -x /home2/db/bowtie2/hg38 -1 tempReads_1.fastq -2 tempReads_2.fastq -p "+self.numThreadsEntry.get()+" -S hostAlignment.sam")
+                        os.system("bowtie2 --local -x /home2/db/bowtie2/hg38 -1 tempReads_1.fastq -2 tempReads_2.fastq -p "+self.numThreadsEntry.get()+" -S hostAlignment.sam")
                         step+=1
                         self.progressbar['value']= int( (step*progressBarIncrement) )
                         self.progressbar.update()

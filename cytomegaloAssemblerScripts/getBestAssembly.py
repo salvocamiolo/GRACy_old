@@ -29,30 +29,31 @@ for b in range(2):
         print "Performing de novo assembly...."
         os.system("/home3/scc20x/Software/SPAdes-3.12.0-Linux/bin/spades.py -1 subsample_1.fq -2 subsample_2.fq --cov-cutoff auto --careful -k 53,63,73,83 -o outputSpades_"+str(a)+"_"+str(b)+" >null 2>&1")
         longestScaffold = 0
-        scaffoldsFile = open("./outputSpades_"+str(a)+"_"+str(b)+"/scaffolds.fasta")
-        line = scaffoldsFile.readline()
-        line = scaffoldsFile.readline()
-        longestScaffold += len(line)
-        while not line[0] == ">":
+        if os.path.isfile("./outputSpades_"+str(a)+"_"+str(b)+"/scaffolds.fasta") == True:
+            scaffoldsFile = open("./outputSpades_"+str(a)+"_"+str(b)+"/scaffolds.fasta")
+            line = scaffoldsFile.readline()
             line = scaffoldsFile.readline()
             longestScaffold += len(line)
+            while not line[0] == ">":
+                line = scaffoldsFile.readline()
+                longestScaffold += len(line)
 
-        if longestScaffold > bestLength:
-            bestLength = longestScaffold
-            bestAssembly_length = "./outputSpades_"+str(a)+"_"+str(b)+"/scaffolds.fasta"
+            if longestScaffold > bestLength:
+                bestLength = longestScaffold
+                bestAssembly_length = "./outputSpades_"+str(a)+"_"+str(b)+"/scaffolds.fasta"
 
-        os.system("getN50 ./outputSpades_"+str(a)+"_"+str(b)+"/scaffolds.fasta >N50.txt")
-        os.system("fold -1 outputSpades_"+str(a)+"_"+str(b)+"/scaffolds.fasta | grep -c N >> N50.txt") 
-        infile = open("N50.txt")
-        infile.readline()
-        infile.readline()
-        n50 = int(((infile.readline().rstrip()).split(" "))[1])
-        numN = infile.readline().rstrip()
-        print a,n50,longestScaffold,numN
-        outfile.write(str(b)+"\t"+str(a)+"\t"+str(n50)+"\t"+str(longestScaffold)+"\t"+str(numN)+"\n")
-        if n50 > bestN50:
-            bestN50 = n50
-            bestAssemblyN50 = "./outputSpades_"+str(a)+"_"+str(b)+"/scaffolds.fasta"
+            os.system("getN50 ./outputSpades_"+str(a)+"_"+str(b)+"/scaffolds.fasta >N50.txt")
+            os.system("fold -1 outputSpades_"+str(a)+"_"+str(b)+"/scaffolds.fasta | grep -c N >> N50.txt") 
+            infile = open("N50.txt")
+            infile.readline()
+            infile.readline()
+            n50 = int(((infile.readline().rstrip()).split(" "))[1])
+            numN = infile.readline().rstrip()
+            print a,n50,longestScaffold,numN
+            outfile.write(str(b)+"\t"+str(a)+"\t"+str(n50)+"\t"+str(longestScaffold)+"\t"+str(numN)+"\n")
+            if n50 > bestN50:
+                bestN50 = n50
+                bestAssemblyN50 = "./outputSpades_"+str(a)+"_"+str(b)+"/scaffolds.fasta"
 
         
 
