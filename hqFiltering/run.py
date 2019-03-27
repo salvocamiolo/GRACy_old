@@ -131,7 +131,7 @@ while True:
     print "Press a key to merge reads"
 
     #Sort paired reads in files
-    comand = "python ~/Software/mySoftware/cytomegaloAssemblerScripts/mergeQualFilteredMates.py " + sample.name+"_hq_1.fastq " + sample.name+"_hq_2.fastq"
+    comand = "python ~/Software/mySoftware/GRACy/cytomegaloAssemblerScripts/mergeQualFilteredMates.py " + sample.name+"_hq_1.fastq " + sample.name+"_hq_2.fastq"
     os.system(comand)
     
     print "Press a key to deduplicate"
