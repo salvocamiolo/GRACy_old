@@ -1,0 +1,50 @@
+
+
+The project folder already exists!
+Samples with the same names will be overwriten!
+Press n to exit or any other key to continue
+Traceback (most recent call last):
+  File "run.py", line 30, in <module>
+    answer = raw_input()
+IOError: [Errno 9] Bad file descriptor
+Reading file  ERR2025587_hq_1.fastq  for sorting
+Traceback (most recent call last):
+  File "/home3/scc20x/Software/pythonScripts/mergeQualFilteredMates.py", line 32, in <module>
+    loci1[str(seq_record.id)] = seq_record
+KeyboardInterrupt
+mv: cannot stat ‘./ERR2025587_hq_?_subset.fastq’: No such file or directory
+mv: cannot stat ‘./ERR2025587_hq_1.fastq_singletons.fastq’: No such file or directory
+Reading file  ERR2025697_hq_1.fastq  for sorting
+Reading file  ERR2025697_hq_2.fastq  for sorting
+Writing file  ERR2025697_hq_1.fastq_hq
+Writing file  ERR2025697_hq_2.fastq_hq
+Writing file  ERR2025697_hq_1.fastq_singletons.fastq
+mv: cannot stat ‘./ERR2025697_hq_?_subset.fastq’: No such file or directory
+Reading file  ERR2282607_hq_1.fastq  for sorting
+Reading file  ERR2282607_hq_2.fastq  for sorting
+Writing file  ERR2282607_hq_1.fastq_hq
+Writing file  ERR2282607_hq_2.fastq_hq
+Writing file  ERR2282607_hq_1.fastq_singletons.fastq
+mv: cannot stat ‘./ERR2282607_hq_?_subset.fastq’: No such file or directory
+Reading file  SRR7093666_hq_1.fastq  for sorting
+Reading file  SRR7093666_hq_2.fastq  for sorting
+Writing file  SRR7093666_hq_1.fastq_hq
+Writing file  SRR7093666_hq_2.fastq_hq
+Writing file  SRR7093666_hq_1.fastq_singletons.fastq
+mv: cannot stat ‘./SRR7093666_hq_?_subset.fastq’: No such file or directory
+Quality filtering for file  /home3/scc20x/ncbi/public/sra/ERR2025587_1.fastq
+Quality filtering for file  /home3/scc20x/ncbi/public/sra/ERR2025587_2.fastq
+Performing deduplication
+End deduplication
+Quality filtering for file  /home3/scc20x/ncbi/public/sra/ERR2025697_1.fastq
+Quality filtering for file  /home3/scc20x/ncbi/public/sra/ERR2025697_2.fastq
+Performing deduplication
+End deduplication
+Quality filtering for file  /home3/scc20x/ncbi/public/sra/ERR2282607_1.fastq
+Quality filtering for file  /home3/scc20x/ncbi/public/sra/ERR2282607_2.fastq
+Performing deduplication
+End deduplication
+Quality filtering for file  /home3/scc20x/ncbi/public/sra/SRR7093666_1.fastq
+Quality filtering for file  /home3/scc20x/ncbi/public/sra/SRR7093666_2.fastq
+Performing deduplication
+End deduplication

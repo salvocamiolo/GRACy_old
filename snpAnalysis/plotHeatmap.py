@@ -29,8 +29,8 @@ while True:
     line = heatmapFiles.readline().rstrip()
     if not line:
         break
-    xlab.append(line)
-    outfile.write(line+"\t")
+    
+    
     if not line in snpPositions:
         snpPositions[line] = {}
     infile = open(line)
@@ -44,6 +44,10 @@ while True:
             snpPositions[line][(fields[0],fields[1],fields[2])] = float(fields[4])
 
     infile.close()
+for exp in snpPositions:
+    outfile.write(exp+"\t")
+    xlab.append(exp)
+
 outfile.write("\n")
 
 #Calculate the total number of snps present in the experiments

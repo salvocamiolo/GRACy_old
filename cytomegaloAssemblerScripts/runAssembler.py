@@ -48,7 +48,7 @@ if qualityFiltering == "yes" or qualityFiltering == "Yes":
         qualConfFile.write(confFile.readline())
     qualConfFile.write("SampleEnd*******************************************\n")
     qualConfFile.close()
-    os.system("python /home3/scc20x/Software/mySoftware/GRACy/hqFiltering//run.py ./scripts/qualityFiltering.conf")
+    os.system("python /home3/scc20x/Software/mySoftware/GRACy/hqFiltering/run.py ./scripts/qualityFiltering.conf")
     os.system("mkdir -p 1_cleanReads")
     os.system("mv ./allSamples/"+projectName+"_hq_?.fastq ./1_cleanReads/")
     os.system("rm -rf allSamples")

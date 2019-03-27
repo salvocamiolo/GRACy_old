@@ -1,0 +1,14 @@
+ProjectName	allSamples
+Sample_start****************************************
+SampleName	HHV-6B_RNASeq
+Read1	/home3/davi01a/Data/HCMV/Betty/Betty_05/Original/HHV6B_Z29-SUPTI_S2_L001_R1_001.fastq
+Read2	/home3/davi01a/Data/HCMV/Betty/Betty_05/Original/HHV6B_Z29-SUPTI_S2_L001_R2_001.fastq
+***Filtering and trimming options
+minQualMean	28
+trimLeft	7
+trimQualRight	28
+trimQualWindow	30
+trimQualStep	5
+minLen	50
+removeDup	yes
+SampleEnd*******************************************
