@@ -28,15 +28,17 @@ loci2Set = set()
 #Load in memory sequences from first fastq file
 print "Reading file ",filename1," for sorting"
 for seq_record in SeqIO.parse(filename1,"fastq"):
-    if not str(seq_record.id) in loci1:
-        loci1[str(seq_record.id)] = seq_record
-        loci1Set.add(str(seq_record.id))
+    locus = ((str(seq_record.id)).split("/"))[0]
+    if not locus in loci1:
+        loci1[locus] = seq_record
+        loci1Set.add(locus)
 #Load in memory sequences from second fastq file
 print "Reading file ",filename2," for sorting"
 for seq_record in SeqIO.parse(filename2,"fastq"):
-    if not str(seq_record.id) in loci2:
-        loci2[str(seq_record.id)] = seq_record
-        loci2Set.add(str(seq_record.id))
+    locus = ((str(seq_record.id)).split("/"))[0]
+    if not locus in loci2:
+        loci2[locus] = seq_record
+        loci2Set.add(locus)
 
 #Calculate common and non common loci
 lociCommon = loci1Set & loci2Set
