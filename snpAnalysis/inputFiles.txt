@@ -1,14 +1,1 @@
-~/Desktop/GriffithProject/081118/Reads/qualityChecked/WTCG_081118_34_nh_tr_1.fastq
-~/Desktop/GriffithProject/081118/Reads/qualityChecked/WTCG_081118_34_nh_tr_2.fastq
-~/Desktop/GriffithProject/081118/Reads/qualityChecked/WTCG_081118_35_nh_tr_1.fastq
-~/Desktop/GriffithProject/081118/Reads/qualityChecked/WTCG_081118_35_nh_tr_2.fastq
-~/Desktop/GriffithProject/081118/Reads/qualityChecked/WTCG_081118_36_nh_tr_1.fastq
-~/Desktop/GriffithProject/081118/Reads/qualityChecked/WTCG_081118_36_nh_tr_2.fastq
-~/Desktop/GriffithProject/081118/Reads/qualityChecked/WTCG_081118_37_nh_tr_1.fastq
-~/Desktop/GriffithProject/081118/Reads/qualityChecked/WTCG_081118_37_nh_tr_2.fastq
-~/Desktop/GriffithProject/081118/Reads/qualityChecked/WTCG_081118_38_nh_tr_1.fastq
-~/Desktop/GriffithProject/081118/Reads/qualityChecked/WTCG_081118_38_nh_tr_2.fastq
-~/Desktop/GriffithProject/081118/Reads/qualityChecked/WTCG_081118_39_nh_tr_1.fastq
-~/Desktop/GriffithProject/081118/Reads/qualityChecked/WTCG_081118_39_nh_tr_2.fastq
-~/Desktop/GriffithProject/081118/Reads/qualityChecked/WTCG_081118_40_nh_tr_1.fastq
-~/Desktop/GriffithProject/081118/Reads/qualityChecked/WTCG_081118_40_nh_tr_2.fastq
+/home3/scc20x/Desktop/GriffithProject/081118/Genotyping/Bam_alignments/WTCG_081118_34.bam

@@ -1,0 +1,49 @@
+
+RL6
+- No Start codon found 
+RL6 - after refinement 
+- No Start codon found 
+
+UL111A
+- Start codon refined  20 codons upstream
+- Stop codon refined 0 codon upstream
+
+
+UL74A
+- No Start codon found 
+
+UL74A
+- No Start codon found 
+UL74A - after refinement 
+Good CDS!
+
+UL119
+- Start codon refined  0 codons upstream
+- Stop codon refined 0 codon upstream
+
+
+UL30A
+- No Start codon found 
+UL30A - after refinement 
+- No Start codon found 
+
+UL1
+The coding sequence is interrupted by a stop codon
+
+
+UL42
+- Stop codon refined 1 codon upstream
+
+
+RL5A
+- No Start codon found 
+RL5A - after refinement 
+- No Start codon found 
+
+UL71
+- Stop codon refined 1 codon upstream
+
+
+UL9
+The coding sequence is interrupted by a stop codon
+

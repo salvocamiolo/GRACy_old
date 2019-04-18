@@ -8,8 +8,9 @@ reads2 = sys.argv[2]
 
 start = sys.argv[3]
 start_o = sys.argv[4]
-end = sys.argv[5]
-end_o = sys.argv[6]
+
+numMatches = int(sys.argv[5])
+
 
 #numCycles = int(sys.argv[7])
 
@@ -79,13 +80,10 @@ for seq_record in SeqIO.parse(start,"fasta"):
     if start_o == "r":
         startSeq = biomodule.reverseComplement(startSeq)
 
-for seq_record in SeqIO.parse(end,"fasta"):
-    terminiSeq = str(seq_record.seq)
-    if end_o == "r":
-        terminiSeq = biomodule.reverseComplement(terminiSeq)
 
 
-elongedSequence = startSeq[-700:-200]
+
+elongedSequence = startSeq[-200:]
 outputSeq = open("joinScaffold_trivialSeq.fasta","w")
 numCycle = 0
 userChoice = "y"
@@ -98,7 +96,7 @@ while not userChoice == "q":
         exit()
     print "Performing blat cycle ",numCycle
     
-    for overlap in range(100,30,-10):
+    for overlap in range(100,10,-10):
         print "Trying overlap",overlap,"...."
         tempFile = open("tempFasta.fasta","w")
         tempFile.write(">tempFasta\n"+elongedSequence[-overlap:]+"\n")
@@ -126,13 +124,13 @@ while not userChoice == "q":
                                     foundSequences.append(biomodule.reverseComplement(sequences[fields[1]][:int(fields[9])]))
 
 
-                    if len(foundSequences)>=3:
+                    if len(foundSequences)>=numMatches:
                         break
-                if len(foundSequences)>=3:
+                if len(foundSequences)>=numMatches:
                     break
-            if len(foundSequences)>=3:
+            if len(foundSequences)>=numMatches:
                 break 
-        if len(foundSequences)>=3:
+        if len(foundSequences)>=numMatches:
                 break
                                   
                 
@@ -185,14 +183,7 @@ while not userChoice == "q":
     userChoice = sys.stdin.read(1)
 
 
-    #fusedTermini = fuseSequences2(elongedSequence,terminiSeq)
-    #print "Fine ciclo"
 
-    #if not fusedTermini == "":
-    #    js.write(">joined_"+str(start)+"_"+str(end)+"\n"+fusedTermini)
-    #    js = open("joined_"+str(start)+"_"+str(end),"w")
-    #    js.close()
-    #    exit()
     
 
 

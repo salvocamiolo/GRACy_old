@@ -637,7 +637,14 @@ class Toplevel1:
                 for item in datasetStatistics:
                     outfile.write(str(datasetStatistics[item][a])+"\t")
                 outfile.write("\n")
-                
+
+            
+            outfile.close()
+            os.system("mv summaryTable.txt "+outputFolder+"/")
+            os.system("rm -f coverage.txt")
+        #*******************************************************
+        #********************* Main algorithm start ************
+        #*******************************************************      
 
                
 
