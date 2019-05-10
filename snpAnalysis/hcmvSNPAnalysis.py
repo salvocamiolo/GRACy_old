@@ -41,6 +41,7 @@ if vcfFileInput == '0': #Fastq files are provided and alignments/SNP calling nee
         print "Calling snps with lofreq"
         os.system("lofreq call -f "+referenceFile+" -o "+sampleName+".vcf "+sampleName+"_alignment_sorted.bam")
         os.system("mv "+sampleName+"_alignment_sorted.bam "+outputFolder+"/")
+        os.system("mv *.vcf "+outputFolder+"/")
         os.system("rm alignment* -f")
         
 

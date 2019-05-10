@@ -10,9 +10,9 @@
 2CEN2	exonerate	gene	134715	135050	.	+	.	ID=UL91_gene;Name=UL91;Product=UL91
 2CEN2	exonerate	mRNA	134715	135050	.	+	.	ID=UL91_mRNA;Parent=UL91_gene;Name=UL91.1;Product=UL91
 2CEN2	exonerate	CDS	134715	135047	.	+	.	ID=UL91_cds1;Parent=UL91_mRNA;Name=UL91.1;Product=UL91
-2CEN2	exonerate	gene	5588	5929	.	-	.	ID=RL6_gene;Name=RL6;Product=RL6;Possible pseudogene-gene
-2CEN2	exonerate	misc_feature	5588	5929	.	-	.	ID=RL6_mRNA;Parent=RL6_gene;Name=RL6.1;Product=RL6;Possible pseudogene-mRNA
-2CEN2	exonerate	misc_feature	5591	5929	.	-	.	ID=RL6_cds1;Parent=RL6_mRNA;Name=RL6.1;Product=RL6;Possible pseudogene-CDS
+2CEN2	exonerate	gene	5582	5887	.	-	.	ID=RL6_gene;Name=RL6;Product=RL6
+2CEN2	exonerate	mRNA	5582	5887	.	-	.	ID=RL6_mRNA;Parent=RL6_gene;Name=RL6.1;Product=RL6
+2CEN2	exonerate	CDS	5588	5908	.	-	.	ID=RL6_cds1;Parent=RL6_mRNA;Name=RL6.1;Product=RL6
 2CEN2	exonerate	gene	51100	52095	.	-	.	ID=UL38_gene;Name=UL38;Product=UL38
 2CEN2	exonerate	mRNA	51100	52095	.	-	.	ID=UL38_mRNA;Parent=UL38_gene;Name=UL38.1;Product=UL38
 2CEN2	exonerate	CDS	51103	52095	.	-	.	ID=UL38_cds1;Parent=UL38_mRNA;Name=UL38.1;Product=UL38
@@ -34,9 +34,9 @@
 2CEN2	exonerate	gene	195224	197800	.	+	.	ID=IRS1_gene;Name=IRS1;Product=IRS1
 2CEN2	exonerate	mRNA	195224	197800	.	+	.	ID=IRS1_mRNA;Parent=IRS1_gene;Name=IRS1.1;Product=IRS1
 2CEN2	exonerate	CDS	195224	197797	.	+	.	ID=IRS1_cds1;Parent=IRS1_mRNA;Name=IRS1.1;Product=IRS1
-2CEN2	exonerate	gene	160523	160786	.	+	.	ID=UL111A_gene;Name=UL111A;Product=UL111A
-2CEN2	exonerate	mRNA	160523	160786	.	+	.	ID=UL111A_mRNA;Parent=UL111A_gene;Name=UL111A.1;Product=UL111A
-2CEN2	exonerate	CDS	160586	160780	.	+	.	ID=UL111A_cds1;Parent=UL111A_mRNA;Name=UL111A.1;Product=UL111A
+2CEN2	exonerate	gene	160574	161275	.	+	.	ID=UL111A_gene;Name=UL111A;Product=UL111A
+2CEN2	exonerate	mRNA	160574	161275	.	+	.	ID=UL111A_mRNA;Parent=UL111A_gene;Name=UL111A.1;Product=UL111A
+2CEN2	exonerate	CDS	160574	160777	.	+	.	ID=UL111A_cds1;Parent=UL111A_mRNA;Name=UL111A.1;Product=UL111A
 2CEN2	exonerate	CDS	160845	161045	.	+	.	ID=UL111A_cds2;Parent=UL111A_mRNA;Name=UL111A.1;Product=UL111A
 2CEN2	exonerate	CDS	161129	161272	.	+	.	ID=UL111A_cds3;Parent=UL111A_mRNA;Name=UL111A.1;Product=UL111A
 2CEN2	exonerate	gene	7802	7945	.	-	.	ID=RL9A_gene;Name=RL9A;Product=RL9A
@@ -455,9 +455,9 @@
 2CEN2	exonerate	gene	187651	188373	.	-	.	ID=UL136_gene;Name=UL136;Product=UL136
 2CEN2	exonerate	mRNA	187651	188373	.	-	.	ID=UL136_mRNA;Parent=UL136_gene;Name=UL136.1;Product=UL136
 2CEN2	exonerate	CDS	187654	188373	.	-	.	ID=UL136_cds1;Parent=UL136_mRNA;Name=UL136.1;Product=UL136
-2CEN2	exonerate	gene	5049	5384	.	-	.	ID=RL5A_gene;Name=RL5A;Product=RL5A;Possible pseudogene-gene
-2CEN2	exonerate	misc_feature	5049	5384	.	-	.	ID=RL5A_mRNA;Parent=RL5A_gene;Name=RL5A.1;Product=RL5A;Possible pseudogene-mRNA
-2CEN2	exonerate	misc_feature	5052	5384	.	-	.	ID=RL5A_cds1;Parent=RL5A_mRNA;Name=RL5A.1;Product=RL5A;Possible pseudogene-CDS
+2CEN2	exonerate	gene	5043	5282	.	-	.	ID=RL5A_gene;Name=RL5A;Product=RL5A
+2CEN2	exonerate	mRNA	5043	5282	.	-	.	ID=RL5A_mRNA;Parent=RL5A_gene;Name=RL5A.1;Product=RL5A
+2CEN2	exonerate	CDS	5049	5333	.	-	.	ID=RL5A_cds1;Parent=RL5A_mRNA;Name=RL5A.1;Product=RL5A
 2CEN2	exonerate	gene	13418	13870	.	+	.	ID=UL4_gene;Name=UL4;Product=UL4
 2CEN2	exonerate	mRNA	13418	13870	.	+	.	ID=UL4_mRNA;Parent=UL4_gene;Name=UL4.1;Product=UL4
 2CEN2	exonerate	CDS	13418	13867	.	+	.	ID=UL4_cds1;Parent=UL4_mRNA;Name=UL4.1;Product=UL4

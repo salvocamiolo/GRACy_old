@@ -118,11 +118,11 @@ while True:
 
     outFileName = fileName+"_snpFreq.txt"
     outfile = open(outFileName,"w")
-    outfile.write("Position\tRefBase\tTargetBase\tFrequency\n")
+    outfile.write("Position\tRefBase\tTargetBase\tCoverage\tFrequencyRef\tFrequencyTarget\n")
     
     outSEFileName = fileName+"_snpEffect.txt"
     outfileSE = open(outSEFileName,"w")
-    outfileSE.write("Position\Strand\RelativePosition\tFrequency\tRefBase\tTargetBase\tRefCodon\tTargetCodon\tRefAA\tTargetAA\n")
+    outfileSE.write("Position\tStrand\tRelativePosition\tFrequency\tCoverage\tRefBase\tTargetBase\tRefCodon\tTargetCodon\tRefAA\tTargetAA\n")
 
 
 
@@ -145,7 +145,7 @@ while True:
         #Calculate frequency
         freqUnits = ((fields[-1].split("="))[-1]).split(",")
         frequency = ((float(freqUnits[2]) + float(freqUnits[3]))/(float(freqUnits[0]) + float(freqUnits[1])+float(freqUnits[2]) + float(freqUnits[3])))*100
-
+        coverage = float(freqUnits[0]) + float(freqUnits[1])+float(freqUnits[2]) + float(freqUnits[3])
         snpReads[pos].append((fields[3],fields[4],float(freqUnits[0]) + float(freqUnits[1]),float(freqUnits[2]) + float(freqUnits[3]) ))
 
 
@@ -239,7 +239,7 @@ while True:
                     
                             print "Target codon",targetCodon
                     
-                        outfileSE.write(item+"\t"+str(pos)+"\t"+strand[item]+"\t"+str(relativePosition)+"\t"+str(frequency)+"\t"+refBase+"\t"+ newBase +"\t"+referenceCodon+"\t"+targetCodon+"\t"+codon_table[referenceCodon]+"\t"+codon_table[targetCodon]+"\n")
+                        outfileSE.write(item+"\t"+str(pos)+"\t"+strand[item]+"\t"+str(relativePosition)+"\t"+str(frequency)+"\t"+str(coverage)+"\t"+refBase+"\t"+ newBase +"\t"+referenceCodon+"\t"+targetCodon+"\t"+codon_table[referenceCodon]+"\t"+codon_table[targetCodon]+"\n")
                     
                     
                     
@@ -262,12 +262,12 @@ while True:
             alternativeReads += snp[3]
         allReads = alternativeReads + refReads
         for snp in snpReads[position]:
-            snpFreq[position].append((snp[0],snp[1],snp[2]/allReads,  snp[3]/allReads))
+            snpFreq[position].append((snp[0],snp[1],snp[2]/allReads,  snp[3]/allReads,snp[2]+snp[3]))
 
 
     for position in snpFreq:
         for snp in snpFreq[position]: 
-            outfile.write(str(position)+"\t"+str(snp[0])+"\t"+str(snp[1])+"\t"+str(float(snp[2])*100)[:5]+"\t"+str(float(snp[3])*100)[:5]+"\n")
+            outfile.write(str(position)+"\t"+str(snp[0])+"\t"+str(snp[1])+"\t"+str(snp[4])+"\t"+str(float(snp[2])*100)[:5]+"\t"+str(float(snp[3])*100)[:5]+"\n")
 
     
     infile.close()

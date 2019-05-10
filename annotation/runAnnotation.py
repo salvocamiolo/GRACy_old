@@ -38,6 +38,7 @@ for f in onlyfiles:
 
 
 for f in prot2map:
+    numCodonRefines = 0
     #Find the best model for the gene *********************************************************
     locus = f.replace("_models.fasta","")
     protSeqs = SeqIO.to_dict(SeqIO.parse("./proteinDB/"+f,"fasta"))
@@ -138,7 +139,7 @@ for f in prot2map:
         if exon[locus][0][2]=="+":   #************* Positive strand
             if not cdsSeq[:3]=="ATG":
                 foundStartCodon = False
-                for a in range(len(sequence)-len(cdsSeq)/3+100):
+                for a in range(len(sequence)-len(cdsSeq)/3+30):
                     newStart = genomeSeq[int(exon[locus][0][0])-1-a*3-3:int(exon[locus][0][0])-1-a*3]
                     if newStart == "ATG":
                         exon[locus][0]=(int(exon[locus][0][0])-a*3-3,exon[locus][0][1],exon[locus][0][2])
@@ -148,6 +149,24 @@ for f in prot2map:
                             cdsSeq+=genomeSeq[int(item[0])-1:int(item[1])]     
                         foundStartCodon = True
                         notes += "- Start codon refined  "+str(a)+" codons upstream\n"
+                        numCodonRefines = a
+                        break
+                    if newStart == "TGA" or newStart == "TAA" or newStart=="TAG":
+                        foundStartCodon = False
+                        notes += "- No Start codon found "
+                        break
+                #If the new start codon was not found in the region upstream then the downstream region is searched
+                for a in range(len(sequence)-len(cdsSeq)/3+30):
+                    newStart = genomeSeq[int(exon[locus][0][0])-1+a*3+3:int(exon[locus][0][0])-1+a*3]
+                    if newStart == "ATG":
+                        exon[locus][0]=(int(exon[locus][0][0])+a*3+3,exon[locus][0][1],exon[locus][0][2])
+                        gene[locus] = (int(exon[locus][0][0])+a*3+3,int(gene[locus][1]),gene[locus][2])
+                        cdsSeq = ""
+                        for item in exon[locus]:
+                            cdsSeq+=genomeSeq[int(item[0])-1:int(item[1])]     
+                        foundStartCodon = True
+                        notes += "- Start codon refined  "+str(a)+" codons upstream\n"
+                        numCodonRefines = a
                         break
                     if newStart == "TGA" or newStart == "TAA" or newStart=="TAG":
                         foundStartCodon = False
@@ -157,7 +176,7 @@ for f in prot2map:
         else: # *********************** Negative Strand
             if not cdsSeq[:3]=="ATG":
                 foundStartCodon = False
-                for a in range(len(sequence)-len(cdsSeq)/3+100):
+                for a in range(len(sequence)-len(cdsSeq)/3+30):
                     #print "New start codons"
                     newStart = bm.reverseComplement(genomeSeq[int(exon[locus][-1][1])+a*3:int(exon[locus][-1][1])+a*3+3])
                     #print newStart
@@ -169,18 +188,40 @@ for f in prot2map:
                             cdsSeq+=bm.reverseComplement(genomeSeq[ int(exon[locus][a][0])-1: int(exon[locus][a][1]) ])   
                         foundStartCodon = 1
                         notes += "- Start codon refined  "+str(a)+" codons upstream\n"
+                        numCodonRefines = a
+                        break
+                    if newStart == "TGA" or newStart == "TAA" or newStart=="TAG":
+                        foundStartCodon = False
+                        notes += "- No Start codon found "
+                        break
+            #If the new start codon was not found in the region upstream then the downstream region is searched
+                for a in range(len(sequence)-len(cdsSeq)/3+30):
+                    #print "New start codons"
+                    newStart = bm.reverseComplement(genomeSeq[int(exon[locus][-1][1])-a*3:int(exon[locus][-1][1])-a*3-3])
+                    #print newStart
+                    if newStart == "ATG":
+                        exon[locus][-1]=(int(exon[locus][-1][0]),int(exon[locus][-1][1])-a*3-3,exon[locus][-1][2])
+                        gene[locus] = (int(gene[locus][0]),int(exon[locus][-1][1])-a*3-3,gene[locus][2])
+                        cdsSeq = ""
+                        for a in range(len(exon[locus])-1,-1,-1):
+                            cdsSeq+=bm.reverseComplement(genomeSeq[ int(exon[locus][a][0])-1: int(exon[locus][a][1]) ])   
+                        foundStartCodon = 1
+                        notes += "- Start codon refined  "+str(a)+" codons upstream\n"
+                        numCodonRefines = a
                         break
                     if newStart == "TGA" or newStart == "TAA" or newStart=="TAG":
                         foundStartCodon = False
                         notes += "- No Start codon found "
                         break
 
+            
+
 
         # Look for Stop codon at the end of the sequence or closely ********************
         if exon[locus][0][2]=="+":   #************* Positive strand
             if not cdsSeq[-3:]=="TGA" and not cdsSeq[-3:]=="TAA" and not cdsSeq[-3:]=="TAG":
                 foundStopCodon = False
-                for a in range(len(sequence)-len(cdsSeq)/3+100):
+                for a in range(len(sequence)-len(cdsSeq)/3+30):
                     newStop = genomeSeq[int(exon[locus][-1][1])+a*3:int(exon[locus][-1][1])+a*3+3]
                     if newStop == "TAA" or newStop=="TGA" or newStop=="TAG":
                         exon[locus][0]=(int(exon[locus][0][0]),int(exon[locus][0][1])+a*3+3,exon[locus][0][2])
@@ -196,7 +237,7 @@ for f in prot2map:
         else: # *********************** Negative Strand
             if not cdsSeq[-3:]=="TGA" and not cdsSeq[-3:]=="TAA" and not cdsSeq[-3:]=="TAG":
                 foundStopCodon = False
-                for a in range(len(sequence)-len(cdsSeq)/3+100):
+                for a in range(len(sequence)-len(cdsSeq)/3+30):
                     #print "New Stop codons"
                     newStop = bm.reverseComplement(genomeSeq[int(exon[locus][0][0])-1-a*3-3:int(exon[locus][0][0])-1-a*3])
                     #print newStop
@@ -211,8 +252,9 @@ for f in prot2map:
                         break
 
         warnFile.write(notes+"\n")
+    
 
-    if foundStartCodon == True and foundStopCodon == True: # Write gff and cds file ********************
+    if foundStartCodon == True and foundStopCodon == True and numCodonRefines <5: # Write gff and cds file ********************
         if  notes == "":
             notes = "\n"+locus+"\n"
 
@@ -321,12 +363,13 @@ for f in prot2map:
 
     
 
-    if foundStartCodon == False or foundStopCodon == False:
+    if foundStartCodon == False or foundStopCodon == False or numCodonRefines >=5:
         print "Annotation needs refinement"
         exResult.close()
         #  ***************************************************************************
         #  ************************* Annotation refinement ***************************
         #  ***************************************************************************
+        
 
         os.system("exonerate --model protein2genome tempFasta.fasta "+genomeName+" --showtargetgff -s 0 -n 1 --refine full --forcegtag >outputExonerate")
         
@@ -410,7 +453,7 @@ for f in prot2map:
             if exon[locus][0][2]=="+":   #************* Positive strand
                 if not cdsSeq[:3]=="ATG":
                     foundStartCodon = False
-                    for a in range(len(sequence)-len(cdsSeq)/3+100):
+                    for a in range(len(sequence)-len(cdsSeq)/3+30):
                         newStart = genomeSeq[int(exon[locus][0][0])-1-a*3-3:int(exon[locus][0][0])-1-a*3]
                         if newStart == "ATG":
                             exon[locus][0]=(int(exon[locus][0][0])-a*3-3,exon[locus][0][1],exon[locus][0][2])
@@ -420,6 +463,24 @@ for f in prot2map:
                                 cdsSeq+=genomeSeq[int(item[0])-1:int(item[1])]     
                             foundStartCodon = True
                             notes += "- Start codon refined  "+str(a)+" codons upstream\n"
+                            numCodonRefines = a
+                            break
+                        if newStart == "TGA" or newStart == "TAA" or newStart=="TAG":
+                            foundStartCodon = False
+                            notes += "- No Start codon found "
+                            break
+            #If the new start codon was not found in the region upstream then the downstream region is searched
+                    for a in range(len(sequence)-len(cdsSeq)/3+30):
+                        newStart = genomeSeq[int(exon[locus][0][0])-1+a*3+3:int(exon[locus][0][0])-1+a*3]
+                        if newStart == "ATG":
+                            exon[locus][0]=(int(exon[locus][0][0])+a*3+3,exon[locus][0][1],exon[locus][0][2])
+                            gene[locus] = (int(exon[locus][0][0])+a*3+3,int(gene[locus][1]),gene[locus][2])
+                            cdsSeq = ""
+                            for item in exon[locus]:
+                                cdsSeq+=genomeSeq[int(item[0])-1:int(item[1])]     
+                            foundStartCodon = True
+                            notes += "- Start codon refined  "+str(a)+" codons upstream\n"
+                            numCodonRefines = a
                             break
                         if newStart == "TGA" or newStart == "TAA" or newStart=="TAG":
                             foundStartCodon = False
@@ -429,7 +490,7 @@ for f in prot2map:
             else: # *********************** Negative Strand
                 if not cdsSeq[:3]=="ATG":
                     foundStartCodon = False
-                    for a in range(len(sequence)-len(cdsSeq)/3+100):
+                    for a in range(len(sequence)-len(cdsSeq)/3+30):
                         #print "New start codons"
                         newStart = bm.reverseComplement(genomeSeq[int(exon[locus][-1][1])+a*3:int(exon[locus][-1][1])+a*3+3])
                         #print newStart
@@ -441,18 +502,40 @@ for f in prot2map:
                                 cdsSeq+=bm.reverseComplement(genomeSeq[ int(exon[locus][a][0])-1: int(exon[locus][a][1]) ])   
                             foundStartCodon = 1
                             notes += "- Start codon refined  "+str(a)+" codons upstream\n"
+                            numCodonRefines = a
+                            break
+                        if newStart == "TGA" or newStart == "TAA" or newStart=="TAG":
+                            foundStartCodon = False
+                            notes += "- No Start codon found "
+                            break
+                #If the new start codon was not found in the region upstream then the downstream region is searched
+                    for a in range(len(sequence)-len(cdsSeq)/3+30):
+                        #print "New start codons"
+                        newStart = bm.reverseComplement(genomeSeq[int(exon[locus][-1][1])-a*3-3:int(exon[locus][-1][1])-a*3])
+                        #print newStart
+
+
+
+                        if newStart == "ATG":
+                            exon[locus][-1]=(int(exon[locus][-1][0]),int(exon[locus][-1][1])-a*3-3,exon[locus][-1][2])
+                            gene[locus] = (int(gene[locus][0]),int(exon[locus][-1][1])-a*3-3,gene[locus][2])
+                            cdsSeq = ""
+                            for a in range(len(exon[locus])-1,-1,-1):
+                                cdsSeq+=bm.reverseComplement(genomeSeq[ int(exon[locus][a][0])-1: int(exon[locus][a][1]) ])   
+                            foundStartCodon = 1
+                            notes += "- Start codon refined  "+str(a)+" codons upstream\n"
+                            numCodonRefines = a
                             break
                         if newStart == "TGA" or newStart == "TAA" or newStart=="TAG":
                             foundStartCodon = False
                             notes += "- No Start codon found "
                             break
 
-
             # Look for Stop codon at the end of the sequence or closely ********************
             if exon[locus][0][2]=="+":   #************* Positive strand
                 if not cdsSeq[-3:]=="TGA" and not cdsSeq[-3:]=="TAA" and not cdsSeq[-3:]=="TAG":
                     foundStopCodon = False
-                    for a in range(len(sequence)-len(cdsSeq)/3+100):
+                    for a in range(len(sequence)-len(cdsSeq)/3+30):
                         newStop = genomeSeq[int(exon[locus][-1][1])+a*3:int(exon[locus][-1][1])+a*3+3]
                         if newStop == "TAA" or newStop=="TGA" or newStop=="TAG":
                             exon[locus][0]=(int(exon[locus][0][0]),int(exon[locus][0][1])+a*3+3,exon[locus][0][2])
@@ -468,7 +551,7 @@ for f in prot2map:
             else: # *********************** Negative Strand
                 if not cdsSeq[-3:]=="TGA" and not cdsSeq[-3:]=="TAA" and not cdsSeq[-3:]=="TAG":
                     foundStopCodon = 0
-                    for a in range(len(sequence)-len(cdsSeq)/3+100):
+                    for a in range(len(sequence)-len(cdsSeq)/3+30):
                         #print "New Stop codons"
                         newStop = bm.reverseComplement(genomeSeq[int(exon[locus][0][0])-1-a*3-3:int(exon[locus][0][0])-1-a*3])
                         #print newStop
@@ -483,6 +566,8 @@ for f in prot2map:
                             break
 
             warnFile.write(notes+"\n")
+
+
 
         if foundStartCodon == True and foundStopCodon == True: # Write gff and cds file ********************
             cdsGood = True

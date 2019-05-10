@@ -6,8 +6,8 @@ import time
 #The script should be launched within the folder containing the fw files
 
 
-
-inputFolder = "/home3/scc20x/Desktop/NicoCollectionReads/UGompelsReads" #Change from Gui
+isTest = sys.argv[1] #the first argument should be the word "submit" to submit, otherwise will be considered a test
+inputFolder = sys.argv[2] #"/home3/scc20x/Desktop/NicoCollectionReads/UGompelsReads" #Change from Gui
 filesToSubmit = "./toSubmit.txt" #Change from Gui
 createProject = "yes" #Change from Gui it may be no and be present in the readsInfo file
 createSample = "yes" #Change from Gui. It may be no and be present in the readsInfo file
@@ -42,9 +42,12 @@ def createNewProject(projectFile):
         project_xml.write("<SUBMISSION_PROJECT>\n<SEQUENCING_PROJECT></SEQUENCING_PROJECT>\n</SUBMISSION_PROJECT>\n<PROJECT_LINKS>\n<PROJECT_LINK>\n<XREF_LINK>\n<DB></DB>\n<ID></ID>\n</XREF_LINK>\n</PROJECT_LINK>\n</PROJECT_LINKS>\n</PROJECT>\n</PROJECT_SET>")
         #IMPORTANT! To change username and password in GRACy
         project_xml.close()
-        
-        print "curl -u Webin-50760:Elisaegizia14 -F \"SUBMISSION=@submission.xml\" -F \"PROJECT=@project.xml\" \"https://www.ebi.ac.uk/ena/submit/drop-box/submit/\" >projectReceipt"
-        os.system("curl -u Webin-50760:Elisaegizia14 -F \"SUBMISSION=@submission.xml\" -F \"PROJECT=@project.xml\" \"https://www.ebi.ac.uk/ena/submit/drop-box/submit/\" >projectReceipt")
+        if not isTest == "submit":
+            print "curl -u Webin-50760:Elisaegizia14 -F \"SUBMISSION=@submission.xml\" -F \"PROJECT=@project.xml\" \"https://wwwdev.ebi.ac.uk/ena/submit/drop-box/submit/\" >projectReceipt"
+            os.system("curl -u Webin-50760:Elisaegizia14 -F \"SUBMISSION=@submission.xml\" -F \"PROJECT=@project.xml\" \"https://wwwdev.ebi.ac.uk/ena/submit/drop-box/submit/\" >projectReceipt")
+        else:
+            print "curl -u Webin-50760:Elisaegizia14 -F \"SUBMISSION=@submission.xml\" -F \"PROJECT=@project.xml\" \"https://www.ebi.ac.uk/ena/submit/drop-box/submit/\" >projectReceipt"
+            os.system("curl -u Webin-50760:Elisaegizia14 -F \"SUBMISSION=@submission.xml\" -F \"PROJECT=@project.xml\" \"https://www.ebi.ac.uk/ena/submit/drop-box/submit/\" >projectReceipt")
         receiptFile = open("projectReceipt")
 
         while True:
@@ -104,8 +107,11 @@ def createNewSample(sampleName):
             xmlfile.write("<TAG>collecting institution</TAG>\n<VALUE>"+collectingInstitution+"</VALUE>\n</SAMPLE_ATTRIBUTE>\n<SAMPLE_ATTRIBUTE>\n")
             xmlfile.write("<TAG>isolate</TAG>\n<VALUE>"+isolate+"</VALUE>\n</SAMPLE_ATTRIBUTE>\n</SAMPLE_ATTRIBUTES>\n</SAMPLE>\n</SAMPLE_SET>\n")
             xmlfile.close()
+            if not isTest == "submit":
+                os.system("curl -u Webin-50760:Elisaegizia14 -F \"SUBMISSION=@submission.xml\" -F \"SAMPLE=@"+alias+"_sample.xml\" \"https://wwwdev.ebi.ac.uk/ena/submit/drop-box/submit/\" >sampleReceipt.txt")
+            else:
+                os.system("curl -u Webin-50760:Elisaegizia14 -F \"SUBMISSION=@submission.xml\" -F \"SAMPLE=@"+alias+"_sample.xml\" \"https://www.ebi.ac.uk/ena/submit/drop-box/submit/\" >sampleReceipt.txt")
 
-            os.system("curl -u Webin-50760:Elisaegizia14 -F \"SUBMISSION=@submission.xml\" -F \"SAMPLE=@"+alias+"_sample.xml\" \"https://www.ebi.ac.uk/ena/submit/drop-box/submit/\" >sampleReceipt.txt")
             receiptFile = open("sampleReceipt.txt")
             while True:
                 line = receiptFile.readline().rstrip()
@@ -202,7 +208,11 @@ while True:
             manifest.write("STUDY\t"+projectAccessionField+"\nSAMPLE\t"+sampleAccessionField+"\nNAME\t"+sampleName+"\n")
             manifest.write("LIBRARY_STRATEGY\t"+libraryStrategy+"\nFASTQ\t"+fq1+"\nFASTQ\t"+fq2+"\n")
             manifest.close()
-            os.system("~/Software/jre1.8.0_191/bin/java -jar ./webin-cli-1.6.0.jar -context reads -userName Webin-50760 -password Elisaegizia14  -manifest "+sampleName+"_manifestFile.txt -submit >fastqReceipt")
+            
+            if not isTest == "submit":
+                os.system("~/Software/jre1.8.0_191/bin/java -jar ./webin-cli-1.6.0.jar -context reads -userName Webin-50760 -password Elisaegizia14  -manifest "+sampleName+"_manifestFile.txt -test >fastqReceipt")
+            else:
+                os.system("~/Software/jre1.8.0_191/bin/java -jar ./webin-cli-1.6.0.jar -context reads -userName Webin-50760 -password Elisaegizia14  -manifest "+sampleName+"_manifestFile.txt -submit >fastqReceipt")
             os.system("rm -f "+fq1+" "+fq2)
 
             receiptFile = open("fastqReceipt")
