@@ -115,7 +115,7 @@ for f in prot2map:
    
     newList = sorted(exon[locus], key=lambda x: x[1])
     exon[locus] = newList
-
+  
 
     #Reconstruct CDS  ***********************************************************
     cdsSeq = "" 
@@ -249,8 +249,8 @@ for f in prot2map:
                     newStop = bm.reverseComplement(genomeSeq[int(exon[locus][0][0])-1-a*3-3:int(exon[locus][0][0])-1-a*3])
                     #print newStop
                     if newStop == "TAA" or newStop=="TGA" or newStop=="TAG":
-                        exon[locus][0]=(int(exon[locus][0][0])-a*3-3,exon[locus][0][1],exon[locus][0][2])
-                        gene[locus] =(int(exon[locus][0][0])-a*3-3, int(gene[locus][1]),gene[locus][2])
+                        exon[locus][0]=(int(exon[locus][0][0])-a*3,exon[locus][0][1],exon[locus][0][2])
+                        gene[locus] =(int(exon[locus][0][0])-a*3, int(gene[locus][1]),gene[locus][2])
                         cdsSeq = ""
                         for b in range(len(exon[locus])-1,-1,-1):
                             cdsSeq+=bm.reverseComplement(genomeSeq[ int(exon[locus][b][0])-1: int(exon[locus][b][1]) ])    
@@ -280,9 +280,9 @@ for f in prot2map:
                                 newExonSet[locus] = []
                             for item in exon[locus]:
                                 if int(item[1])-int(item[0]) + newmRNALength > a+3:
-                                    newExonSet[locus].append((int(item[0]),int(item[0]) + a+3 - newmRNALength -1 ,item[2]))
+                                    newExonSet[locus].append((int(item[0]),int(item[0]) + a - newmRNALength -1 ,item[2]))
                                     exon[locus] = newExonSet[locus]
-                                    gene[locus] = (int(gene[locus][0]),int(item[0]) + a+3 - newmRNALength -1 ,gene[locus][2])
+                                    gene[locus] = (int(gene[locus][0]),int(item[0]) + a - newmRNALength -1 ,gene[locus][2])
                                     break
                                 else:
                                     newmRNALength += int(item[1]) - int(item[0])
@@ -295,16 +295,18 @@ for f in prot2map:
                                 newExonSet[locus] = []
                             for a in range(len(exon[locus])-1,-1,-1):
                                 if int(item[1])-int(item[0]) + newmRNALength > a+3:
-                                    newExonSet[locus].append((int(item[1]) - a -3 + newmRNALength, int(item[1]),item[2]))
+                                    newExonSet[locus].append((int(item[1]) - a  + newmRNALength, int(item[1]),item[2]))
                                     exon[locus] = newExonSet[locus]
-                                    gene[locus] = (int(item[1]) - a -3 + newmRNALength, int(gene[locus][1]), gene[locus][2])
+                                    gene[locus] = (int(item[1]) - a  + newmRNALength, int(gene[locus][1]), gene[locus][2])
                                     break
 
                                 else:
                                     newmRNALength = int(item[1]) - int(item[0])
                                     newExonSet[locus].append((int(item[0]),int(item[1]),item[2]))
                             cdsSeq = cdsSeq[:a+3]
-
+                            print exon[locus][2]
+                            exon[locus][2] = exon[locus][2]-6
+                            print exon[locus][2]
                         break
                     else:
                         cdsGood = False
@@ -329,7 +331,10 @@ for f in prot2map:
                 gffFile.write(assemblyName+"\texonerate\t"+"mRNA"+"\t"+str(int(gene[locus][0]))+"\t"+str(int(gene[locus][1])+3)+"\t.\t"+str(gene[locus][2])+"\t.\tID="+locus+"_mRNA;Parent="+locus+"_gene;Name="+locus+".1;Product="+locus+"\n")
                 numExon = 1
                 for item in exon[locus]:
-                    gffFile.write(assemblyName+"\texonerate\t"+"CDS"+"\t"+str(item[0])+"\t"+str(item[1])+"\t.\t"+str(item[2])+"\t.\tID="+locus+"_cds"+str(numExon)+";Parent="+locus+"_mRNA;Name="+locus+".1;Product="+locus+"\n")
+                    if item == exon[locus][-1]: #If this is the last exon include the stop codon in the coordinates
+                        gffFile.write(assemblyName+"\texonerate\t"+"CDS"+"\t"+str(item[0])+"\t"+str(int(item[1])+3)+"\t.\t"+str(item[2])+"\t.\tID="+locus+"_cds"+str(numExon)+";Parent="+locus+"_mRNA;Name="+locus+".1;Product="+locus+"\n")
+                    else:
+                        gffFile.write(assemblyName+"\texonerate\t"+"CDS"+"\t"+str(item[0])+"\t"+str(item[1])+"\t.\t"+str(item[2])+"\t.\tID="+locus+"_cds"+str(numExon)+";Parent="+locus+"_mRNA;Name="+locus+".1;Product="+locus+"\n")
                     numExon += 1
                 
 
@@ -338,7 +343,10 @@ for f in prot2map:
                 gffFile.write(assemblyName+"\texonerate\t"+"mRNA"+"\t"+str(int(gene[locus][0])-3)+"\t"+str(int(gene[locus][1]))+"\t.\t"+str(gene[locus][2])+"\t.\tID="+locus+"_mRNA;Parent="+locus+"_gene;Name="+locus+".1;Product="+locus+"\n")
                 numExon = 1
                 for item in exon[locus]:
-                    gffFile.write(assemblyName+"\texonerate\t"+"CDS"+"\t"+str(item[0])+"\t"+str(item[1])+"\t.\t"+str(item[2])+"\t.\tID="+locus+"_cds"+str(numExon)+";Parent="+locus+"_mRNA;Name="+locus+".1;Product="+locus+"\n")
+                    if item == exon[locus][0]:# and len(exon[locus]) == 1: #If this is the first exon include the stop codon in the coordinates
+                        gffFile.write(assemblyName+"\texonerate\t"+"CDS"+"\t"+str(int(item[0])-3)+"\t"+str(item[1])+"\t.\t"+str(item[2])+"\t.\tID="+locus+"_cds"+str(numExon)+";Parent="+locus+"_mRNA;Name="+locus+".1;Product="+locus+"\n")
+                    else:
+                        gffFile.write(assemblyName+"\texonerate\t"+"CDS"+"\t"+str(item[0])+"\t"+str(item[1])+"\t.\t"+str(item[2])+"\t.\tID="+locus+"_cds"+str(numExon)+";Parent="+locus+"_mRNA;Name="+locus+".1;Product="+locus+"\n")
                     numExon += 1
 
             cdsFile.write(">"+locus+" +\n"+cdsSeq+"\n")
@@ -563,8 +571,8 @@ for f in prot2map:
                         newStop = bm.reverseComplement(genomeSeq[int(exon[locus][0][0])-1-a*3-3:int(exon[locus][0][0])-1-a*3])
                         #print newStop
                         if newStop == "TAA" or newStop=="TGA" or newStop=="TAG":
-                            exon[locus][0]=(int(exon[locus][0][0])-a*3-3,exon[locus][0][1],exon[locus][0][2])
-                            gene[locus] =(int(exon[locus][0][0])-a*3-3, int(gene[locus][1]),gene[locus][2])
+                            exon[locus][0]=(int(exon[locus][0][0])-a*3,exon[locus][0][1],exon[locus][0][2])
+                            gene[locus] =(int(exon[locus][0][0])-a*3, int(gene[locus][1]),gene[locus][2])
                             cdsSeq = ""
                             for b in range(len(exon[locus])-1,-1,-1):
                                 cdsSeq+=bm.reverseComplement(genomeSeq[ int(exon[locus][b][0])-1: int(exon[locus][b][1]) ])    
@@ -643,7 +651,10 @@ for f in prot2map:
                     gffFile.write(assemblyName+"\texonerate\t"+"mRNA"+"\t"+str(int(gene[locus][0]))+"\t"+str(int(gene[locus][1])+3)+"\t.\t"+str(gene[locus][2])+"\t.\tID="+locus+"_mRNA;Parent="+locus+"_gene;Name="+locus+".1;Product="+locus+"\n")
                     numExon = 1
                     for item in exon[locus]:
-                        gffFile.write(assemblyName+"\texonerate\t"+"CDS"+"\t"+str(item[0])+"\t"+str(item[1])+"\t.\t"+str(item[2])+"\t.\tID="+locus+"_cds"+str(numExon)+";Parent="+locus+"_mRNA;Name="+locus+".1;Product="+locus+"\n")
+                        if item == exon[locus][-1]: 
+                            gffFile.write(assemblyName+"\texonerate\t"+"CDS"+"\t"+str(item[0])+"\t"+str(int(item[1])+3)+"\t.\t"+str(item[2])+"\t.\tID="+locus+"_cds"+str(numExon)+";Parent="+locus+"_mRNA;Name="+locus+".1;Product="+locus+"\n")
+                        else:
+                            gffFile.write(assemblyName+"\texonerate\t"+"CDS"+"\t"+str(item[0])+"\t"+str(item[1])+"\t.\t"+str(item[2])+"\t.\tID="+locus+"_cds"+str(numExon)+";Parent="+locus+"_mRNA;Name="+locus+".1;Product="+locus+"\n")
                         numExon += 1
                     
 
@@ -652,7 +663,10 @@ for f in prot2map:
                     gffFile.write(assemblyName+"\texonerate\t"+"mRNA"+"\t"+str(int(gene[locus][0])-3)+"\t"+str(int(gene[locus][1]))+"\t.\t"+str(gene[locus][2])+"\t.\tID="+locus+"_mRNA;Parent="+locus+"_gene;Name="+locus+".1;Product="+locus+"\n")
                     numExon = 1
                     for item in exon[locus]:
-                        gffFile.write(assemblyName+"\texonerate\t"+"CDS"+"\t"+str(item[0])+"\t"+str(item[1])+"\t.\t"+str(item[2])+"\t.\tID="+locus+"_cds"+str(numExon)+";Parent="+locus+"_mRNA;Name="+locus+".1;Product="+locus+"\n")
+                        if item == exon[locus][0]:# and len(exon[locus]) == 1: 
+                            gffFile.write(assemblyName+"\texonerate\t"+"CDS"+"\t"+str(int(item[0])-3)+"\t"+str(item[1])+"\t.\t"+str(item[2])+"\t.\tID="+locus+"_cds"+str(numExon)+";Parent="+locus+"_mRNA;Name="+locus+".1;Product="+locus+"\n")
+                        else:
+                            gffFile.write(assemblyName+"\texonerate\t"+"CDS"+"\t"+str(item[0])+"\t"+str(item[1])+"\t.\t"+str(item[2])+"\t.\tID="+locus+"_cds"+str(numExon)+";Parent="+locus+"_mRNA;Name="+locus+".1;Product="+locus+"\n")
                         numExon += 1
 
                 cdsFile.write(">"+locus+" +\n"+cdsSeq+"\n")
