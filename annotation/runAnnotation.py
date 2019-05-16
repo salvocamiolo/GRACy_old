@@ -7,13 +7,20 @@ from os import listdir
 from os.path import isfile, join
 
 genomeName = sys.argv[1]
+outputFolder = sys.argv[2]
 prot2map = []
 
+suffixName = (genomeName.split("/"))[-1]
 
-gffFile = open("annotation.gff","w")
-warnFile = open("annotationWarnings.txt","w")
-cdsFile = open("cds.fasta","w")
-protFile = open("proteins.fasta","w")
+
+
+gffFile = open(suffixName+"_annotation.gff","w") #To change from the command line
+warnFile = open(suffixName+"_annotationWarnings.txt","w") #To change from the command line
+cdsFile = open(suffixName+"_cds.fasta","w") #To change from the command line
+protFile = open(suffixName+"_proteins.fasta","w") #To change from the command line
+
+
+os.system("rm -f ./proteinDB/._*")
 
 
 def checkCDS(cds):
@@ -701,7 +708,19 @@ cdsFile.close()
 gffFile.close()
 warnFile.close()
 
-        
+#Translate valid cds in proteins 
+
+sequences = SeqIO.to_dict(SeqIO.parse(suffixName+"_cds.fasta","fasta"))
+
+for seq in sequences:
+    if not "pseudo" in str(sequences[seq].description):
+        protSeq = (sequences[seq].seq).translate()
+        protFile.write(">"+str(sequences[seq].description)+"\n"+str(protSeq)+"\n")
+
+protFile.close()
+
+
+os.system("mv "+suffixName+"* "+outputFolder)
 
 
         
