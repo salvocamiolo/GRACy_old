@@ -181,7 +181,7 @@ for f in prot2map:
                         break
 
         else: # *********************** Negative Strand
-            if not cdsSeq[:3]=="ATG" or not (codon =="TTG" and locus=="RL6"): #RL6 start with alternative start codon
+            if not cdsSeq[:3]=="ATG" or not (cdsSeq[:3] =="TTG" and locus=="RL6"): #RL6 start with alternative start codon
                 foundStartCodon = False
                 for a in range(len(sequence)-len(cdsSeq)/3+30):
                     #print "New start codons"
@@ -503,7 +503,7 @@ for f in prot2map:
                             break
 
             else: # *********************** Negative Strand
-                if not cdsSeq[:3]=="ATG" or not (codon =="TTG" and locus=="RL6"): #RL6 start with a non canonical start codon
+                if not cdsSeq[:3]=="ATG" or not (cdsSeq[:3] =="TTG" and locus=="RL6"): #RL6 start with a non canonical start codon
                     foundStartCodon = False
                     for a in range(len(sequence)-len(cdsSeq)/3+30):
                         #print "New start codons"
