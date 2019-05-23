@@ -1,0 +1,11 @@
+echo "Performing alignment with bowtie2....."
+bowtie2-build $1 reference -q >null 2>&1
+bowtie2  -1 $2 -2 $3 -x reference -S $4.sam -p 16 $5 >null 2>&1
+samtools view -bS -h $4.sam > $4.bam 2>null
+samtools sort -o $4_sorted.bam $4.bam >null 2>&1
+bamtools filter -tag XM:0 -in test_sorted.bam -out test_sorted_0mis.bam
+bamtools filter -tag XM:1 -in test_sorted.bam -out test_sorted_1mis.bam
+samtools merge test_sorted_fewmis.bam test_sorted_0mis.bam test_sorted_1mis.bam
+samtools index test_sorted_fewmis.bam
+
+

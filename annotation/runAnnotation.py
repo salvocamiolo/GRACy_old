@@ -62,7 +62,7 @@ for f in prot2map:
     tempFasta.close()
 
     #Run Exonerate on the best model *********************************************************
-    os.system("exonerate --model protein2genome tempFasta.fasta "+genomeName+" --showtargetgff -s 0 -n 1 --forcegtag  >outputExonerate")
+    os.system("exonerate --model protein2genome tempFasta.fasta "+genomeName+" --showtargetgff -s 0 -n 1 --forcegtag --minintron 35  >outputExonerate")
    
    
    
@@ -181,7 +181,7 @@ for f in prot2map:
                         break
 
         else: # *********************** Negative Strand
-            if not cdsSeq[:3]=="ATG":
+            if not cdsSeq[:3]=="ATG" or not (codon =="TTG" and locus=="RL6"): #RL6 start with alternative start codon
                 foundStartCodon = False
                 for a in range(len(sequence)-len(cdsSeq)/3+30):
                     #print "New start codons"
@@ -386,7 +386,7 @@ for f in prot2map:
         #  ***************************************************************************
         
 
-        os.system("exonerate --model protein2genome tempFasta.fasta "+genomeName+" --showtargetgff -s 0 -n 1 --refine full --forcegtag >outputExonerate")
+        os.system("exonerate --model protein2genome tempFasta.fasta "+genomeName+" --showtargetgff -s 0 -n 1 --refine full --forcegtag --minintron 35 >outputExonerate")
         
         #Check Exonerate output ***************************************************************** 
         #Check the proteins gave a match in the target genome
@@ -503,7 +503,7 @@ for f in prot2map:
                             break
 
             else: # *********************** Negative Strand
-                if not cdsSeq[:3]=="ATG":
+                if not cdsSeq[:3]=="ATG" or not (codon =="TTG" and locus=="RL6"): #RL6 start with a non canonical start codon
                     foundStartCodon = False
                     for a in range(len(sequence)-len(cdsSeq)/3+30):
                         #print "New start codons"

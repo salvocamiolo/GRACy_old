@@ -68,7 +68,7 @@ while True:
     if not sample.minLen == "no":
         sample.minLen = int(sample.minLen)
 
-    sample.removeDup = ((configFile.readline().rstrip()).split('\t'))[1]
+    #sample.removeDup = ((configFile.readline().rstrip()).split('\t'))[1]
  
     
 
@@ -137,27 +137,27 @@ while True:
     print "Press a key to deduplicate"
 
     #remove duplicates if needed
-    if sample.removeDup == "yes":
-        print "Performing deduplication"
-        os.system("echo "+ sample.name+"_hq_1.fastq >input_list; echo "+ sample.name+"_hq_2.fastq >>input_list")
-        os.system("fastuniq -i input_list -o readugbviuiuiwh_1.fastq -p readugbviuiuiwh_2.fastq")
-        print "press a key to remove intermediate files"
+    #if sample.removeDup == "yes":
+    #    print "Performing deduplication"
+    #    os.system("echo "+ sample.name+"_hq_1.fastq >input_list; echo "+ sample.name+"_hq_2.fastq >>input_list")
+    #    os.system("fastuniq -i input_list -o readugbviuiuiwh_1.fastq -p readugbviuiuiwh_2.fastq")
+    #    print "press a key to remove intermediate files"
 
-        os.system("mv readugbviuiuiwh_1.fastq "+ sample.name+"_hq_1.fastq")
-        os.system("mv readugbviuiuiwh_2.fastq "+ sample.name+"_hq_2.fastq")
+    #    os.system("mv readugbviuiuiwh_1.fastq "+ sample.name+"_hq_1.fastq")
+    #    os.system("mv readugbviuiuiwh_2.fastq "+ sample.name+"_hq_2.fastq")
         
-        print "End deduplication"
+    #    print "End deduplication"
 
 
 
-    print "Press a key to move files"
+    #print "Press a key to move files"
 
-    comand = "mv ./" + sample.name+"_hq_?.fastq ./"+projectName
-    os.system(comand)
-    comand = "mv ./" + sample.name+"_hq_1.fastq_singletons.fastq ./"+projectName
-    os.system(comand)
-    comand = "rm -f badReads?.fastq"
-    os.system(comand)
+    #comand = "mv ./" + sample.name+"_hq_?.fastq ./"+projectName
+    #os.system(comand)
+    #comand = "mv ./" + sample.name+"_hq_1.fastq_singletons.fastq ./"+projectName
+    #os.system(comand)
+    #comand = "rm -f badReads?.fastq"
+    #os.system(comand)
 
 
 

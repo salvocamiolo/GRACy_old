@@ -41,7 +41,7 @@ while True:
             break
         fields = line2.split("\t")
         if not (fields[0],fields[1],fields[2]) in snpPositions[line]:
-            snpPositions[line][(fields[0],fields[1],fields[2])] = float(fields[4])
+            snpPositions[line][(fields[0],fields[1],fields[2])] = float(fields[5])
 
     infile.close()
 for exp in snpPositions:
