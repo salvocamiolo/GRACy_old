@@ -283,7 +283,7 @@ class Toplevel1:
                 self.logArea.see(tk.END)
                 self.logArea.configure(state='disabled')
                 self.logArea.update()
-                os.system("jellyfish count -m 17 -s 100M -t 8 -C "+dedupFile1+" -o "+dedupFile1+"_kmerCount.jf")
+                os.system(" ~/Software/jellyfish-2.2.10/bin/jellyfish count -m 17 -s 100M -t 8 -C "+dedupFile1+" -o "+dedupFile1+"_kmerCount.jf")
 
                 self.logArea.configure(state='normal')
                 self.logArea.insert(tk.END, "Done!\n")
@@ -301,7 +301,7 @@ class Toplevel1:
                 self.logArea.configure(state='disabled')
                 self.logArea.update()
 
-                os.system("jellyfish count -m 17 -s 100M -t 8 -C "+dedupFile2+" -o "+dedupFile2+"_kmerCount.jf")
+                os.system("~/Software/jellyfish-2.2.10/bin/jellyfish count -m 17 -s 100M -t 8 -C "+dedupFile2+" -o "+dedupFile2+"_kmerCount.jf")
 
                 self.logArea.configure(state='normal')
                 self.logArea.insert(tk.END, "Done!\n")
@@ -316,7 +316,7 @@ class Toplevel1:
                 self.logArea.configure(state='disabled')
                 self.logArea.update()
 
-                os.system("jellyfish merge "+dedupFile1+"_kmerCount.jf "+dedupFile2+"_kmerCount.jf")
+                os.system("~/Software/jellyfish-2.2.10/bin/jellyfish merge "+dedupFile1+"_kmerCount.jf "+dedupFile2+"_kmerCount.jf")
                 self.logArea.configure(state='normal')
                 self.logArea.insert(tk.END, "Done!\n")
                 self.logArea.see(tk.END)
@@ -431,7 +431,7 @@ class Toplevel1:
                         if not gr in numMatchedKmers:
                             numMatchedKmers[gr] = 0
                         
-                        command = "jellyfish query mer_counts_merged.jf "
+                        command = "~/Software/jellyfish-2.2.10/bin/jellyfish query mer_counts_merged.jf "
                         for querySeq in specificKmerGroup[gr]:
                             command += querySeq
                             command += " "

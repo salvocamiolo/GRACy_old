@@ -1,0 +1,4 @@
+/home3/scc20x/Desktop/congenitalHCMVEvolution/data/patient01-Saliva/S10_S3_L001_R1_001.fastq_hcmvSpecificReads_1.fastq
+/home3/scc20x/Desktop/congenitalHCMVEvolution/data/patient01-Saliva/S10_S3_L001_R2_001.fastq_hcmvSpecificReads_2.fastq
+/home3/scc20x/Desktop/congenitalHCMVEvolution/data/patient01-Urine/U03_S1_L001_R1_001.fastq_hcmvSpecificReads_1.fastq
+/home3/scc20x/Desktop/congenitalHCMVEvolution/data/patient01-Urine/U03_S1_L001_R2_001.fastq_hcmvSpecificReads_2.fastq

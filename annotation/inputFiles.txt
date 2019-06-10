@@ -1,1 +1,1 @@
-2CEN2.fasta
+R01-00016_WTCG_081118_34_38_genome.fasta

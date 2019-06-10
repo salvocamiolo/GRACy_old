@@ -50,8 +50,9 @@ while True:
     read1Out = open(filename1+"_hcmvSpecificReads_1.fastq","w")
     read2Out = open(filename2+"_hcmvSpecificReads_2.fastq","w")
     for read in hcmvReadsSet:
-        SeqIO.write(read_1[read+"/1"],read1Out,"fastq")
-        SeqIO.write(read_2[read+"/2"],read2Out,"fastq")
+    	if len(str(  (read_1[read+"/1"]).seq )) == len( (read_1[read+"/1"]).letter_annotations["phred_quality"] ) and len(str(  (read_2[read+"/2"]).seq )) == len( (read_2[read+"/2"]).letter_annotations["phred_quality"] ):
+            SeqIO.write(read_1[read+"/1"],read1Out,"fastq")
+            SeqIO.write(read_2[read+"/2"],read2Out,"fastq")
 
     kf.close()
     print "Performing kraken on secondary database"

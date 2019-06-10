@@ -57,25 +57,30 @@ if qualityFiltering == "yes" or qualityFiltering == "Yes":
     #performing normalization
     os.system("mv "+projectName+"_hq_1.fastq ./1_cleanReads/qualityFiltered_1.fq")
     os.system("mv "+projectName+"_hq_2.fastq ./1_cleanReads/qualityFiltered_2.fq")
-    os.system("interleave-reads.py 1_cleanReads/qualityFiltered_1.fq 1_cleanReads/qualityFiltered_2.fq -o paired.fq")
-    os.system("normalize-by-median.py  -k 17 -C 200 -M 160e9 -p  -o - paired.fq > paired_normalized.fq")
-    os.system("split-paired-reads.py paired_normalized.fq")
-    os.system("mv paired_normalized.fq.1 ./1_cleanReads/"+projectName+"_hq_1.fastq")
-    os.system("mv paired_normalized.fq.2 ./1_cleanReads/"+projectName+"_hq_2.fastq")
+    
 
     now = datetime.datetime.now()
     logFile.write("Quality filtering ended at "+now.strftime("%H:%M")+"\n\n")
     os.system("rm -f badReads1.fastq badReads2.fastq *filterStats.txt *singletons.fastq paired_normalized.fq paired.fq qualityFiltering.conf")
  
 else:
-    for a in range(7):
+    for a in range(6):
         confFile.readline()
-    if os.path.isfile("./1_cleanReads/"+projectName+"_hq_1.fastq") == False:
-        print "File ","./1_cleanReads/",projectName,"_hq_1.fastq does not exist, now exiting...."
-        exit()
-    if os.path.isfile("./1_cleanReads/"+projectName+"_hq_2.fastq") == False:
-        print "File ","./1_cleanReads/",projectName,"_hq_2.fastq does not exist, now exiting...."
-        exit()
+    if os.path.isdir("./1_cleanReads/") == True:
+        if os.path.isfile("./1_cleanReads/"+projectName+"_hq_1.fastq") == False:
+            print "File ","./1_cleanReads/",projectName,"_hq_1.fastq does not exist, now exiting...."
+            exit()
+        if os.path.isfile("./1_cleanReads/"+projectName+"_hq_2.fastq") == False:
+            print "File ","./1_cleanReads/",projectName,"_hq_2.fastq does not exist, now exiting...."
+            exit()
+    else:
+        os.system("mkdir 1_cleanReads")
+        os.chdir("1_cleanReads")
+        os.system("ln -s "+read1+" qualityFiltered_1.fq")
+        os.system("ln -s "+read2+" qualityFiltered_2.fq")
+        os.chdir("../")
+
+
 
 
 
@@ -85,12 +90,19 @@ else:
 #*********************** 2 Denovo assembly *********************
 #***************************************************************
 confFile.readline() #Read comment
+
 denovoAssembly = ((confFile.readline().rstrip()).split("\t"))[1]
 #kmer = ((confFile.readline().rstrip()).split("\t"))[1]
 if denovoAssembly == "yes" or denovoAssembly=="Yes":
     now = datetime.datetime.now()
     logFile.write("De novo assembly started at "+now.strftime("%H:%M")+"\n")
     print "\nPerforming denovo assembly......."
+    os.system("interleave-reads.py 1_cleanReads/qualityFiltered_1.fq 1_cleanReads/qualityFiltered_2.fq -o paired.fq")
+    os.system("normalize-by-median.py  -k 17 -C 200 -M 160e9 -p  -o - paired.fq > paired_normalized.fq")
+    os.system("python ~/Software/mySoftware/GRACy/assembly/scripts/splitIntervealed.py paired_normalized.fq")
+    os.system("mv newRead_1.fastq ./1_cleanReads/"+projectName+"_hq_1.fastq")
+    os.system("mv newRead_2.fastq ./1_cleanReads/"+projectName+"_hq_2.fastq")
+
     os.system("python /home3/scc20x/Software/mySoftware/GRACy/assembly/scripts/getBestAssembly.py ./1_cleanReads/"+projectName+"_hq_1.fastq ./1_cleanReads/"+projectName+"_hq_2.fastq assemblyStatistics.txt")
     os.system("mkdir 2_spadesAssembly")
     os.system("mv scaffolds.fasta ./2_spadesAssembly/")

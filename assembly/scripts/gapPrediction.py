@@ -77,7 +77,7 @@ while a < len(seq2fill)-1:
             t.close()
             print "Aligning the reads to the found sequences...."
             os.system("bowtie2-build foundSequences.fasta found >null 2>&1")
-            os.system("bowtie2 -x found -1 "+read1+" -2 "+read2+" -S alignment.sam >null 2>&1")
+            os.system("bowtie2 --local -x found -1 "+read1+" -2 "+read2+" -S alignment.sam >null 2>&1")
             print "Converting sam to bam...."
             os.system("samtools view -bS -h -F 4 alignment.sam >alignment.bam  2>&1")
             print "sorting bam...."

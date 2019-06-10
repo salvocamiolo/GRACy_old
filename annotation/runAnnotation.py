@@ -264,7 +264,7 @@ for f in prot2map:
     if foundStartCodon == True and foundStopCodon == True and numCodonRefines <5: # Write gff and cds file ********************
         if  notes == "":
             notes = "\n"+locus+"\n"
-
+        gffNote = ""
         #  ******************* Check CDS integrity
         cdsGood = True
         for a in range(0,len(cdsSeq)-3,+3):
@@ -294,19 +294,22 @@ for f in prot2map:
                             if not locus in newExonSet:
                                 newExonSet[locus] = []
                             for a in range(len(exon[locus])-1,-1,-1):
-                                if int(item[1])-int(item[0]) + newmRNALength > a+3:
-                                    newExonSet[locus].append((int(item[1]) - a  + newmRNALength, int(item[1]),item[2]))
+                                if int(exon[locus][a][1])-int(exon[locus][a][0]) + newmRNALength > a+3:
+                                    newExonSet[locus].append((int(exon[locus][a][1]) - a  + newmRNALength, int(exon[locus][a][1]),exon[locus][a][2]))
+                                    #print "Previous exon locus",exon[locus]
                                     exon[locus] = newExonSet[locus]
-                                    gene[locus] = (int(item[1]) - a  + newmRNALength, int(gene[locus][1]), gene[locus][2])
+                                    #print "after exon locus",exon[locus]
+                                    #print gene[locus]
+                                    #gene[locus] = (int(exon[locus][a][1]) - a  + newmRNALength, int(gene[locus][1]), gene[locus][2])
                                     break
 
                                 else:
-                                    newmRNALength = int(item[1]) - int(item[0])
-                                    newExonSet[locus].append((int(item[0]),int(item[1]),item[2]))
+                                    newmRNALength = int(exon[locus][a][1]) - int(exon[locus][a][0])
+                                    newExonSet[locus].append((int(exon[locus][a][0]),int(exon[locus][a][1]),exon[locus][a][2]))
                             cdsSeq = cdsSeq[:a+3]
-                            print exon[locus][2]
-                            exon[locus][2] = exon[locus][2]-6
-                            print exon[locus][2]
+                            #print exon[locus][0][1]
+                            exon[locus][0] = (exon[locus][0][0], exon[locus][0][1]-6,exon[locus][0][2])
+                            #print exon[locus][0][1]
                         break
                     else:
                         cdsGood = False
@@ -614,16 +617,17 @@ for f in prot2map:
                                 if not locus in newExonSet:
                                     newExonSet[locus] = []
                                 for a in range(len(exon[locus])-1,-1,-1):
-                                    if int(item[1])-int(item[0]) + newmRNALength > a+3:
-                                        newExonSet[locus].append((int(item[1]) - a -3 + newmRNALength, int(item[1]),item[2]))
+                                    if int(exon[locus][a][1])-int(exon[locus][a][0]) + newmRNALength > a+3:
+                                        newExonSet[locus].append((int(exon[locus][a][1]) - a -3 + newmRNALength, int(exon[locus][a][1]),exon[locus][a][2]))
                                         exon[locus] = newExonSet[locus]
-                                        gene[locus] = (int(item[1]) - a -3 + newmRNALength, int(gene[locus][1]), gene[locus][2])
+                                        gene[locus] = (int(exon[locus][a][1]) - a -3 + newmRNALength, int(gene[locus][1]), gene[locus][2])
                                         break
 
                                     else:
-                                        newmRNALength = int(item[1]) - int(item[0])
-                                        newExonSet[locus].append((int(item[0]),int(item[1]),item[2]))
+                                        newmRNALength = int(exon[locus][a][1]) - int(exon[locus][a][0])
+                                        newExonSet[locus].append((int(exon[locus][a][0]),int(exon[locus][a][1]),exon[locus][a][2]))
                                 cdsSeq = cdsSeq[:a+3]
+                                exon[locus][0] = (exon[locus][0][0], exon[locus][0][1]-6,exon[locus][0][2])
 
                             break
                         else:

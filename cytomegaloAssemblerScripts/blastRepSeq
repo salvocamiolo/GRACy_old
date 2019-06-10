@@ -1,6 +1,0 @@
-cp ~/Software/mySoftware/GRACy/cytomegaloAssemblerScripts/sequence_* .
-makeblastdb -dbtype nucl -in $1
-blastn -query sequence_trl.fasta -db $1 -outfmt 6 -task blastn > blastTRL.txt
-blastn -query sequence_irs.fasta -db $1 -outfmt 6 -task blastn > blastIRS.txt
-blastn -query sequence_a.fasta -db $1 -outfmt 6 -task blastn > blastA.txt
-blastn -query sequence_a_prime.fasta -db $1 -outfmt 6 -task blastn > blastAprime.txt
