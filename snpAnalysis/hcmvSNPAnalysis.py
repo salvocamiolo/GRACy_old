@@ -32,8 +32,26 @@ if vcfFileInput == '0': #Fastq files are provided and alignments/SNP calling nee
             exit(0)
 
         print "Analising sample",sampleName
+
+        print "Reads quality filtering before alignment"
+        print "Running Trimgalore"
+        prefix1 = read1.replace(".fastq","")
+        prefix2 = read2.replace(".fastq","")
+        os.system("trim_galore --paired -q 30  "+read1+" "+read2)
+
+        print "Performing deduplication"
+        os.system("echo "+prefix1+"_val_1.fq > inputFastUniq")
+        os.system("echo "+prefix2+"_val_2.fq >> inputFastUniq")
+        os.system("fastuniq -i inputFastUniq -t q -o trimmed_dedup_1.fastq -p trimmed_dedup_2.fastq")
+
+        print "Performing prinseq quality filtering"
+        os.system("prinseq -fastq trimmed_dedup_1.fastq  -fastq2 trimmed_dedup_2.fastq -min_qual_mean 25 -trim_qual_right 30  -trim_qual_window 15 -trim_qual_step 5 -min_len 80 -out_bad null -out_good trimmed_dedup_pr")
+
+
+        
+
         print "Aigning reads to reference"
-        os.system("bowtie2 --end-to-end -1 "+read1+" -2 "+read2+" -x reference -S alignment.sam -p "+numThreads)
+        os.system("bowtie2 --end-to-end -1 trimmed_dedup_pr_1.fastq -2 trimmed_dedup_pr_2.fastq -x reference -S alignment.sam -p "+numThreads)
         print "Converting sam to bam"
         os.system("samtools view -bS -h alignment.sam >alignment.bam")
         print "Sorting bam"
@@ -55,6 +73,7 @@ if vcfFileInput == '0': #Fastq files are provided and alignments/SNP calling nee
         os.system("mv "+sampleName+"_alignment_sorted.bam "+outputFolder+"/")
         os.system("mv *.vcf "+outputFolder+"/")
         os.system("rm alignment* -f")
+        os.system("rm -f inputFastUniq *_val_1.fq *_val_2.fq trimmed_dedup_*")
         
 
 
