@@ -13,6 +13,9 @@ except ImportError:
 from PIL import ImageTk, Image
 import sys
 import tkFont
+import os
+
+installationDirectory = "/home3/scc20x/Software/mySoftware/GRACy/"
 
 def vp_start_gui():
     '''Starting point when module is the main routine.'''
@@ -46,7 +49,8 @@ def destroy_Toplevel1():
 class Toplevel1:
     def __init__(self, top=None):
         
-        
+        def launchQC():
+            os.system("python ./qualityCheck/readsQualityCheck.py")
 
         
 
@@ -79,48 +83,37 @@ class Toplevel1:
         top.title("GRACy")
         top.configure(highlightcolor="black")
 
-        image = ImageTk.PhotoImage(file="./resources/Medicon_virus.png")
+        image = ImageTk.PhotoImage(file="./resources/Medicon_virus.jpg")
 
         gmail=ImageTk.PhotoImage(file='./resources/Medicon_virus_times.jpg')
         self.lab=tk.Label(image=gmail)
         self.lab.photo=gmail
         self.lab.pack()
 
-        readsQCButton = tk.Button(top)
+        readsQCButton = tk.Button(top, command=launchQC)
         readsQCButton.place(x=535,y=30,height=30,width=180)
-        readsQCButton.configure(text= "Reads QC",bg="#568F98",fg="white",font=("Times",14,'bold'),bd=0,highlightbackground="#568F98",highlightcolor="#568F98")
+        readsQCButton.configure(text= "Reads QC",bg="#568F98",fg="white",font=("Times",14,'bold'),bd=0,highlightbackground="#568F98",highlightcolor="#568F98",activebackground='#568F98')
 
         assemblyButton = tk.Button(top)
         assemblyButton.place(x=640,y=265,height=30,width=180)
-        assemblyButton.configure(text= "De novo assembly",bg="#568F98",fg="white",font=("Times",14,'bold'),bd=0,highlightbackground="#568F98",highlightcolor="#568F98")
+        assemblyButton.configure(text= "De novo assembly",bg="#568F98",fg="white",font=("Times",14,'bold'),bd=0,highlightbackground="#568F98",highlightcolor="#568F98",activebackground='#568F98')
 
         gentypingButton = tk.Button(top)
         gentypingButton.place(x=600,y=412,height=30,width=150)
-        gentypingButton.configure(text= "Genotyping",bg="#568F98",fg="white",font=("Times",14,'bold'),bd=0,highlightbackground="#568F98",highlightcolor="#568F98")
+        gentypingButton.configure(text= "Genotyping",bg="#568F98",fg="white",font=("Times",14,'bold'),bd=0,highlightbackground="#568F98",highlightcolor="#568F98",activebackground='#568F98')
 
         annotationButton = tk.Button(top)
         annotationButton.place(x=200,y=495,height=30,width=150)
-        annotationButton.configure(text= "Annotation",bg="#568F98",fg="white",font=("Times",14,'bold'),bd=0,highlightbackground="#568F98",highlightcolor="#568F98")
+        annotationButton.configure(text= "Annotation",bg="#568F98",fg="white",font=("Times",14,'bold'),bd=0,highlightbackground="#568F98",highlightcolor="#568F98",activebackground='#568F98')
 
         dbSubmissionButton = tk.Button(top)
         dbSubmissionButton.place(x=65,y=167,height=30,width=150)
-        dbSubmissionButton.configure(text= "DB submission",bg="#568F98",fg="white",font=("Times",14,'bold'),bd=0,highlightbackground="#568F98",highlightcolor="#568F98")
+        dbSubmissionButton.configure(text= "DB submission",bg="#568F98",fg="white",font=("Times",14,'bold'),bd=0,highlightbackground="#568F98",highlightcolor="#568F98",activebackground='#568F98')
 
         snpAnalysisButton = tk.Button(top)
         snpAnalysisButton.place(x=65,y=358,height=30,width=150)
-        snpAnalysisButton.configure(text= "SNP analysis",bg="#568F98",fg="white",font=("Times",14,'bold'),bd=0,highlightbackground="#568F98",highlightcolor="#568F98")
+        snpAnalysisButton.configure(text= "SNP analysis",bg="#568F98",fg="white",font=("Times",14,'bold'),bd=0,highlightbackground="#568F98",highlightcolor="#568F98",activebackground='#568F98')
 
-
-        #def make_button(imageFile,xpos,ypos,h,w):
-        #    image = ImageTk.PhotoImage(file=imageFile)
-        ##    b = tk.Button(top)
-        #    b.config(image=image)
-        #    b.image = image
-        #    b.place(x=xpos,y=ypos,height=h,width=w)
-            
-        
-        #make_button("portion.png",20,20,80,80)
-        #make_button("portion.png",150,150,160,160)
 
 
 

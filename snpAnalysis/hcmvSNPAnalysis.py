@@ -35,8 +35,8 @@ if vcfFileInput == '0': #Fastq files are provided and alignments/SNP calling nee
 
         print "Reads quality filtering before alignment"
         print "Running Trimgalore"
-        prefix1 = read1.replace(".fastq","")
-        prefix2 = read2.replace(".fastq","")
+        prefix1 = ((read1.split("/"))[-1]).replace(".fastq","")
+        prefix2 = ((read2.split("/"))[-1]).replace(".fastq","")
         os.system("trim_galore --paired -q 30  "+read1+" "+read2)
 
         print "Performing deduplication"

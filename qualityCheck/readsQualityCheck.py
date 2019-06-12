@@ -120,7 +120,7 @@ class Toplevel1:
         def runQualityCheck():
             inputFolder = self.inputFolderEntry.get()
             outputFolder = self.outputFolderEntry.get()
-
+            bowtie2Ref = self.bowtieRefEntry.get()
             #Collect files to quality check
             onlyfiles = [f for f in listdir(inputFolder) if isfile(join(inputFolder, f))]
             fileNumber = {}
@@ -245,7 +245,7 @@ class Toplevel1:
                         self.logArea.see(tk.END)
                         self.logArea.configure(state='disabled')
                         self.logArea.update()
-                        os.system("bowtie2 --local -x /home2/db/bowtie2/hg38 -1 tempReads_1.fastq -2 tempReads_2.fastq -p "+self.numThreadsEntry.get()+" -S hostAlignment.sam")
+                        os.system("bowtie2 --local -x "+bowtie2Ref+" -1 tempReads_1.fastq -2 tempReads_2.fastq -p "+self.numThreadsEntry.get()+" -S hostAlignment.sam")
                         step+=1
                         self.progressbar['value']= int( (step*progressBarIncrement) )
                         self.progressbar.update()
@@ -669,7 +669,7 @@ class Toplevel1:
             [('selected', _compcolor), ('active',_ana2color)])
 
         w=880
-        h=660
+        h=730
         ws = root.winfo_screenwidth() # width of the screen
         hs = root.winfo_screenheight() # height of the screen
         # calculate x and y coordinates for the Tk root window
@@ -724,27 +724,36 @@ class Toplevel1:
         self.recodingFileButton.place(x=340,y=160,height=30,width=100)
         self.recodingFileButton.configure(text="Open file")
 
+        self.bowtieRefLabel = tk.Label(top)
+        self.bowtieRefLabel.place(x=20,y=200,height=20, width=180)
+        self.bowtieRefLabel.configure(text="Human bowtie2 reference")
+
+        self.bowtieRefEntry = tk.Entry(top)
+        self.bowtieRefEntry.place(x=20,y=220,height=30, width = 420)
+        self.bowtieRefEntry.insert(0,"/home2/db/bowtie2/hg38")
+
+
         self.adapter1Label = tk.Label(top)
-        self.adapter1Label.place(x=20,y=200,height=20, width=70)
+        self.adapter1Label.place(x=20,y=260,height=20, width=70)
         self.adapter1Label.configure(text="Adapter 1")
 
         self.adapter1Entry = tk.Entry(top)
-        self.adapter1Entry.place(x=20,y=220,height=30, width = 420)
+        self.adapter1Entry.place(x=20,y=280,height=30, width = 420)
 
         self.adapter2Label = tk.Label(top)
-        self.adapter2Label.place(x=20,y=260,height=20, width=70)
+        self.adapter2Label.place(x=20,y=320,height=20, width=70)
         self.adapter2Label.configure(text="Adapter 2")
 
         self.adapter2Entry = tk.Entry(top)
-        self.adapter2Entry.place(x=20,y=280,height=30, width = 420)
+        self.adapter2Entry.place(x=20,y=340,height=30, width = 420)
 
 
         self.numThreadsLabel = tk.Label(top,justify="left")
-        self.numThreadsLabel.place(x=20,y=320,height=20,width=130)
+        self.numThreadsLabel.place(x=20,y=380,height=20,width=130)
         self.numThreadsLabel.configure(text="Number of threads")
 
         self.numThreadsEntry = tk.Entry(top,justify="right")
-        self.numThreadsEntry.place(x=20,y=340,height=30, width = 150)
+        self.numThreadsEntry.place(x=20,y=400,height=30, width = 150)
         self.numThreadsEntry.insert(0,"8")
 
         self.tasksLabel = tk.Label(top)
@@ -788,29 +797,29 @@ class Toplevel1:
 
 
         self.logTextLabel = tk.Label(top)
-        self.logTextLabel.place(x=20,y=400,height=20,width=90)
+        self.logTextLabel.place(x=20,y=460,height=20,width=90)
         self.logTextLabel.configure(text="Log window")
         self.logFrame = tk.Frame(top)
-        self.logFrame.place(x=20, y=420, height=180, width=820)
+        self.logFrame.place(x=20, y=480, height=180, width=820)
         self.logFrame.configure(relief='groove')
         self.logFrame.configure(borderwidth="2")
         self.logFrame.configure(relief='groove')
         self.logFrame.configure(width=125)
         self.logArea = tk.Text(top,state='disabled')
-        self.logArea.place(x=25,y=425,height=170, width=810)
+        self.logArea.place(x=25,y=485,height=170, width=810)
         self.logArea.configure(background="white",borderwidth=5)
         self.logArea.configure(selectbackground="#c4c4c4")
 
         self.progressbar=ttk.Progressbar(top,orient="horizontal",length=820,mode="determinate")
-        self.progressbar.place(x=20,y=620)
+        self.progressbar.place(x=20,y=680)
         self.progressbar['maximum'] = 100000
 
         self.runButton = tk.Button(top,command=runQualityCheck)
-        self.runButton.place(x=740,y=360,height=30,width=100)
+        self.runButton.place(x=740,y=420,height=30,width=100)
         self.runButton.configure(text="Run")
 
         self.exitButton = tk.Button(top,command=exitProgram)
-        self.exitButton.place(x=620,y=360,height=30,width=100)
+        self.exitButton.place(x=620,y=420,height=30,width=100)
         self.exitButton.configure(text="Exit")
 
 
