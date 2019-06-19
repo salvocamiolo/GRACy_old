@@ -16,6 +16,7 @@ import datetime
 from Bio import SeqIO
 
 import biomodule
+import Tkinter, Tkconstants, tkFileDialog
 
 
 installationDirectory = sys.argv[1]
@@ -74,6 +75,11 @@ class Toplevel1:
 
         def exitProgram():
             exit()
+
+        def openInputFile():
+            inputFile = tkFileDialog.askopenfilename(initialdir = "~",title = "Select file")
+            self.inputFileEntry.delete(0,tk.END)
+            self.inputFileEntry.insert(0,inputFile)
 
         #***************************************************
         #*************** Start main algorithm **************
@@ -990,9 +996,9 @@ class Toplevel1:
 
         self.inputFileEntry = tk.Entry(top)
         self.inputFileEntry.place(x=20,y=40,width=520,height=30)
-        self.inputFileEntry.insert(0,"/home3/scc20x/Software/mySoftware/GRACy/inputAssemblyFile.txt")
+        self.inputFileEntry.insert(0,"Please select file....")
 
-        self.inputFileButton = tk.Button(top)
+        self.inputFileButton = tk.Button(top,command=openInputFile)
         self.inputFileButton.place(x=550,y=40,width=100,height=30)
         self.inputFileButton.configure(text="Open file")
 
