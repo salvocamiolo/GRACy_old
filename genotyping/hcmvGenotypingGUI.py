@@ -1,5 +1,8 @@
-#!/usr/bin/python
-installationFolder = "/home3/scc20x/Software/mySoftware/GRACy/genotyping"
+import sys
+
+
+installationDirectory = sys.argv[1]
+
 
 
 from pyPdf import PdfFileWriter, PdfFileReader
@@ -94,7 +97,7 @@ class Toplevel1:
             orderedHyperLoci = ["rl5a","rl6","rl12","rl13","ul1","ul9","ul11","ul20","ul73","ul74","ul120","ul139","ul146"]
 
             numReads = int(self.numReadsEntry.get())
-            dbfile = installationFolder+"/kmerDB/"+self.dbEntry.get()
+            dbfile = installationDirectory+"genotyping/kmerDB/"+self.dbEntry.get()
             NumThreads = int(self.numThreadsEntry.get())
             inputFile = self.InputFileEntry.get()
 
@@ -188,7 +191,7 @@ class Toplevel1:
                 self.logArea.see(tk.END)
                 self.logArea.configure(state='disabled')
                 self.logArea.update()
-                os.system("bowtie2 -1 "+dedupFile1+" -2 "+dedupFile2+" -x "+installationFolder+"/fastaFiles/hcmvReference -S alignmenthsbfy43223.sam >null 2>&1")
+                os.system("bowtie2 -1 "+dedupFile1+" -2 "+dedupFile2+" -x "+installationFolder+"genotyping/fastaFiles/hcmvReference -S alignmenthsbfy43223.sam >null 2>&1")
                 self.logArea.configure(state='normal')
                 self.logArea.insert(tk.END, "Done!\n")
                 self.logArea.see(tk.END)

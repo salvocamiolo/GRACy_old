@@ -55,6 +55,9 @@ class Toplevel1:
         def denovoAssembly():
             os.system("python "+installationDirectory+"assembly/hcmvAssembly.py "+installationDirectory)
 
+        def genotyping():
+            os.system("python "+installationDirectory+"genotyping/hcmvGenotypingGUI.py "+installationDirectory)
+
         
 
 
@@ -101,7 +104,7 @@ class Toplevel1:
         assemblyButton.place(x=640,y=265,height=30,width=180)
         assemblyButton.configure(text= "De novo assembly",bg="#568F98",fg="white",font=("Times",14,'bold'),bd=0,highlightbackground="#568F98",highlightcolor="#568F98",activebackground='#568F98')
 
-        gentypingButton = tk.Button(top)
+        gentypingButton = tk.Button(top,command=genotyping)
         gentypingButton.place(x=600,y=412,height=30,width=150)
         gentypingButton.configure(text= "Genotyping",bg="#568F98",fg="white",font=("Times",14,'bold'),bd=0,highlightbackground="#568F98",highlightcolor="#568F98",activebackground='#568F98')
 
