@@ -9,6 +9,9 @@ outfile = open(filename+"_cleaned.sam","w")
 
 
 line1 = infile.readline().rstrip()
+if not line1:
+    print "cleanSoftAndUnmapped failed. Now exit"
+    exit()
 outfile.write(line1+"\n")
 
 

@@ -184,16 +184,16 @@ def greedyElongation(seq):
 
         print "Perform phrap assembly step...."
         
-
-
-        os.system("phrap -minmatch 15  toAssemble.fasta > phrapAssembly 2>null")
+        #he following phrap command is replaced by a cap3 command
+        #os.system("phrap -minmatch 15  toAssemble.fasta > phrapAssembly 2>null")
+        os.system("cap3 toAssemble.fasta > cap3Assembly 2>null")
         #os.system("cp toAssemble.fasta ./tempor/toAssemble.fasta_"+str(numElong))
         #os.system("cp outputBlast.txt ./tempor/outputBlast.txt_"+str(numElong))
         #os.system("cp toElong.fasta ./tempor/toElong_"+str(numElong))
         numElong += 1
 
         longestScaffold = ""
-        for seq_record in SeqIO.parse("toAssemble.fasta.contigs","fasta"):
+        for seq_record in SeqIO.parse("toAssemble.fasta.cap.contigs","fasta"):
             if len(str(seq_record.seq)) >= len(longestScaffold):
                 longestScaffold = str(seq_record.seq)
 

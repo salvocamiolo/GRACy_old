@@ -1,0 +1,3 @@
+hcmv_50m_1.fastq	sampleName1_1.fastq
+hcmv_50m_2.fastq	sampleName1_2.fastq
+

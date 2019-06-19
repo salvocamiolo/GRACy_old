@@ -1,2 +1,0 @@
-tempReads_1.fastq
-tempReads_2.fastq

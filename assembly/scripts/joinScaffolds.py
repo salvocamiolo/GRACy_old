@@ -99,16 +99,16 @@ def greedyElongation(seq):
 
         print "Perform second phrap assembly step......."
         
-
-
-        os.system("phrap -minmatch 25 toAssemble.fasta > phrapAssembly 2>null")
+        #he following phrap command is replaced by a cap3 command
+        #os.system("phrap -minmatch 15  toAssemble.fasta > phrapAssembly 2>null")
+        os.system("cap3 toAssemble.fasta > cap3Assembly 2>null")
         #os.system("cp toAssemble.fasta ./tempor/toAssemble.fasta_"+str(numElong))
         #os.system("cp outputBlast.txt ./tempor/outputBlast.txt_"+str(numElong))
         #os.system("cp toElong.fasta ./tempor/toElong_"+str(numElong))
         numElong += 1
 
         longestScaffold = ""
-        for seq_record in SeqIO.parse("toAssemble.fasta.contigs","fasta"):
+        for seq_record in SeqIO.parse("toAssemble.fasta.cap.contigs","fasta"):
             if len(str(seq_record.seq)) >= len(longestScaffold):
                 longestScaffold = str(seq_record.seq)
 
@@ -287,11 +287,14 @@ while True:
     if unmappedContigs == 1:
         os.system("cat unmapped.fasta unmapped.fasta.contigs2 >tmp1 ; mv tmp1 unmapped.fasta")
     print "Assembling unmapped reads......"
-    os.system("phrap -minmatch 25 unmapped.fasta > phrapAssembly 2>null")
+    
+    #he following phrap command is replaced by a cap3 command
+    #os.system("phrap -minmatch 25 unmapped.fasta > phrapAssembly 2>null")
+    os.system("cap3 unmapped.fasta > cap3Assembly 2>null")
     unmappedContigsFile = open("unmapped.fasta.contigs2","w")
 
     unmappedContigs = 0
-    for seq_record in SeqIO.parse("unmapped.fasta.contigs","fasta"):
+    for seq_record in SeqIO.parse("unmapped.fasta.cap.contigs","fasta"):
 
         tempScaffold = open("tempScaffold.fasta","w")
         tempScaffold.write(">tempScaffold\n"+str(seq_record.seq)+"\n")

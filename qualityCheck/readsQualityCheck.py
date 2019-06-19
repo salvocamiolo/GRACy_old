@@ -20,6 +20,7 @@ import time
 import numpy as nm
 import matplotlib.pyplot as plt
 
+installationDirectory = sys.argv[1]
 
 def vp_start_gui():
     '''Starting point when module is the main routine.'''
@@ -39,9 +40,9 @@ def create_Toplevel1(root, *args, **kwargs):
     global w, w_win, rt
     rt = root
     w = tk.Toplevel (root)
-    VirHosFilt_support.set_Tk_var()
+    #VirHosFilt_support.set_Tk_var()
     top = Toplevel1 (w)
-    VirHosFilt_support.init(w, top, *args, **kwargs)
+    #VirHosFilt_support.init(w, top, *args, **kwargs)
     return (w, top)
 
 def destroy_Toplevel1():
@@ -208,24 +209,24 @@ class Toplevel1:
                 if not dataset[0] ==".":
                     if not dataset in datasetStatistics:
                         datasetStatistics[dataset] = []
-                    os.system("ln -s "+inputFolder+"/"+dataset+"_1.fastq tempReads_1.fastq")
-                    os.system("ln -s "+inputFolder+"/"+dataset+"_2.fastq tempReads_2.fastq")
+                    os.system("ln -s "+inputFolder+"/"+dataset+"_1.fastq tempReads_140875_1.fastq")
+                    os.system("ln -s "+inputFolder+"/"+dataset+"_2.fastq tempReads_140875_2.fastq")
 
                     self.logArea.configure(state='normal')
                     self.logArea.insert(tk.END, "Calculating the number of reads for dataset "+dataset+"....\n")
                     self.logArea.see(tk.END)
                     self.logArea.configure(state='disabled')
                     self.logArea.update()
-                    os.system("wc -l "+inputFolder+"/"+dataset+"_1.fastq  >numReads")
+                    os.system("wc -l "+inputFolder+"/"+dataset+"_1.fastq  >numReads_140875")
                     step+=1
                     self.progressbar['value']= int( (step*progressBarIncrement) )
-                    numreads = open("numReads")
+                    numreads = open("numReads_140875")
                     
                     numberOfReads = int(((numreads.readline().rstrip()).split(" "))[0])/2
                     originalReadsNumber = numberOfReads
                     datasetStatistics[dataset].append(numberOfReads)
                     numreads.close()
-                    os.system("rm -f numReads")
+                    os.system("rm -f numReads_140875")
                     self.logArea.configure(state='normal')
                     self.logArea.insert(tk.END, "Done!...... Number of reads: "+str(numberOfReads)+"\n\n")
                     self.logArea.see(tk.END)
@@ -245,7 +246,7 @@ class Toplevel1:
                         self.logArea.see(tk.END)
                         self.logArea.configure(state='disabled')
                         self.logArea.update()
-                        os.system("bowtie2 --local -x "+bowtie2Ref+" -1 tempReads_1.fastq -2 tempReads_2.fastq -p "+self.numThreadsEntry.get()+" -S hostAlignment.sam")
+                        os.system(installationDirectory+"resources/bowtie2 --local -x "+bowtie2Ref+" -1 tempReads_140875_1.fastq -2 tempReads_140875_2.fastq -p "+self.numThreadsEntry.get()+" -S hostAlignment_140875.sam")
                         step+=1
                         self.progressbar['value']= int( (step*progressBarIncrement) )
                         self.progressbar.update()
@@ -265,7 +266,7 @@ class Toplevel1:
                         self.logArea.see(tk.END)
                         self.logArea.configure(state='disabled')
                         self.logArea.update()
-                        os.system("samtools view -bS -h hostAlignment.sam >hostAlignment.bam") 
+                        os.system(installationDirectory+"resources/samtools view -bS -h hostAlignment_140875.sam >hostAlignment_140875.bam") 
                         self.logArea.configure(state='normal')
                         self.logArea.insert(tk.END, "Done!\n")
                         self.logArea.see(tk.END)
@@ -280,7 +281,7 @@ class Toplevel1:
                         self.logArea.see(tk.END)
                         self.logArea.configure(state='disabled')
                         self.logArea.update()
-                        os.system("bam2fastq --no-aligned --force --strict -o unmapped#.fq hostAlignment.bam")
+                        os.system(installationDirectory+"resources/bam2fastq --no-aligned --force --strict -o unmapped_140875#.fq hostAlignment_140875.bam")
                         step+=1
                         self.progressbar['value']= int( (step*progressBarIncrement) )
                         self.progressbar.update()
@@ -289,25 +290,25 @@ class Toplevel1:
                         self.logArea.see(tk.END)
                         self.logArea.configure(state='disabled')
                         self.logArea.update()
-                        os.system("mv unmapped_1.fq tempReads_1.fastq")
-                        os.system("mv unmapped_2.fq tempReads_2.fastq")
-                        os.system("rm -f hostAlignment.bam ")
+                        os.system("mv unmapped_140875_1.fq tempReads_140875_1.fastq")
+                        os.system("mv unmapped_140875_2.fq tempReads_140875_2.fastq")
+                        os.system("rm -f hostAlignment_140875.bam ")
 
                         self.logArea.configure(state='normal')
                         self.logArea.insert(tk.END, "Calculating the number of host free reads for dataset "+dataset+"....")
                         self.logArea.see(tk.END)
                         self.logArea.configure(state='disabled')
                         self.logArea.update()
-                        os.system("wc -l tempReads_1.fastq >numReads")
+                        os.system("wc -l tempReads_140875_1.fastq >numReads_140875")
                         step+=1
                         self.progressbar['value']= int( (step*progressBarIncrement) )
                         self.progressbar.update()
-                        numreads = open("numReads")
+                        numreads = open("numReads_140875")
                         numberOfReads = int(((numreads.readline().rstrip()).split(" "))[0])/2
                         datasetStatistics[dataset].append(str(numberOfReads))
                         datasetStatistics[dataset].append(str(numberOfReads*100/originalReadsNumber)[:4])
                         numreads.close()
-                        os.system("rm -f numReads")
+                        os.system("rm -f numReads_140875")
                         self.logArea.configure(state='normal')
                         self.logArea.insert(tk.END, "Done!...... Number of reads: "+str(numberOfReads)+"\n\n")
                         self.logArea.see(tk.END)
@@ -333,10 +334,10 @@ class Toplevel1:
                         if len(self.adapter1Entry.get())>5 and len(self.adapter2Entry.get())>5:
                             adpt1 = self.adapter1Entry.get()
                             adpt2 = self.adapter2Entry.get()
-                            os.system("trim_galore -paired -a "+adpt1+" -a2 "+adpt2+" tempReads_1.fastq tempReads_2.fastq ")
+                            os.system(installationDirectory+"resources/trim_galore -paired -a "+adpt1+" -a2 "+adpt2+" tempReads_140875_1.fastq tempReads_140875_2.fastq ")
 
                         else:
-                            os.system("trim_galore -paired tempReads_1.fastq tempReads_2.fastq ")
+                            os.system("trim_galore -paired tempReads_140875_1.fastq tempReads_140875_2.fastq ")
 
                         step+=1
                         self.progressbar['value']= int( (step*progressBarIncrement) )
@@ -347,25 +348,25 @@ class Toplevel1:
                         self.logArea.configure(state='disabled')
                         self.logArea.update()
 
-                        os.system("mv tempReads_1_val_1.fq tempReads_1.fastq")
-                        os.system("mv tempReads_2_val_2.fq tempReads_2.fastq")
-                        os.system("rm -f tempReads_1.fastq_trimming_report.txt tempReads_2.fastq_trimming_report.txt")
+                        os.system("mv tempReads_140875_1_val_1.fq tempReads_140875_1.fastq")
+                        os.system("mv tempReads_140875_2_val_2.fq tempReads_140875_2.fastq")
+                        os.system("rm -f tempReads_140875_1.fastq_trimming_report.txt tempReads_140875_2.fastq_trimming_report.txt")
 
                         self.logArea.configure(state='normal')
                         self.logArea.insert(tk.END, "Calculating the number reads after trimming for dataset "+dataset+"....")
                         self.logArea.see(tk.END)
                         self.logArea.configure(state='disabled')
                         self.logArea.update()
-                        os.system("wc -l tempReads_1.fastq >numReads")
+                        os.system("wc -l tempReads_140875_1.fastq >numReads_140875")
                         step+=1
                         self.progressbar['value']= int( (step*progressBarIncrement) )
                         self.progressbar.update()
-                        numreads = open("numReads")
+                        numreads = open("numReads_140875")
                         numberOfReads = int(((numreads.readline().rstrip()).split(" "))[0])/2
                         datasetStatistics[dataset].append(str(numberOfReads))
                         datasetStatistics[dataset].append(str(numberOfReads*100/originalReadsNumber)[:4])
                         numreads.close()
-                        os.system("rm -f numReads")
+                        os.system("rm -f numReads_140875")
                         self.logArea.configure(state='normal')
                         self.logArea.insert(tk.END, "Done!...... Number of reads: "+str(numberOfReads)+"\n\n")
                         self.logArea.see(tk.END)
@@ -382,7 +383,10 @@ class Toplevel1:
                         self.logArea.see(tk.END)
                         self.logArea.configure(state='disabled')
                         self.logArea.update()
-                        os.system("fastuniq -i dedupTemplate.txt -t q -o "+codes[dataset+"_1.fastq"].replace("_1.fastq","")+suffixCode+"_dd_1.fastq -p "+codes[dataset+"_2.fastq"].replace("_2.fastq","")+suffixCode+"_dd_2.fastq")
+                        os.system("echo tempReads_140875_1.fastq >dedupTemplate.txt")
+                        os.system("echo tempReads_140875_2.fastq >> dedupTemplate.txt")
+                        os.system(installationDirectory+"resources/fastuniq -i dedupTemplate.txt -t q -o "+codes[dataset+"_1.fastq"].replace("_1.fastq","")+suffixCode+"_dd_1.fastq -p "+codes[dataset+"_2.fastq"].replace("_2.fastq","")+suffixCode+"_dd_2.fastq")
+                        os.system("rm -f dedupTemplate.txt")
                         dedupFileName1 = codes[dataset+"_1.fastq"].replace("_1.fastq","")+suffixCode+"_dd_1.fastq"
                         dedupFileName2 = codes[dataset+"_2.fastq"].replace("_2.fastq","")+suffixCode+"_dd_2.fastq"
                         self.logArea.configure(state='normal')
@@ -398,16 +402,16 @@ class Toplevel1:
                         self.logArea.see(tk.END)
                         self.logArea.configure(state='disabled')
                         self.logArea.update()
-                        os.system("wc -l "+dedupFileName1+" >numReads")
+                        os.system("wc -l "+dedupFileName1+" >numReads_140875")
                         step+=1
                         self.progressbar['value']= int( (step*progressBarIncrement) )
                         self.progressbar.update()
-                        numreads = open("numReads")
+                        numreads = open("numReads_140875")
                         numberOfReads = int(((numreads.readline().rstrip()).split(" "))[0])/2
                         datasetStatistics[dataset].append(str(numberOfReads))
                         datasetStatistics[dataset].append(str(numberOfReads*100/originalReadsNumber)[:4])
                         numreads.close()
-                        os.system("rm -f numReads")
+                        os.system("rm -f numReads_140875")
                         self.logArea.configure(state='normal')
                         self.logArea.insert(tk.END, "Done!...... Number of reads: "+str(numberOfReads)+"\n\n")
                         self.logArea.see(tk.END)
@@ -421,7 +425,7 @@ class Toplevel1:
                         self.logArea.see(tk.END)
                         self.logArea.configure(state='disabled')
                         self.logArea.update()
-                        os.system("bowtie2 -1 tempReads_1.fastq -2 tempReads_2.fastq -x ../referenceSequences/hcmv -p "+self.numThreadsEntry.get()+" -S alignment.sam")
+                        os.system(installationDirectory+"resources/bowtie2 -1 tempReads_140875_1.fastq -2 tempReads_140875_2.fastq -x "+installationDirectory+"resources/hcmv -p "+self.numThreadsEntry.get()+" -S alignment_140875.sam")
                         step+=1
                         self.progressbar['value']= int( (step*progressBarIncrement) )
                         self.progressbar.update()
@@ -437,7 +441,7 @@ class Toplevel1:
                         self.logArea.see(tk.END)
                         self.logArea.configure(state='disabled')
                         self.logArea.update()
-                        os.system("samtools view -bS -h  alignment.sam >alignment.bam")
+                        os.system(installationDirectory+"resources/samtools view -bS -h  alignment_140875.sam >alignment_140875.bam")
                         step+=1
                         self.progressbar['value']= int( (step*progressBarIncrement) )
                         self.progressbar.update()
@@ -453,7 +457,7 @@ class Toplevel1:
                         self.logArea.see(tk.END)
                         self.logArea.configure(state='disabled')
                         self.logArea.update()
-                        os.system("samtools sort -o alignment_sorted.bam alignment.bam")
+                        os.system(installationDirectory+"resources/samtools sort -o alignment_140875_sorted.bam alignment_140875.bam")
                         step+=1
                         self.progressbar['value']= int( (step*progressBarIncrement) )
                         self.progressbar.update()
@@ -469,10 +473,10 @@ class Toplevel1:
                         self.logArea.see(tk.END)
                         self.logArea.configure(state='disabled')
                         self.logArea.update()
-                        os.system("samtools depth -d 10000000 alignment_sorted.bam  |  awk '{sum+=$3} END { print sum/NR}' >avCoverage.txt")
-                        os.system("samtools depth -a -d 10000000 alignment_sorted.bam >coverage.txt")
-                        plotCoveragePlot("coverage.txt",codes[dataset+"_1.fastq"].replace("_1.fastq","")+"_nh_tr")
-                        os.system("samtools depth -d 10000000 alignment_sorted.bam  | wc -l >breadth.txt")
+                        os.system(installationDirectory+"resources/samtools depth -d 10000000 alignment_140875_sorted.bam  |  awk '{sum+=$3} END { print sum/NR}' >avCoverage_140875.txt")
+                        os.system(installationDirectory+"resources/samtools depth -a -d 10000000 alignment_140875_sorted.bam >coverage_140875.txt")
+                        plotCoveragePlot("coverage_140875.txt",codes[dataset+"_1.fastq"].replace("_1.fastq","")+"_nh_tr")
+                        os.system(installationDirectory+"resources/samtools depth -d 10000000 alignment_140875_sorted.bam  | wc -l >breadth_140875.txt")
                         step+=1
                         self.progressbar['value']= int( (step*progressBarIncrement) )
                         self.progressbar.update()
@@ -483,25 +487,25 @@ class Toplevel1:
                         self.logArea.update()
 
 
-                        avCovFile = open("avCoverage.txt")
+                        avCovFile = open("avCoverage_140875.txt")
                         avCov = float(avCovFile.readline().rstrip())
                         avCovFile.close()
                         print "Average coverage",avCov
                         
                         datasetStatistics[dataset].append(avCov)
 
-                        os.system("samtools view -F 4 alignment.sam | wc -l > readsMapping")
+                        os.system(installationDirectory+"resources/samtools view -F 4 alignment_140875.sam | wc -l > readsMapping_140875")
                         step+=1
                         self.progressbar['value']= int( (step*progressBarIncrement) )
                         self.progressbar.update()
-                        readsMappingFile = open("readsMapping")
+                        readsMappingFile = open("readsMapping_140875")
                         readsMapping = float(readsMappingFile.readline().rstrip())
                         readsMappingFile.close()
                         
                         datasetStatistics[dataset].append(str(readsMapping))
                         datasetStatistics[dataset].append(str(readsMapping*100/originalReadsNumber)[:4])
 
-                        bfile = open("breadth.txt")
+                        bfile = open("breadth_140875.txt")
                         breadthValue = float(bfile.readline().rstrip())
                         bfile.close()
 
@@ -516,7 +520,7 @@ class Toplevel1:
                             self.logArea.see(tk.END)
                             self.logArea.configure(state='disabled')
                             self.logArea.update()
-                            os.system("bowtie2 -1 "+dedupFileName1+" -2 "+ dedupFileName2+ "  -x ../referenceSequences/hcmv -p "+self.numThreadsEntry.get()+" -S alignment.sam")
+                            os.system(installationDirectory+"resources/bowtie2 -1 "+dedupFileName1+" -2 "+ dedupFileName2+ "  -x "+installationDirectory+"resources/hcmv -p "+self.numThreadsEntry.get()+" -S alignment_140875.sam")
                             step+=1
                             self.progressbar['value']= int( (step*progressBarIncrement) )
                             self.progressbar.update()
@@ -531,7 +535,7 @@ class Toplevel1:
                             self.logArea.see(tk.END)
                             self.logArea.configure(state='disabled')
                             self.logArea.update()
-                            os.system("samtools view -bS -h  alignment.sam >alignment.bam")
+                            os.system(installationDirectory+"resources/samtools view -bS -h  alignment_140875.sam >alignment_140875.bam")
                             step+=1
                             self.progressbar['value']= int( (step*progressBarIncrement) )
                             self.progressbar.update()
@@ -546,7 +550,7 @@ class Toplevel1:
                             self.logArea.see(tk.END)
                             self.logArea.configure(state='disabled')
                             self.logArea.update()
-                            os.system("samtools sort -o alignment_sorted.bam alignment.bam")
+                            os.system(installationDirectory+"resources/samtools sort -o alignment_140875_sorted.bam alignment_140875.bam")
                             step+=1
                             self.progressbar['value']= int( (step*progressBarIncrement) )
                             self.progressbar.update()
@@ -561,14 +565,14 @@ class Toplevel1:
                             self.logArea.see(tk.END)
                             self.logArea.configure(state='disabled')
                             self.logArea.update()
-                            os.system("samtools depth -d 10000000 alignment_sorted.bam  |  awk '{sum+=$3} END { print sum/NR}' >avCoverage.txt")
-                            os.system("samtools depth -a -d 10000000 alignment_sorted.bam   >coverage.txt")
-                            plotCoveragePlot("coverage.txt",codes[dataset+"_1.fastq"].replace("_1.fastq","")+"_nh_tr_dd")
-                            os.system("samtools depth -d 10000000 alignment_sorted.bam  | wc -l >breadth.txt")
+                            os.system(installationDirectory+"resources/samtools depth -d 10000000 alignment_140875_sorted.bam  |  awk '{sum+=$3} END { print sum/NR}' >avCoverage_140875.txt")
+                            os.system(installationDirectory+"resources/samtools depth -a -d 10000000 alignment_140875_sorted.bam   >coverage_140875.txt")
+                            plotCoveragePlot("coverage_140875.txt",codes[dataset+"_1.fastq"].replace("_1.fastq","")+"_nh_tr_dd")
+                            os.system(installationDirectory+"resources/samtools depth -d 10000000 alignment_140875_sorted.bam  | wc -l >breadth_140875.txt")
                             step+=1
                             self.progressbar['value']= int( (step*progressBarIncrement) )
                             self.progressbar.update()
-                            avCovFile = open("avCoverage.txt")
+                            avCovFile = open("avCoverage_140875.txt")
                             avCov = float(avCovFile.readline().rstrip())
                             avCovFile.close()
                             self.logArea.configure(state='normal')
@@ -581,18 +585,18 @@ class Toplevel1:
                             
                             datasetStatistics[dataset].append(avCov)
 
-                            os.system("samtools view -F 4 alignment.sam | wc -l > readsMapping")
+                            os.system(installationDirectory+"resources/samtools view -F 4 alignment_140875.sam | wc -l > readsMapping_140875")
                             step+=1
                             self.progressbar['value']= int( (step*progressBarIncrement) )
                             self.progressbar.update()
-                            readsMappingFile = open("readsMapping")
+                            readsMappingFile = open("readsMapping_140875")
                             readsMapping = float(readsMappingFile.readline().rstrip())
                             readsMappingFile.close()
                             
                             datasetStatistics[dataset].append(str(readsMapping))
                             datasetStatistics[dataset].append(str(readsMapping*100/originalReadsNumber)[:4])
 
-                            bfile = open("breadth.txt")
+                            bfile = open("breadth_140875.txt")
                             breadthValue = float(bfile.readline().rstrip())
                             bfile.close()
 
@@ -604,8 +608,14 @@ class Toplevel1:
 
 
                     print "finished"
-                    os.system("mv tempReads_1.fastq "+outputFolder+"/"+codes[dataset+"_1.fastq"].replace("_1.fastq","")+suffixCode+"_1.fastq")
-                    os.system("mv tempReads_2.fastq "+outputFolder+"/"+codes[dataset+"_2.fastq"].replace("_2.fastq","")+suffixCode+"_2.fastq")
+                    self.logArea.configure(state='normal')
+                    self.logArea.insert(tk.END, "\n\nFiltering complete on all datasets!\n")
+                    self.logArea.see(tk.END)
+                    self.logArea.configure(state='disabled')
+                    self.logArea.update()
+                    
+                    os.system("mv tempReads_140875_1.fastq "+outputFolder+"/"+codes[dataset+"_1.fastq"].replace("_1.fastq","")+suffixCode+"_1.fastq")
+                    os.system("mv tempReads_140875_2.fastq "+outputFolder+"/"+codes[dataset+"_2.fastq"].replace("_2.fastq","")+suffixCode+"_2.fastq")
                     if self.deduplicateChkValue.get() == True:
                         os.system("mv "+dedupFileName1+" "+outputFolder+"/")
                         os.system("mv "+dedupFileName2+" "+outputFolder+"/")
@@ -641,9 +651,10 @@ class Toplevel1:
             
             outfile.close()
             os.system("mv summaryTable.txt "+outputFolder+"/")
-            os.system("rm -f coverage.txt")
+            os.system("rm -f coverage.txt *140875*")
+
         #*******************************************************
-        #********************* Main algorithm start ************
+        #********************* Main algorithm end ************
         #*******************************************************      
 
                

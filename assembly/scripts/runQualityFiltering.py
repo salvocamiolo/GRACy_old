@@ -17,22 +17,13 @@ class sampleConfig:
 
 
 confFile = sys.argv[1]
+installationDirectory = sys.argv[2]
 
 configFile = open(confFile)
 projectName = ((configFile.readline().rstrip()).split('\t'))[1]
 
 
 
-
-#if not os.path.exists(projectName):
-#    os.makedirs(projectName)
-#else:
-#    print "\n\nThe project folder already exists!"
-#    print "Samples with the same names will be overwriten!"
-#    print "Press n to exit or any other key to continue"
-#    answer = raw_input()
-#    if answer == "n":
-#        sys.exit()
 
 #Iterating the config file
 while True:
@@ -80,7 +71,7 @@ while True:
 
     #Qualiti filetering fastq 1
     print "Quality filtering for file ",sample.reads1
-    comand = "prinseq -fastq " + sample.reads1 + " -out_format 3 -min_qual_mean " + str(sample.minQualMean)
+    comand = installationDirectory+"resources/prinseq -fastq " + sample.reads1 + " -out_format 3 -min_qual_mean " + str(sample.minQualMean)
     if not sample.trimLeft == "no":
         comand += " -trim_left " + str(sample.trimLeft)
 
@@ -134,33 +125,10 @@ while True:
 
 
     #Sort paired reads in files
-    comand = "python ~/Software/mySoftware/GRACy/assembly/scripts/mergeQualFilteredMates.py " + sample.name+"_hq_1.fastq " + sample.name+"_hq_2.fastq"
+    comand = "python "+installationDirectory+"assembly/scripts/mergeQualFilteredMates.py " + sample.name+"_hq_1.fastq " + sample.name+"_hq_2.fastq"
     os.system(comand)
     
-    #print "Press a key to deduplicate"
 
-    #remove duplicates if needed
-    #if sample.removeDup == "yes":
-    #    print "Performing deduplication"
-    #    os.system("echo "+ sample.name+"_hq_1.fastq >input_list; echo "+ sample.name+"_hq_2.fastq >>input_list")
-    #    os.system("fastuniq -i input_list -o readugbviuiuiwh_1.fastq -p readugbviuiuiwh_2.fastq")
-    #    print "press a key to remove intermediate files"
-
-    #    os.system("mv readugbviuiuiwh_1.fastq "+ sample.name+"_hq_1.fastq")
-    #    os.system("mv readugbviuiuiwh_2.fastq "+ sample.name+"_hq_2.fastq")
-        
-    #    print "End deduplication"
-
-
-
-    #print "Press a key to move files"
-    #print "mv ./" + sample.name+"_hq_?.fastq ./"+projectName
-    #comand = "mv ./" + sample.name+"_hq_?.fastq ./"+projectName
-    #os.system(comand)
-    #comand = "mv ./" + sample.name+"_hq_1.fastq_singletons.fastq ./"+projectName
-    #os.system(comand)
-    #comand = "rm -f badReads?.fastq"
-    #os.system(comand)
 
 
 

@@ -50,7 +50,10 @@ class Toplevel1:
     def __init__(self, top=None):
         
         def launchQC():
-            os.system("python ./qualityCheck/readsQualityCheck.py")
+            os.system("python "+installationDirectory+"qualityCheck/readsQualityCheck.py "+installationDirectory)
+
+        def denovoAssembly():
+            os.system("python "+installationDirectory+"assembly/hcmvAssembly.py "+installationDirectory)
 
         
 
@@ -94,7 +97,7 @@ class Toplevel1:
         readsQCButton.place(x=535,y=30,height=30,width=180)
         readsQCButton.configure(text= "Reads QC",bg="#568F98",fg="white",font=("Times",14,'bold'),bd=0,highlightbackground="#568F98",highlightcolor="#568F98",activebackground='#568F98')
 
-        assemblyButton = tk.Button(top)
+        assemblyButton = tk.Button(top,command=denovoAssembly)
         assemblyButton.place(x=640,y=265,height=30,width=180)
         assemblyButton.configure(text= "De novo assembly",bg="#568F98",fg="white",font=("Times",14,'bold'),bd=0,highlightbackground="#568F98",highlightcolor="#568F98",activebackground='#568F98')
 
