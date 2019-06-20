@@ -58,17 +58,17 @@ class Toplevel1:
            exit()
 
         def openInputFolder():
-            inputFolder = tkFileDialog.askdirectory(initialdir = "~",title = "Select directory")
+            inputFolder = tkFileDialog.askdirectory(initialdir = "./",title = "Select folder")
             self.inputFolderEntry.delete(0,tk.END)
             self.inputFolderEntry.insert(0,inputFolder)
 
         def openOutputFolder():
-            outputolder = tkFileDialog.askdirectory(initialdir = "~",title = "Select directory")
+            outputolder = tkFileDialog.askdirectory(initialdir = "./",title = "Select folder")
             self.outputFolderEntry.delete(0,tk.END)
             self.outputFolderEntry.insert(0,outputolder)
 
         def openRecodingFile():
-            recodingFile = tkFileDialog.askopenfilename(initialdir = "~",title = "Select file")
+            recodingFile = tkFileDialog.askopenfilename(initialdir = "./",title = "Select file")
             self.recodingFileEntry.delete(0,tk.END)
             self.recodingFileEntry.insert(0,recodingFile)
 

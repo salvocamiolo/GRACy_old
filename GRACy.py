@@ -1,3 +1,7 @@
+#!/usr/bin/python
+installationDirectory = "/home3/scc20x/Software/mySoftware/GRACy/"
+
+
 try:
     import Tkinter as tk
 except ImportError:
@@ -15,7 +19,7 @@ import sys
 import tkFont
 import os
 
-installationDirectory = "/home3/scc20x/Software/mySoftware/GRACy/"
+
 
 def vp_start_gui():
     '''Starting point when module is the main routine.'''
@@ -50,15 +54,20 @@ class Toplevel1:
     def __init__(self, top=None):
         
         def launchQC():
-            os.system("python "+installationDirectory+"qualityCheck/readsQualityCheck.py "+installationDirectory)
+            os.system("python "+installationDirectory+"qualityCheck/readsQualityCheck.py "+installationDirectory+" &")
 
         def denovoAssembly():
-            os.system("python "+installationDirectory+"assembly/hcmvAssembly.py "+installationDirectory)
+            os.system("python "+installationDirectory+"assembly/hcmvAssembly.py "+installationDirectory+" &")
 
         def genotyping():
-            os.system("python "+installationDirectory+"genotyping/hcmvGenotypingGUI.py "+installationDirectory)
+            os.system("python "+installationDirectory+"genotyping/hcmvGenotypingGUI.py "+installationDirectory+" &")
 
-        
+        def annotation():
+            os.system("python "+installationDirectory+"annotation/hcmvAnnonation.py "+installationDirectory+" &")
+
+        def snpAnalysis():
+            os.system("python "+installationDirectory+"snpAnalysis/hcmvSNPAnalysisGUI.py "+installationDirectory+" &")
+
 
 
         '''This class configures and populates the toplevel window.
@@ -89,9 +98,9 @@ class Toplevel1:
         top.title("GRACy")
         top.configure(highlightcolor="black")
 
-        image = ImageTk.PhotoImage(file="./resources/Medicon_virus.jpg")
+        image = ImageTk.PhotoImage(file=installationDirectory+"resources/Medicon_virus.jpg")
 
-        gmail=ImageTk.PhotoImage(file='./resources/Medicon_virus_times.jpg')
+        gmail=ImageTk.PhotoImage(file=installationDirectory+'resources/Medicon_virus_times.jpg')
         self.lab=tk.Label(image=gmail)
         self.lab.photo=gmail
         self.lab.pack()
@@ -108,7 +117,7 @@ class Toplevel1:
         gentypingButton.place(x=600,y=412,height=30,width=150)
         gentypingButton.configure(text= "Genotyping",bg="#568F98",fg="white",font=("Times",14,'bold'),bd=0,highlightbackground="#568F98",highlightcolor="#568F98",activebackground='#568F98')
 
-        annotationButton = tk.Button(top)
+        annotationButton = tk.Button(top,command = annotation)
         annotationButton.place(x=200,y=495,height=30,width=150)
         annotationButton.configure(text= "Annotation",bg="#568F98",fg="white",font=("Times",14,'bold'),bd=0,highlightbackground="#568F98",highlightcolor="#568F98",activebackground='#568F98')
 
@@ -116,7 +125,7 @@ class Toplevel1:
         dbSubmissionButton.place(x=65,y=167,height=30,width=150)
         dbSubmissionButton.configure(text= "DB submission",bg="#568F98",fg="white",font=("Times",14,'bold'),bd=0,highlightbackground="#568F98",highlightcolor="#568F98",activebackground='#568F98')
 
-        snpAnalysisButton = tk.Button(top)
+        snpAnalysisButton = tk.Button(top,command=snpAnalysis)
         snpAnalysisButton.place(x=65,y=358,height=30,width=150)
         snpAnalysisButton.configure(text= "SNP analysis",bg="#568F98",fg="white",font=("Times",14,'bold'),bd=0,highlightbackground="#568F98",highlightcolor="#568F98",activebackground='#568F98')
 

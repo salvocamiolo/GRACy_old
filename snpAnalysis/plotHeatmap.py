@@ -1,7 +1,5 @@
-#import seaborn as sns; sns.set()
+
 import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
 import sys
 
 position2PlotFile = sys.argv[1]
@@ -82,24 +80,7 @@ for snp in snp2Plot:
     table2Plot.append(line)
     outfile.write("\n")
 
-print table2Plot
-print len(table2Plot)
-print xlab
 
-#df = pd.DataFrame(table2Plot)
-#df.columns = xlab
-#print df
-#fig,ax = 
-#plt.subplots(figsize=(12,40))
-#title = "Heatmap"
-#plt.title(title,fontsize=18)
-#ttl =ax.title
-#ttl.set_position([0.5,1.05])
-#ax.axis('off')
-
-#sns.heatmap(table2Plot,xticklabels=xlab,yticklabels=ylab,annot_kws={"size":0.01})
-#plt.show()
-#plt.savefig('heatmap.png')
     
 
 
