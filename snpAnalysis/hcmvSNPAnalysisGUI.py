@@ -221,9 +221,7 @@ class Toplevel1:
                         os.system(installationDirectory+"resources/lofreq call -f "+referenceFile+" -o "+sampleName+"_SNPs.vcf "+sampleName+"_alignment_sorted.bam")
                         
                         #Analyze indes using the GATK pipeline
-                        
-                        os.system(installationDirectory+"resources/lofreq call -f "+referenceFile+" -o "+sampleName+".vcf "+sampleName+"_alignment_sorted.bam")
-                        
+
                         self.logArea.configure(state='normal')
                         self.logArea.insert(tk.END, "*  Calling INDELs with GATK\n")
                         self.logArea.see(tk.END)
@@ -247,7 +245,7 @@ class Toplevel1:
                         self.logArea.see(tk.END)
                         self.logArea.configure(state='disabled')
                         self.logArea.update()
-                        os.system("java -jar -XX:ParallelGCThreads"+numThreads+" "+installationDirectory+"resources/picard.jar MarkDuplicates I=rg_added_sorted.bam O=dedupped.bam  CREATE_INDEX=true VALIDATION_STRINGENCY=SILENT M=output.metrics")
+                        os.system("java -jar -XX:ParallelGCThreads="+numThreads+" "+installationDirectory+"resources/picard.jar MarkDuplicates I=rg_added_sorted.bam O=dedupped.bam  CREATE_INDEX=true VALIDATION_STRINGENCY=SILENT M=output.metrics")
                         os.system("java -jar "+installationDirectory+"resources/picard.jar CreateSequenceDictionary R="+referenceFile)
                         
                         os.system(installationDirectory+"resources/samtools faidx "+referenceFile)
@@ -270,7 +268,8 @@ class Toplevel1:
                         os.system("rm vcfFilesToExamine *.dict *.fai mapped.bam *.bt2 rg_added_sorted.bam *trimming_report.txt")
                         os.system("ls *_snpEffect.txt > file2Plot")
                         os.system("python "+installationDirectory+"snpAnalysis/buildTable.py file2Plot")
-                        os.system("mv  *_snpEffect.txt *_snpFreq.txt "+outputFolder+"/" )
+                        os.system("mv  *_snpEffect.txt *_snpFreq.txt snpTable.txt "+outputFolder+"/" )
+
                         
 
                 if suffix == "vcf":
@@ -283,7 +282,7 @@ class Toplevel1:
                     os.system("rm vcfFilesToExamine *.dict *.fai mapped.bam *.bt2 rg_added_sorted.bam *trimming_report.txt")
                     os.system("ls *_snpEffect.txt > file2Plot")
                     os.system("python "+installationDirectory+"snpAnalysis/buildTable.py file2Plot")
-                    os.system("mv  *_snpEffect.txt *_snpFreq.txt "+outputFolder+"/" )
+                    os.system("mv  *_snpEffect.txt *_snpFreq.txt snpTable.txt"+outputFolder+"/" )
                     
 
                     
