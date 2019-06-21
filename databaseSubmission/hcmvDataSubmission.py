@@ -9,10 +9,12 @@ try:
 except ImportError:
     import tkinter.ttk as ttk
     py3 = True
-
+import Tkinter, Tkconstants, tkFileDialog
 
 import sys
-
+installationDirectory = sys.argv[1]
+import os
+import time
 
 def vp_start_gui():
     '''Starting point when module is the main routine.'''
@@ -33,9 +35,9 @@ def create_Toplevel1(root, *args, **kwargs):
     global w, w_win, rt
     rt = root
     w = tk.Toplevel (root)
-    VirHosFilt_support.set_Tk_var()
+    
     top = Toplevel1 (w)
-    VirHosFilt_support.init(w, top, *args, **kwargs)
+    
     return (w, top)
 
 def destroy_Toplevel1():
@@ -45,8 +47,335 @@ def destroy_Toplevel1():
 
 class Toplevel1:
     def __init__(self, top=None):
+
+
+        sampleAccession = {}
+        runAccession = {}
+        projectAccessionNumber = ""
+        experimentAccession = {}
+        sampleList = []
+        
+        def exitProgram():
+            exit()
+
+        def openRunToSubmit():
+            toSubmit = tkFileDialog.askopenfilename(initialdir = "./",title = "Select file")
+            self.runToSubmitFileEntry.delete(0,tk.END)
+            self.runToSubmitFileEntry.insert(0,toSubmit)
+        
+        def openFastqFolder():
+            fastqFodler = tkFileDialog.askdirectory(initialdir = "./",title = "Select folder")
+            self.fastqFolderEntry.delete(0,tk.END)
+            self.fastqFolderEntry.insert(0,fastqFodler)
+
+        def openFastqInfoFile():
+            fastqInfo = tkFileDialog.askopenfilename(initialdir = "./",title = "Select file")
+            self.fastqInfoEntry.delete(0,tk.END)
+            self.fastqInfoEntry.insert(0,fastqInfo)
+
+        def openProjectInfoFile():
+            projectInfo = tkFileDialog.askopenfilename(initialdir = "./",title = "Select file")
+            self.projectInfoEntry.delete(0,tk.END)
+            self.projectInfoEntry.insert(0,projectInfo)
+
+        def openSampleInfoFile():
+            sampleInfo = tkFileDialog.askopenfilename(initialdir = "./",title = "Select file")
+            self.sampleInfoEntry.delete(0,tk.END)
+            self.sampleInfoEntry.insert(0,sampleInfo)
+
+        def createNewProject(projectFile):
+            if os.path.isfile(projectFile)==True:
+                projectInfoFile = open(projectFile)
+                projectInfoFile.readline()
+                line = projectInfoFile.readline().rstrip()
+                projectInfoFields = line.split("\t")
+                projectAlias = projectInfoFields[0]
+                projectName = projectInfoFields[1]
+                projectTitle = projectInfoFields[2]
+                projectDescription = projectInfoFields[3]
+                project_xml = open("project.xml","w")
+                project_xml.write("<PROJECT_SET>\n")
+                project_xml.write("<PROJECT alias=\""+projectAlias+"\">\n")
+                project_xml.write("<NAME>"+projectName+"</NAME>\n")
+                project_xml.write("<TITLE>"+projectTitle+"</TITLE>\n")
+                project_xml.write("<DESCRIPTION>"+projectDescription+"</DESCRIPTION>\n")
+                project_xml.write("<SUBMISSION_PROJECT>\n<SEQUENCING_PROJECT></SEQUENCING_PROJECT>\n</SUBMISSION_PROJECT>\n<PROJECT_LINKS>\n<PROJECT_LINK>\n<XREF_LINK>\n<DB></DB>\n<ID></ID>\n</XREF_LINK>\n</PROJECT_LINK>\n</PROJECT_LINKS>\n</PROJECT>\n</PROJECT_SET>")
+                #IMPORTANT! To change username and password in GRACy
+                project_xml.close()
+                if self.testSubmissionchkValue.get()==True:
+                    print "curl -u "+self.usernameEntry.get()+":"+self.passwordEntry.get()+" -F \"SUBMISSION=@submission.xml\" -F \"PROJECT=@project.xml\" \"https://wwwdev.ebi.ac.uk/ena/submit/drop-box/submit/\" >projectReceipt"
+                    os.system("curl -u "+self.usernameEntry.get()+":"+self.passwordEntry.get()+" -F \"SUBMISSION=@submission.xml\" -F \"PROJECT=@project.xml\" \"https://wwwdev.ebi.ac.uk/ena/submit/drop-box/submit/\" >projectReceipt")
+                else:
+                    print "This is not a test. Do you wish to continue?"
+                    sys.stdin.read(1)
+                    print "curl -u "+self.usernameEntry.get()+":"+self.passwordEntry.get()+" -F \"SUBMISSION=@submission.xml\" -F \"PROJECT=@project.xml\" \"https://www.ebi.ac.uk/ena/submit/drop-box/submit/\" >projectReceipt"
+                    os.system("curl -u "+self.usernameEntry.get()+":"+self.passwordEntry.get()+" -F \"SUBMISSION=@submission.xml\" -F \"PROJECT=@project.xml\" \"https://www.ebi.ac.uk/ena/submit/drop-box/submit/\" >projectReceipt")
+                receiptFile = open("projectReceipt")
+
+                while True:
+                    line = receiptFile.readline().rstrip()
+                    if not line:
+                        break
+                    fields = line.split("\"")
+                    for item in fields:
+                        if "PRJE" in item:
+                            receiptFile.close()
+                            return item
+                            break
+
+        def createNewSample(sampleName):
+            if not sampleName in sampleAccession:
+                sampleAccession[sampleName] = ""
+            infile = open(self.sampleInfoEntry.get())
+
+            infile.readline() #Read header
+            
+            sampleFound = 0
+            while True:
+                line = infile.readline().rstrip()
+                #print line
+                #sys.stdin.read(1)
+                if not line:
+                    break
+                fields = line.split("\t")
+                alias = fields[0]
+                center = fields[1]
+                title = fields[2]
+                taxonID = fields[3]
+                scientificName = fields[4]
+                geographicLocation = fields[5]
+                hostCommonName = fields[6]
+                hostHealthState = fields[7]
+                isolationSource = fields[8]
+                sex = fields[9]
+                hostScientificName = fields[10]
+                collectorName = fields[11]
+                collectingInstitution = fields[12]
+                isolate = fields[13]
+                
+                if alias == sampleName:
+                    sampleFound = 1
+                    xmlfile = open(alias+"_sample.xml","w")
+                    xmlfile.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<SAMPLE_SET>\n<SAMPLE alias=\""+alias+"\" center_name=\""+center+"\">\n")
+                    xmlfile.write("<TITLE>"+title+"</TITLE>\n<SAMPLE_NAME>\n<TAXON_ID>"+taxonID+"</TAXON_ID>\n<SCIENTIFIC_NAME>"+scientificName+"</SCIENTIFIC_NAME>\n")
+                    xmlfile.write(" <COMMON_NAME></COMMON_NAME>\n</SAMPLE_NAME>\n<SAMPLE_ATTRIBUTES>\n<SAMPLE_ATTRIBUTE>\n")
+                    xmlfile.write(" <TAG>geographic location (country and/or sea)</TAG>\n<VALUE>"+geographicLocation+"</VALUE>\n")
+                    xmlfile.write(" </SAMPLE_ATTRIBUTE>\n<SAMPLE_ATTRIBUTE>\n<TAG>host common name</TAG>\n<VALUE>"+hostCommonName+"</VALUE>\n")
+                    xmlfile.write(" </SAMPLE_ATTRIBUTE>\n<SAMPLE_ATTRIBUTE>\n<TAG>host health state</TAG>\n<VALUE>"+hostHealthState+"</VALUE>\n")
+                    xmlfile.write(" </SAMPLE_ATTRIBUTE>\n<SAMPLE_ATTRIBUTE>\n<TAG>isolation source host associated</TAG>\n<VALUE>"+isolationSource+"</VALUE>\n</SAMPLE_ATTRIBUTE>\n<SAMPLE_ATTRIBUTE>\n")
+                    xmlfile.write("<TAG>host sex</TAG>\n<VALUE>"+sex+"</VALUE>\n</SAMPLE_ATTRIBUTE>\n<SAMPLE_ATTRIBUTE>\n")
+                    xmlfile.write("<TAG>host scientific name</TAG>\n<VALUE>"+hostScientificName+"</VALUE>\n</SAMPLE_ATTRIBUTE>\n<SAMPLE_ATTRIBUTE>\n")
+                    xmlfile.write("<TAG>collector name</TAG>\n<VALUE>"+collectorName+"</VALUE>\n</SAMPLE_ATTRIBUTE>\n<SAMPLE_ATTRIBUTE>\n")
+                    xmlfile.write("<TAG>collecting institution</TAG>\n<VALUE>"+collectingInstitution+"</VALUE>\n</SAMPLE_ATTRIBUTE>\n<SAMPLE_ATTRIBUTE>\n")
+                    xmlfile.write("<TAG>isolate</TAG>\n<VALUE>"+isolate+"</VALUE>\n</SAMPLE_ATTRIBUTE>\n</SAMPLE_ATTRIBUTES>\n</SAMPLE>\n</SAMPLE_SET>\n")
+                    xmlfile.close()
+                    if self.testSubmissionchkValue.get()==True:
+                        os.system("curl -u "+self.usernameEntry.get()+":"+self.passwordEntry.get()+" -F \"SUBMISSION=@submission.xml\" -F \"SAMPLE=@"+alias+"_sample.xml\" \"https://wwwdev.ebi.ac.uk/ena/submit/drop-box/submit/\" >sampleReceipt.txt")
+                    else:
+                        print "This is not a test. Do you wish to continue?"
+                        sys.stdin.read(1)
+                        os.system("curl -u "+self.usernameEntry.get()+":"+self.passwordEntry.get()+" -F \"SUBMISSION=@submission.xml\" -F \"SAMPLE=@"+alias+"_sample.xml\" \"https://www.ebi.ac.uk/ena/submit/drop-box/submit/\" >sampleReceipt.txt")
+
+                    receiptFile = open("sampleReceipt.txt")
+                    while True:
+                        line = receiptFile.readline().rstrip()
+                        if not line:
+                            break
+                        fields = line.split("\"")
+                        for item in fields:
+                            if "ERS" in item or "SRS" in item or "DRS" in item:
+                                receiptFile.close()
+                                return item
+                                break
+
+            if sampleFound == 0:
+                print "Sample",sampleName,"was not found in the provided sample file."
+                print "Now exit...."
+                exit()
+
+            infile.close()
+
+        
+
+
         
         
+        
+        def readsSubmission():
+            if self.runToSubmitFileEntry.get()=="Please select a file...." or self.fastqFolderEntry.get()=="Please select a folder...." or self.fastqInfoEntry.get()=="Please select a file...." or self.usernameEntry.get()=="myENA_Username" or self.passwordEntry.get()=="":
+                self.logArea.configure(state='normal')
+                self.logArea.insert(tk.END, "The following fields must be filled:\n")
+                self.logArea.insert(tk.END, "Samples to submit\nFastq folder\nFastq info folder\nENA username\nPassword\n\n")
+                self.logArea.see(tk.END)
+                self.logArea.configure(state='disabled')
+                self.logArea.update()
+            else:
+                #*******************************************************************
+                #********************* Main algorithm reads submission  ************
+                #*******************************************************************
+                isTest = self.testSubmissionchkValue.get() 
+                inputFolder = self.fastqFolderEntry.get()
+                filesToSubmit = self.runToSubmitFileEntry.get()
+                createProject = self.createProjectchkValue.get()
+                createSample = self.createSampleschkValue.get()
+                projectInfo = self.projectInfoEntry.get()
+                sampleInfo = self.sampleInfoEntry.get()
+                readsInfo = self.fastqInfoEntry.get()
+                os.system("cp "+installationDirectory+"databaseSubmission/submission.xml .")
+
+                
+
+                self.logArea.configure(state='normal')
+                self.logArea.insert(tk.END, "isTest: "+str(isTest)+"\n"+"inputFolder: "+str(inputFolder)+"\nfilesToSubmit: "+str(filesToSubmit)+"\nCreatePoject: "+str(createProject)+"\nCreateSample: "+str(createSample)+"\nProjectInfo: "+str(projectInfo)+"\nSampleInfo: "+str(sampleInfo)+"\nReadsInfo: "+str(readsInfo)+"\n\n")
+                self.logArea.see(tk.END)
+                self.logArea.configure(state='disabled')
+                self.logArea.update()
+
+                if createProject==True:
+                    self.logArea.configure(state='normal')
+                    self.logArea.insert(tk.END, "Creating a new Project....\n")
+                    self.logArea.see(tk.END)
+                    self.logArea.configure(state='disabled')
+                    self.logArea.update()
+                    projectAccessionNumber = createNewProject(projectInfo)
+                    self.logArea.configure(state='normal')
+                    self.logArea.insert(tk.END, "A project was created on ENA with the accession number: "+projectAccessionNumber+"\n\n")
+                    self.logArea.see(tk.END)
+                    self.logArea.configure(state='disabled')
+                    self.logArea.update()
+
+                toSubmitFile = open(filesToSubmit)
+                while True:
+                    sampleName = toSubmitFile.readline().rstrip()
+                    if not sampleName:
+                        break
+
+                    if not sampleName in experimentAccession:
+                        experimentAccession[sampleName] = ""
+
+                    if not sampleName in runAccession:
+                        runAccession[sampleName] = ""
+
+                    sampleList.append(sampleName)
+
+
+                    #Create samples if needed
+                    if createSample == True:
+                        self.logArea.configure(state='normal')
+                        self.logArea.insert(tk.END, "Creating a new sample for dataset "+sampleName+"....\n")
+                        self.logArea.see(tk.END)
+                        self.logArea.configure(state='disabled')
+                        self.logArea.update()
+                        sampleAccessionNumber = createNewSample(sampleName)
+                        self.logArea.configure(state='normal')
+                        self.logArea.insert(tk.END, "Sample created for dataset "+sampleName+" with accession number: "+sampleAccessionNumber+"\n")
+                        self.logArea.see(tk.END)
+                        self.logArea.configure(state='disabled')
+                        self.logArea.update()
+
+                        time.sleep(3)
+                    
+                    #Grab reads information from readsInfo file
+                    infile = open(readsInfo)
+                    infile.readline()
+                    foundRecord = 0
+                    while True:
+                        line = infile.readline().rstrip()
+                        if not line:
+                            break
+                        fields = line.split("\t")
+                        projectAccessionField = fields[0]
+                        sampleAccessionField = fields[1]
+
+                        sampleAlias = fields[2]
+                        instrument = fields[3]
+                        insertSize = fields[4]
+                        librarySource = fields[5]
+                        librarySelection = fields[6]
+                        libraryStrategy = fields[7]
+                        fq1 = fields[8]
+                        fq2 = fields[9]
+
+                        if createProject == True:
+                            projectAccessionField = projectAccessionNumber
+                        if createSample ==True:
+                            sampleAccessionField = sampleAccessionNumber
+
+                        sampleAccession[sampleName] = sampleAccessionField
+
+                        if sampleAlias == sampleName:
+                            foundRecord = 1
+                            os.system("ln -s "+inputFolder+"/"+fq1)
+                            os.system("ln -s "+inputFolder+"/"+fq2)
+
+                            manifest = open(sampleName+"_manifestFile.txt","w",buffering=0)
+                            manifest.write("INSTRUMENT\t"+instrument+"\nINSERT_SIZE\t"+insertSize+"\nLIBRARY_SOURCE\t"+librarySource+"\nLIBRARY_SELECTION\t"+librarySelection+"\n")
+                            manifest.write("STUDY\t"+projectAccessionField+"\nSAMPLE\t"+sampleAccessionField+"\nNAME\t"+sampleName+"\n")
+                            manifest.write("LIBRARY_STRATEGY\t"+libraryStrategy+"\nFASTQ\t"+fq1+"\nFASTQ\t"+fq2+"\n")
+                            manifest.close()
+                            
+                            self.logArea.configure(state='normal')
+                            self.logArea.insert(tk.END, "Submitting reads for sample "+sampleName+"....\n")
+                            self.logArea.see(tk.END)
+                            self.logArea.configure(state='disabled')
+                            self.logArea.update()
+
+                            if self.testSubmissionchkValue.get()==True:
+                                os.system("java -jar "+installationDirectory+"databaseSubmission/webin-cli-1.8.6.jar -context reads -userName "+self.usernameEntry.get()+" -password "+self.passwordEntry.get()+"  -manifest "+sampleName+"_manifestFile.txt -test >fastqReceipt")
+                            else:
+                                print "This is not a test. Do you wish to continue?"
+                                sys.stdin.read(1)
+                                os.system("java -jar "+installationDirectory+"databaseSubmission/webin-cli-1.8.6.jar -context reads -userName "+self.usernameEntry.get()+" -password "+self.passwordEntry.get()+"  -manifest "+sampleName+"_manifestFile.txt -submit >fastqReceipt")
+                            os.system("rm -f "+fq1+" "+fq2)
+
+                            receiptFile = open("fastqReceipt")
+                            while True:
+                                line = receiptFile.readline().rstrip()
+                                if not line:
+                                    break
+                                fields = line.split(" ")
+                                print fields
+                                for item in fields:
+                                    if "ERR" in item or "SRR" in item or "DRR" in item: 
+                                        if not "ERROR" in item:
+                                            runAccession[sampleName] = item
+
+                                    if "ERX" in item or "SRX" in item or "DRX" in item: 
+                                        experimentAccession[sampleName]=item
+
+                                    
+                            receiptFile.close()
+                            self.logArea.configure(state='normal')
+                            self.logArea.insert(tk.END, "Fastq files submitted!\n")
+                            self.logArea.insert(tk.END, "Run accession number: "+runAccession[sampleName]+"\n")
+                            self.logArea.insert(tk.END, "Experiment accession number: "+experimentAccession[sampleName]+"\n")
+                            self.logArea.see(tk.END)
+                            self.logArea.configure(state='disabled')
+                            self.logArea.update()
+                            
+                            print experimentAccession[sampleName],"Submitted"
+                            sys.stdin.read(1)
+
+
+
+                    print "Finished"
+                    print sampleName,sampleAccession[sampleName],runAccession[sampleName],experimentAccession[sampleName]
+                    sys.stdin.read(1)
+                    #os.system("rm -f *manifestFile.txt *Receipt* *.report")
+
+
+
+
+                outfile = open("accessionNumbersTable.txt","w")
+                outfile.write("SampleAlias\tSampleAccession\tRunAccession\tExperimentAccession\n")
+
+                for item in sampleList:
+                    print item,sampleAccession[item],runAccession[item],experimentAccession[item]
+                    outfile.write(item+"\t"+sampleAccession[item]+"\t"+runAccession[item]+"\t"+experimentAccession[item]+"\n")
+
+                outfile.close()
+
+
 
         
 
@@ -79,124 +408,128 @@ class Toplevel1:
         top.title("Data submission tool")
         top.configure(highlightcolor="black")
 
-        runToSubmitFileLabel = tk.Label(top)
-        runToSubmitFileLabel.configure(text="Run to submit")
-        runToSubmitFileLabel.place(x=20,y=20,width=90,height=20)
+        self.runToSubmitFileLabel = tk.Label(top)
+        self.runToSubmitFileLabel.configure(text="Samples to submit")
+        self.runToSubmitFileLabel.place(x=20,y=20,width=130,height=20)
 
-        runToSubmitFileEntry = tk.Entry(top)
-        runToSubmitFileEntry.place(x=20,y=40,width=300,height=30)
-        runToSubmitFileEntry.insert(0,"Please select a file....")
+        self.runToSubmitFileEntry = tk.Entry(top)
+        self.runToSubmitFileEntry.place(x=20,y=40,width=300,height=30)
+        self.runToSubmitFileEntry.insert(0,"Please select a file....")
 
-        runToSubmitButton = tk.Button(top)
-        runToSubmitButton.place(x=330,y=40,width=100,height=30)
-        runToSubmitButton.configure(text="Open file")
+        self.runToSubmitButton = tk.Button(command=openRunToSubmit)
+        self.runToSubmitButton.place(x=330,y=40,width=100,height=30)
+        self.runToSubmitButton.configure(text="Open file")
 
-        fastqFolderLabel = tk.Label(top)
-        fastqFolderLabel.configure(text="Fastq folder")
-        fastqFolderLabel.place(x=20,y=80,width=80,height=20)
+        self.fastqFolderLabel = tk.Label()
+        self.fastqFolderLabel.configure(text="Fastq folder")
+        self.fastqFolderLabel.place(x=20,y=80,width=80,height=20)
 
-        fastqFolderEntry = tk.Entry(top)
-        fastqFolderEntry.place(x=20,y=100,width=300,height=30)
-        fastqFolderEntry.insert(0,"Please select a folder....")
+        self.fastqFolderEntry = tk.Entry(top)
+        self.fastqFolderEntry.place(x=20,y=100,width=300,height=30)
+        self.fastqFolderEntry.insert(0,"Please select a folder....")
 
-        fastqFolderButton = tk.Button(top)
-        fastqFolderButton.place(x=330,y=100,width=100,height=30)
-        fastqFolderButton.configure(text="Open folder")
+        self.fastqFolderButton = tk.Button(top,command=openFastqFolder)
+        self.fastqFolderButton.place(x=330,y=100,width=100,height=30)
+        self.fastqFolderButton.configure(text="Open folder")
 
-        fastqInfoLabel = tk.Label(top)
-        fastqInfoLabel.configure(text="Fastq info table")
-        fastqInfoLabel.place(x=20,y=140,width=110,height=20)
+        self.fastqInfoLabel = tk.Label(top)
+        self.fastqInfoLabel.configure(text="Fastq info table")
+        self.fastqInfoLabel.place(x=20,y=140,width=110,height=20)
 
-        fastqInfoEntry = tk.Entry(top)
-        fastqInfoEntry.place(x=20,y=160,width=300,height=30)
-        fastqInfoEntry.insert(0,"Please select a file....")
+        self.fastqInfoEntry = tk.Entry(top)
+        self.fastqInfoEntry.place(x=20,y=160,width=300,height=30)
+        self.fastqInfoEntry.insert(0,"Please select a file....")
 
-        fastqInfoFileButton = tk.Button(top)
-        fastqInfoFileButton.place(x=330,y=160,width=100,height=30)
-        fastqInfoFileButton.configure(text="Open file")
-
-
-        projectInfoLabel = tk.Label(top)
-        projectInfoLabel.configure(text="Project info table")
-        projectInfoLabel.place(x=470,y=20,width=110,height=20)
-
-        projectInfoEntry = tk.Entry(top)
-        projectInfoEntry.place(x=470,y=40,width=300,height=30)
-        projectInfoEntry.insert(0,"Please select a file....")
-
-        projectInfoButton = tk.Button(top)
-        projectInfoButton.place(x=780,y=40,width=100,height=30)
-        projectInfoButton.configure(text="Open file")
+        self.fastqInfoFileButton = tk.Button(top,command=openFastqInfoFile)
+        self.fastqInfoFileButton.place(x=330,y=160,width=100,height=30)
+        self.fastqInfoFileButton.configure(text="Open file")
 
 
-        sampleInfoLabel = tk.Label(top)
-        sampleInfoLabel.configure(text="Samples info Table")
-        sampleInfoLabel.place(x=470,y=80,width=130,height=20)
+        self.projectInfoLabel = tk.Label(top)
+        self.projectInfoLabel.configure(text="Project info table")
+        self.projectInfoLabel.place(x=470,y=20,width=110,height=20)
 
-        sampleInfoEntry = tk.Entry(top)
-        sampleInfoEntry.place(x=470,y=100,width=300,height=30)
-        sampleInfoEntry.insert(0,"Please select a file....")
+        self.projectInfoEntry = tk.Entry(top)
+        self.projectInfoEntry.place(x=470,y=40,width=300,height=30)
+        self.projectInfoEntry.insert(0,"Please select a file....")
 
-        sampleInfoButton = tk.Button(top)
-        sampleInfoButton.place(x=780,y=100,width=100,height=30)
-        sampleInfoButton.configure(text="Open file")
+        self.projectInfoButton = tk.Button(top,command=openProjectInfoFile)
+        self.projectInfoButton.place(x=780,y=40,width=100,height=30)
+        self.projectInfoButton.configure(text="Open file")
 
 
-        usernameLabel = tk.Label(top)
-        usernameLabel.configure(text="Username")
-        usernameLabel.place(x=470,y=140,width=75,height=20)
+        self.sampleInfoLabel = tk.Label(top)
+        self.sampleInfoLabel.configure(text="Samples info Table")
+        self.sampleInfoLabel.place(x=470,y=80,width=130,height=20)
 
-        usernameEntry = tk.Entry(top,justify='right')
-        usernameEntry.place(x=470,y=160,width=200,height=30)
-        usernameEntry.insert(0,"myENA_Username")
+        self.sampleInfoEntry = tk.Entry(top)
+        self.sampleInfoEntry.place(x=470,y=100,width=300,height=30)
+        self.sampleInfoEntry.insert(0,"Please select a file....")
 
-        passwordLabel = tk.Label(top)
-        passwordLabel.configure(text="Password")
-        passwordLabel.place(x=680,y=140,width=75,height=20)
+        self.sampleInfoButton = tk.Button(top,command=openSampleInfoFile)
+        self.sampleInfoButton.place(x=780,y=100,width=100,height=30)
+        self.sampleInfoButton.configure(text="Open file")
 
-        passwordEntry = tk.Entry(top,justify='right')
-        passwordEntry.place(x=680,y=160,width=200,height=30)
-        passwordEntry.insert(0,"*************")
 
-        createProjectchkValue = tk.BooleanVar() 
-        createProjectchkValue.set(True)
-        createProjectCheckButton = tk.Checkbutton(top,variable=createProjectchkValue)
-        createProjectCheckButton.place(x=20,y=230,height=20,width=150)
-        createProjectCheckButton.configure(text="Create new Project")
+        self.usernameLabel = tk.Label(top)
+        self.usernameLabel.configure(text="Username")
+        self.usernameLabel.place(x=470,y=140,width=75,height=20)
+
+        self.usernameEntry = tk.Entry(top,justify='right')
+        self.usernameEntry.place(x=470,y=160,width=200,height=30)
+        self.usernameEntry.insert(0,"myENA_Username")
+
+        self.passwordLabel = tk.Label(top)
+        self.passwordLabel.configure(text="Password")
+        self.passwordLabel.place(x=680,y=140,width=75,height=20)
+
+        self.passwordEntry = tk.Entry(top,justify='right')
+        self.passwordEntry.place(x=680,y=160,width=200,height=30)
+        self.passwordEntry.insert(0,"")
+
+        self.createProjectchkValue = tk.BooleanVar() 
+        self.createProjectchkValue.set(True)
+        self.createProjectCheckButton = tk.Checkbutton(top,variable=self.createProjectchkValue)
+        self.createProjectCheckButton.place(x=20,y=230,height=20,width=150)
+        self.createProjectCheckButton.configure(text="Create new Project")
         #createProjectCheckButton.bind('<Button-1>',selectKraken)
 
-        createSampleschkValue = tk.BooleanVar() 
-        createProjectchkValue.set(True)
-        createSamplesCheckButton = tk.Checkbutton(top,variable=createProjectchkValue)
-        createSamplesCheckButton.place(x=200,y=230,height=20,width=150)
-        createSamplesCheckButton.configure(text="Create new Project")
+        self.createSampleschkValue = tk.BooleanVar() 
+        self.createSampleschkValue.set(True)
+        self.createSamplesCheckButton = tk.Checkbutton(top,variable=self.createProjectchkValue)
+        self.createSamplesCheckButton.place(x=200,y=230,height=20,width=170)
+        self.createSamplesCheckButton.configure(text="Create new Sample(s)")
 
-        testSubmissionchkValue = tk.BooleanVar() 
-        testSubmissionchkValue.set(True)
-        testSubmissionCheckButton = tk.Checkbutton(top,variable=testSubmissionchkValue)
-        testSubmissionCheckButton.place(x=380,y=230,height=20,width=150)
-        testSubmissionCheckButton.configure(text="Test submission")
+        self.testSubmissionchkValue = tk.BooleanVar() 
+        self.testSubmissionchkValue.set(True)
+        self.testSubmissionCheckButton = tk.Checkbutton(top,variable=self.testSubmissionchkValue)
+        self.testSubmissionCheckButton.place(x=380,y=230,height=20,width=150)
+        self.testSubmissionCheckButton.configure(text="Test submission")
 
 
-        runButton = tk.Button(top)
-        runButton.place(x=780,y=220,width=100,height=30)
-        runButton.configure(text="Submit")
+        self.runButton = tk.Button(top,command=readsSubmission)
+        self.runButton.place(x=780,y=220,width=100,height=30)
+        self.runButton.configure(text="Submit")
+
+        self.exitButton = tk.Button(top,command=exitProgram)
+        self.exitButton.place(x=660,y=220,width=100,height=30)
+        self.exitButton.configure(text="Exit")
        
 
-        logFileLabel = tk.Label(top)
-        logFileLabel.place(x=20,y=270,height=20,width=100)
-        logFileLabel.configure(text="Log window")
+        self.logFileLabel = tk.Label(top)
+        self.logFileLabel.place(x=20,y=270,height=20,width=100)
+        self.logFileLabel.configure(text="Log window")
 
-        logFrame = tk.Frame(top)
-        logFrame.place(x=20, y=290, height=180, width=860)
-        logFrame.configure(relief='groove')
-        logFrame.configure(borderwidth="2")
-        logFrame.configure(relief='groove')
-        logFrame.configure(width=125)
-        logArea = tk.Text(top,state='disabled')
-        logArea.place(x=25,y=295,height=170, width=850)
-        logArea.configure(background="white",borderwidth=5)
-        logArea.configure(selectbackground="#c4c4c4")
+        self.logFrame = tk.Frame(top)
+        self.logFrame.place(x=20, y=290, height=180, width=860)
+        self.logFrame.configure(relief='groove')
+        self.logFrame.configure(borderwidth="2")
+        self.logFrame.configure(relief='groove')
+        self.logFrame.configure(width=125)
+        self.logArea = tk.Text(top,state='disabled')
+        self.logArea.place(x=25,y=295,height=170, width=850)
+        self.logArea.configure(background="white",borderwidth=5)
+        self.logArea.configure(selectbackground="#c4c4c4")
 
 
         

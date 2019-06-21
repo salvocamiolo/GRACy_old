@@ -68,6 +68,10 @@ class Toplevel1:
         def snpAnalysis():
             os.system("python "+installationDirectory+"snpAnalysis/hcmvSNPAnalysisGUI.py "+installationDirectory+" &")
 
+        def dbSubmission():
+            os.system("python "+installationDirectory+"databaseSubmission/hcmvDataSubmission.py "+installationDirectory+" &")
+
+
 
 
         '''This class configures and populates the toplevel window.
@@ -121,7 +125,7 @@ class Toplevel1:
         annotationButton.place(x=200,y=495,height=30,width=150)
         annotationButton.configure(text= "Annotation",bg="#568F98",fg="white",font=("Times",14,'bold'),bd=0,highlightbackground="#568F98",highlightcolor="#568F98",activebackground='#568F98')
 
-        dbSubmissionButton = tk.Button(top)
+        dbSubmissionButton = tk.Button(top,command = dbSubmission)
         dbSubmissionButton.place(x=65,y=167,height=30,width=150)
         dbSubmissionButton.configure(text= "DB submission",bg="#568F98",fg="white",font=("Times",14,'bold'),bd=0,highlightbackground="#568F98",highlightcolor="#568F98",activebackground='#568F98')
 

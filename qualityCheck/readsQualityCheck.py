@@ -61,17 +61,19 @@ class Toplevel1:
             inputFolder = tkFileDialog.askdirectory(initialdir = "./",title = "Select folder")
             self.inputFolderEntry.delete(0,tk.END)
             self.inputFolderEntry.insert(0,inputFolder)
+            self.inputFolderEntry.xview_moveto(1)
 
         def openOutputFolder():
             outputolder = tkFileDialog.askdirectory(initialdir = "./",title = "Select folder")
             self.outputFolderEntry.delete(0,tk.END)
             self.outputFolderEntry.insert(0,outputolder)
+            self.outputFolderEntry.xview_moveto(1)
 
         def openRecodingFile():
             recodingFile = tkFileDialog.askopenfilename(initialdir = "./",title = "Select file")
             self.recodingFileEntry.delete(0,tk.END)
             self.recodingFileEntry.insert(0,recodingFile)
-
+            self.recodingFileEntry.xview_moveto(1)
 
         def plotCoveragePlot(covFile,expName):
             position = []
@@ -700,8 +702,9 @@ class Toplevel1:
 
         self.inputFolderEntry = tk.Entry(top)
         self.inputFolderEntry.place(x=20,y=40,height=30, width = 300)
-        #self.inputFolderEntry.insert(0,"Please select folder....")
-        self.inputFolderEntry.insert(0,"/home3/scc20x/infolder1")
+        self.inputFolderEntry.insert(0,"Please select folder....")
+        self.inputFolderEntry.xview(-1)
+     
 
         self.inputFolderButton = tk.Button(top,command=openInputFolder)
         self.inputFolderButton.place(x=340,y=40,height=30,width=100)
