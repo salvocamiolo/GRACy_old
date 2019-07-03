@@ -3,19 +3,27 @@ import sys
 import os
 
 projectName = sys.argv[1]
+installationDirectory = sys.argv[2]
+
+
+os.system("cp "+installationDirectory+"resources/hcmv_genome.fasta .")
+os.system("cp "+installationDirectory+"assembly/scripts/genome_recepie.rcp  .")
+os.system("cp "+installationDirectory+"assembly/scripts/center_recepie.rcp .")
 
 
 #new bit
-os.system("bowtie2-build merlinGenome_190000_200000_f.txt reference")
-os.system("bowtie2 -x reference -1 ../1_cleanReads/"+projectName+"_hq_1.fastq -2 ../1_cleanReads/"+projectName+"_hq_2.fastq -S alignment.sam")
-os.system("samtools view -h -Sb alignment.sam >alignment.bam")
-os.system("samtools view -F 12 -b alignment.bam >botMapped.bam")
-os.system("samtools view -f 4 -F 8 -b alignment.bam >oneMapped.bam")
-os.system("samtools view -f 8 -F 4 -b alignment.bam >twoMapped.bam")
-os.system("samtools merge all.bam botMapped.bam oneMapped.bam twoMapped.bam")
-os.system("bam2fastq -o reads#.fastq all.bam")
-os.system("/home3/scc20x/Software/SPAdes-3.12.0-Linux/bin/spades.py -1 reads_1.fastq -2 reads_2.fastq  --cov-cutoff auto --careful -k 51,61,71 -o centerScaffold")
-os.system("scaffold_builder_v2.py -q ./centerScaffold/scaffolds.fasta -r merlinGenome_190000_200000_f.txt -p sb2 ")
+os.system(installationDirectory+"resources/bowtie2-build merlinGenome_190000_200000_f.txt reference")
+os.system(installationDirectory+"resources/bowtie2  -x reference -1 ../1_cleanReads/"+projectName+"_hq_1.fastq -2 ../1_cleanReads/"+projectName+"_hq_2.fastq -S alignment.sam")
+os.system(installationDirectory+"resources/samtools view -h -Sb alignment.sam >alignment.bam")
+os.system(installationDirectory+"resources/samtools view -F 12 -b alignment.bam >botMapped.bam")
+os.system(installationDirectory+"resources/samtools view -f 4 -F 8 -b alignment.bam >oneMapped.bam")
+os.system(installationDirectory+"resources/samtools view -f 8 -F 4 -b alignment.bam >twoMapped.bam")
+os.system(installationDirectory+"resources/samtools merge all.bam botMapped.bam oneMapped.bam twoMapped.bam")
+os.system(installationDirectory+"resources/bam2fastq -o reads#.fastq all.bam")
+os.system(installationDirectory+"resources/SPAdes-3.12.0-Linux/bin/spades.py -1 reads_1.fastq -2 reads_2.fastq  --cov-cutoff auto --careful -k 51,61,71 -o centerScaffold")
+#Following command replaced by the following
+os.system("python "+installationDirectory+"resources/scaffold_builder_v2.py -q ./centerScaffold/scaffolds.fasta -r merlinGenome_190000_200000_f.txt -p sb2 ")
+#os.system(installationDirectory+"resources/Ragout/bin/ragout --overwrite center_recepie.rcp")
 
 
 
@@ -36,7 +44,7 @@ outfile.close()
 os.system("mv temp.fasta sb2_Scaffold.fasta")
 
 
-os.system("lastz merlinGenome_190000_200000_f.txt sb2_Scaffold.fasta --format=general:name1,start1,end1,name2,start2,end2,identity,score --ydrop=50000 >lastzOutput.txt")
+os.system(installationDirectory+"resources/lastz merlinGenome_190000_200000_f.txt sb2_Scaffold.fasta --format=general:name1,start1,end1,name2,start2,end2,identity,score --ydrop=50000 >lastzOutput.txt")
 
 bestAlignment = ["scaffold",1,1,1,1,0]
 
@@ -55,17 +63,21 @@ print bestAlignment
 print "The center scaffold has length",str(bestAlignment[2]-bestAlignment[1])
 #print "The best alignment is ",bestAlignment
 #Add the center repetitive region to the contigs files
-print("./extractSeqByRange.py sb2_Scaffold.fasta "+bestAlignment[0]+" "+str(bestAlignment[3])+" "+str(bestAlignment[4])+" f")
-os.system("./extractSeqByRange.py sb2_Scaffold.fasta "+bestAlignment[0]+" "+str(bestAlignment[3])+" "+str(bestAlignment[4])+" f")
+print(installationDirectory+"resources/extractSeqByRange.py sb2_Scaffold.fasta "+bestAlignment[0]+" "+str(bestAlignment[3])+" "+str(bestAlignment[4])+" f")
+os.system(installationDirectory+"resources/extractSeqByRange.py sb2_Scaffold.fasta "+bestAlignment[0]+" "+str(bestAlignment[3])+" "+str(bestAlignment[4])+" f")
 #os.system("cat ../2_spadesAssembly/scaffolds.fasta "+bestAlignment[0]+"_"+str(bestAlignment[3])+"_"+str(bestAlignment[4])+"_f.txt >scaffolds.fasta ")
 
-os.system("scaffold_builder_v2.py -q ../2_spadesAssembly/scaffolds.fasta -r /home3/scc20x/hcmvReference/hcmv_genome.fasta -p sb >null 2>&1")
+#Next command is changed with the following
+#os.system(installationDirectory+"resources/scaffold_builder_v2.py -q ../2_spadesAssembly/scaffolds.fasta -r /home3/scc20x/hcmvReference/hcmv_genome.fasta -p sb >null 2>&1")
+os.system(installationDirectory+"resources/Ragout/bin/ragout --overwrite genome_recepie.rcp")
 
-sbFile = open("sb_Scaffold.fasta")
-sbFile.readline()
-mainScaffold = sbFile.readline().rstrip()
+
+for seq_record in SeqIO.parse("./ragout-out/scaffolds_scaffolds.fasta","fasta"):
+    mainScaffold = str(seq_record.seq)
+    break
+
 print "The main scaffold has length",len(mainScaffold)
-sbFile.close()
+
 
 
 
@@ -87,7 +99,7 @@ if "N" in centerScaffold:
     gfFile.write("lib1 bwa ../1_cleanReads/"+projectName+"_hq_1.fastq ../1_cleanReads/"+projectName+"_hq_2.fastq 300 0.25 FR")
     gfFile.close()
     centerScaffoldFile = bestAlignment[0]+"_"+str(bestAlignment[3])+"_"+str(bestAlignment[4])+"_f.txt"
-    os.system("GapFiller -l gapfillerlib.txt -s "+centerScaffoldFile)
+    os.system(installationDirectory+"resources/GapFiller -l gapfillerlib.txt -s "+centerScaffoldFile)
     os.system("cp ./standard_output/standard_output.gapfilled.final.fa "+centerScaffoldFile)
 
     

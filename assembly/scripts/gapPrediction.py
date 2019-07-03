@@ -7,6 +7,7 @@ from Bio import SeqIO
 inputFile = sys.argv[1]
 read1 = sys.argv[2]
 read2 = sys.argv[3]
+installationDirectory = sys.argv[4]
 
 
 for seq_record in SeqIO.parse(inputFile,"fasta"):
@@ -37,8 +38,8 @@ while a < len(seq2fill)-1:
         t3.write(">threeprime\n"+threeprime+"\n")
         t5.close()
         t3.close()
-        os.system("blastn -query temp5.fasta -db hcmv_genomes.fasta -outfmt 6 -out temp5_outputBlast.txt >null 2>&1")
-        os.system("blastn -query temp3.fasta -db hcmv_genomes.fasta -outfmt 6 -out temp3_outputBlast.txt >null 2>&1")
+        os.system(installationDirectory+"resources/blastn -query temp5.fasta -db hcmv_genomes.fasta -outfmt 6 -out temp5_outputBlast.txt >null 2>&1")
+        os.system(installationDirectory+"resources/blastn -query temp3.fasta -db hcmv_genomes.fasta -outfmt 6 -out temp3_outputBlast.txt >null 2>&1")
 
         best5hits = {}
         best3hits = {}
@@ -76,14 +77,14 @@ while a < len(seq2fill)-1:
                 t.write(">"+item+"\n"+foundSequences[item]+"\n")
             t.close()
             print "Aligning the reads to the found sequences...."
-            os.system("bowtie2-build foundSequences.fasta found >null 2>&1")
-            os.system("bowtie2 --local -x found -1 "+read1+" -2 "+read2+" -S alignment.sam >null 2>&1")
+            os.system(installationDirectory+"resources/bowtie2-build foundSequences.fasta found >null 2>&1")
+            os.system(installationDirectory+"resources/bowtie2 --local -x found -1 "+read1+" -2 "+read2+" -S alignment.sam >null 2>&1")
             print "Converting sam to bam...."
-            os.system("samtools view -bS -h -F 4 alignment.sam >alignment.bam  2>&1")
+            os.system(installationDirectory+"resources/samtools view -bS -h -F 4 alignment.sam >alignment.bam  2>&1")
             print "sorting bam...."
-            os.system("samtools sort -o alignment_sorted.bam alignment.bam >null 2>&1")
+            os.system(installationDirectory+"resources/samtools sort -o alignment_sorted.bam alignment.bam >null 2>&1")
             print "Calculating coverage...."
-            os.system("samtools depth alignment_sorted.bam >coverage.txt 2>&1")
+            os.system(installationDirectory+"resources/samtools depth alignment_sorted.bam >coverage.txt 2>&1")
 
             covValues = {}
             print "Analyzing coverage data...."

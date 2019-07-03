@@ -202,7 +202,7 @@ class Toplevel1:
                     logFile.write("De novo assembly started at "+now.strftime("%H:%M")+"\n")
                     print "\nPerforming denovo assembly......."
                     os.system("interleave-reads.py 1_cleanReads/qualityFiltered_1.fq 1_cleanReads/qualityFiltered_2.fq -o paired.fq")
-                    os.system("normalize-by-median.py  -k 17 -C 200 -M 160e9 -p  -o - paired.fq > paired_normalized.fq")
+                    os.system("normalize-by-median.py  -k 17 -C 200 -M 16e9 -p  -o - paired.fq > paired_normalized.fq")
                     os.system("python "+installationDirectory+"assembly/scripts/splitIntervealed.py paired_normalized.fq")
                     os.system("mv newRead_1.fastq ./1_cleanReads/"+projectName+"_hq_1.fastq")
                     os.system("mv newRead_2.fastq ./1_cleanReads/"+projectName+"_hq_2.fastq")
@@ -289,14 +289,14 @@ class Toplevel1:
                     self.logArea.update()
                     os.chdir("3_scaffoldsOrientation")
                     
-                    os.system("python createCenterScaffold.py "+projectName)
+                    os.system("python createCenterScaffold.py "+projectName+" "+installationDirectory)
                     os.system("cp newFinalScaffold.fasta longestScaffold.fasta ")
                     self.logArea.configure(state='normal')
                     self.logArea.insert(tk.END, "*  Filling gaps from existing sequences\n")
                     self.logArea.see(tk.END)
                     self.logArea.configure(state='disabled')
                     self.logArea.update()
-                    os.system("python gapPrediction.py longestScaffold.fasta ../1_cleanReads/qualityFiltered_1.fq ../1_cleanReads/qualityFiltered_2.fq")
+                    os.system("python gapPrediction.py longestScaffold.fasta ../1_cleanReads/qualityFiltered_1.fq ../1_cleanReads/qualityFiltered_2.fq "+installationDirectory)
                     
                     finalScaffoldFile = open("finalScaffold.fasta","w")
                     finalScaffoldFile.write(">finalScaffold\n")

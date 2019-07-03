@@ -321,7 +321,7 @@ class Toplevel1:
                             self.logArea.update()
 
                             if self.testSubmissionchkValue.get()==True:
-                                os.system("java -jar "+installationDirectory+"databaseSubmission/webin-cli-1.8.6.jar -context reads -userName "+self.usernameEntry.get()+" -password "+self.passwordEntry.get()+"  -manifest "+sampleName+"_manifestFile.txt -test >fastqReceipt")
+                                os.system("java -jar "+installationDirectory+"databaseSubmission/webin-cli-1.8.6.jar -context reads -userName "+self.usernameEntry.get()+" -password "+self.passwordEntry.get()+"  -manifest "+sampleName+"_manifestFile.txt -test -validate >fastqReceipt")
                             else:
                                 print "This is not a test. Do you wish to continue?"
                                 sys.stdin.read(1)
