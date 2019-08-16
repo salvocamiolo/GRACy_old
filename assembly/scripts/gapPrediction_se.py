@@ -6,8 +6,7 @@ from Bio import SeqIO
 
 inputFile = sys.argv[1]
 read1 = sys.argv[2]
-read2 = sys.argv[3]
-installationDirectory = sys.argv[4]
+installationDirectory = sys.argv[3]
 
 
 for seq_record in SeqIO.parse(inputFile,"fasta"):
@@ -78,7 +77,7 @@ while a < len(seq2fill)-1:
             t.close()
             print "Aligning the reads to the found sequences...."
             os.system(installationDirectory+"resources/bowtie2-build foundSequences.fasta found >null 2>&1")
-            os.system(installationDirectory+"resources/bowtie2 --local -x found -1 "+read1+" -2 "+read2+" -S alignment.sam >null 2>&1")
+            os.system(installationDirectory+"resources/bowtie2 --local -x found -U "+read1+ " -S alignment.sam >null 2>&1")
             print "Converting sam to bam...."
             os.system(installationDirectory+"resources/samtools view -bS -h -F 4 alignment.sam >alignment.bam  2>&1")
             print "sorting bam...."
@@ -110,46 +109,38 @@ while a < len(seq2fill)-1:
 
 
             
-            if not bestMatch == '':
-                print "Genome",bestMatch,"seems to be the best match to fill the gap"
-                print "The bit length is",len(foundSequences[bestMatch]),"and it is covered with an average coverage",bestCoverage,"bases"
-        
-
-
-                #get coverage for bestMatch
-                cov = open("coverage.txt")
-                coveredPositions = []
-                while True:
-                    covLine = cov.readline().rstrip()
-                    if not covLine:
-                        break
-                    covFields = covLine.split("\t")
-                    if covFields[0] == bestMatch and int(covFields[2])>1:
-                        coveredPositions.append(int(covFields[1]))
-                cov.close()
-                print coveredPositions
-                coveredSequence = ""
-                for a in range(len(foundSequences[bestMatch])):
-                    if a in coveredPositions:
-                        coveredSequence += foundSequences[bestMatch][a]
-                    else:
-                        coveredSequence+="J"
-
-                print coveredSequence
-                #[best5hits[bestMatch][0]:best3hits[bestMatch][1]]
-
-
-                newSeq = seq2fill[:gapStart-200+best5hits[bestMatch][2]]+coveredSequence+seq2fill[gapEnd+best3hits[bestMatch][3]:]
-                print "The new genome sequence is now",len(newSeq)
-                seq2fill = newSeq
-            else:
-                newSeq = seq2fill[:gapStart]
-                for u in range(gapEnd-gapStart):
-                    newSeq+="J"
-                newSeq+=seq2fill[gapEnd:]
-                seq2fill = newSeq
             
+            print "Genome",bestMatch,"seems to be the best match to fill the gap"
+            print "The bit length is",len(foundSequences[bestMatch]),"and it is covered with an average coverage",bestCoverage,"bases"
+    
 
+
+            #get coverage for bestMatch
+            cov = open("coverage.txt")
+            coveredPositions = []
+            while True:
+                covLine = cov.readline().rstrip()
+                if not covLine:
+                    break
+                covFields = covLine.split("\t")
+                if covFields[0] == bestMatch and int(covFields[2])>1:
+                    coveredPositions.append(int(covFields[1]))
+            cov.close()
+            print coveredPositions
+            coveredSequence = ""
+            for a in range(len(foundSequences[bestMatch])):
+                if a in coveredPositions:
+                    coveredSequence += foundSequences[bestMatch][a]
+                else:
+                    coveredSequence+="J"
+
+            print coveredSequence
+            #[best5hits[bestMatch][0]:best3hits[bestMatch][1]]
+
+
+            newSeq = seq2fill[:gapStart-200+best5hits[bestMatch][2]]+coveredSequence+seq2fill[gapEnd+best3hits[bestMatch][3]:]
+            print "The new genome sequence is now",len(newSeq)
+            seq2fill = newSeq
             a = 0
 
     

@@ -54,10 +54,10 @@ def destroy_Toplevel1():
 class Toplevel1:
     def __init__(self, top=None):
 
-        def bowtiePE(reference,read1,read2):
+        def bowtiePE(reference,read1,read2,numTh):
             os.system(installationDirectory+"resources/bowtie2-build "+reference+" reference -q >null 2>&1")
 
-            os.system(installationDirectory+"resources/bowtie2  -1 "+read1+" -2 "+read2+" -x reference -S test.sam")
+            os.system(installationDirectory+"resources/bowtie2  -1 "+read1+" -2 "+read2+" -x reference -S test.sam -p "+numTh)
             os.system(installationDirectory+"resources/samtools view -bS -h test.sam > test.bam 2>null")
             os.system(installationDirectory+"resources/samtools sort -o test_sorted.bam test.bam >null 2>&1")
             
@@ -359,6 +359,7 @@ class Toplevel1:
                     os.system("cp "+installationDirectory+"assembly/scripts/bowtiePE ./4_createConsensus")
                     os.system("cp "+installationDirectory+"assembly/scripts/createConsensus ./4_createConsensus")
                     os.system("cp "+installationDirectory+"assembly/scripts/extractSeqByRange.py ./4_createConsensus")
+                    os.system("cp "+installationDirectory+"assembly/scripts/libdeflate.so ./4_createConsensus")
                     os.chdir("4_createConsensus")
 
                     for seq_record in SeqIO.parse("finalScaffold.fasta","fasta"):
@@ -377,7 +378,7 @@ class Toplevel1:
                     self.logArea.configure(state='disabled')
                     self.logArea.update()
 
-                    bowtiePE("finalScaffold_1_15001_f.txt","../1_cleanReads/qualityFiltered_1.fq","../1_cleanReads/qualityFiltered_2.fq")
+                    bowtiePE("finalScaffold_1_15001_f.txt","../1_cleanReads/qualityFiltered_1.fq","../1_cleanReads/qualityFiltered_2.fq",self.threadsEntry.get())
 
                     self.logArea.configure(state='normal')
                     self.logArea.insert(tk.END, "*  *  Extracting mapped reads\n")
@@ -436,7 +437,7 @@ class Toplevel1:
                     self.logArea.see(tk.END)
                     self.logArea.configure(state='disabled')
                     self.logArea.update()
-                    bowtiePE("finalScaffold_15001_"+str(assemblyLength -10000 )+"_f.txt","../1_cleanReads/qualityFiltered_1.fq","../1_cleanReads/qualityFiltered_2.fq")
+                    bowtiePE("finalScaffold_15001_"+str(assemblyLength -10000 )+"_f.txt","../1_cleanReads/qualityFiltered_1.fq","../1_cleanReads/qualityFiltered_2.fq",self.threadsEntry.get())
                     self.logArea.configure(state='normal')
                     self.logArea.insert(tk.END, "*  *  Extracting mapped reads\n")
                     self.logArea.see(tk.END)
@@ -489,7 +490,7 @@ class Toplevel1:
                     self.logArea.see(tk.END)
                     self.logArea.configure(state='disabled')
                     self.logArea.update()
-                    bowtiePE("finalScaffold_"+str(assemblyLength -9999 )+"_2000000_f.txt","../1_cleanReads/qualityFiltered_1.fq","../1_cleanReads/qualityFiltered_2.fq")
+                    bowtiePE("finalScaffold_"+str(assemblyLength -9999 )+"_2000000_f.txt","../1_cleanReads/qualityFiltered_1.fq","../1_cleanReads/qualityFiltered_2.fq",self.threadsEntry.get())
                     self.logArea.configure(state='normal')
                     self.logArea.insert(tk.END, "*  *  Extracting mapped reads\n")
                     self.logArea.see(tk.END)
@@ -514,7 +515,7 @@ class Toplevel1:
                     self.logArea.configure(state='disabled')
                     self.logArea.update()
                     os.system("java -jar "+installationDirectory+"resources/picard.jar CreateSequenceDictionary R=finalScaffold_"+str(assemblyLength - 9999 )+"_2000000_f.txt >null 2>&1")
-                    os.system(installationDirectory+"/samtools faidx finalScaffold_"+str(assemblyLength - 9999 )+"_2000000_f.txt")
+                    os.system(installationDirectory+"resources/samtools faidx finalScaffold_"+str(assemblyLength - 9999 )+"_2000000_f.txt")
                     os.system("java -jar  "+installationDirectory+"resources/GenomeAnalysisTK.jar -T  HaplotypeCaller -R finalScaffold_"+str(assemblyLength - 9999 )+"_2000000_f.txt -I dedupped.bam  -o output.vcf -A StrandAlleleCountsBySample >null 2>&1")
                     os.system(installationDirectory+"resources/filterVCF.py output.vcf >null 2>&1")
                     os.system(installationDirectory+"resources/bgzip -c output.vcf_filtered.vcf > output.vcf_filtered.vcf.gz 2>null")
@@ -617,7 +618,7 @@ class Toplevel1:
                         self.logArea.see(tk.END)
                         self.logArea.configure(state='disabled')
                         self.logArea.update()    
-                        bwaPE("newReference.fasta",read1,read2,"test","8","0.02") #Change here the number of threads
+                        bwaPE("newReference.fasta",read1,read2,"test",self.threadsEntry.get(),"0.02") #Change here the number of threads
                         os.system(installationDirectory+"resources/samtools faidx newReference.fasta >null 2>&1")
                         print "Calculating coverage on assembly...."
                         self.logArea.configure(state='normal')
@@ -749,6 +750,7 @@ class Toplevel1:
                     os.system("cp "+installationDirectory+"assembly/scripts/bowtiePE ./6_createConsensus")
                     os.system("cp "+installationDirectory+"assembly/scripts/createConsensus ./6_createConsensus")
                     os.system("cp "+installationDirectory+"assembly/scripts/extractSeqByRange.py ./6_createConsensus")
+                    os.system("cp "+installationDirectory+"assembly/scripts/libdeflate.so ./6_createConsensus")
                     os.chdir("6_createConsensus")
 
                     for seq_record in SeqIO.parse("finalScaffold.fasta","fasta"):
@@ -767,7 +769,7 @@ class Toplevel1:
                     self.logArea.configure(state='disabled')
                     self.logArea.update()
 
-                    bowtiePE("finalScaffold_1_15001_f.txt","../1_cleanReads/qualityFiltered_1.fq","../1_cleanReads/qualityFiltered_2.fq")
+                    bowtiePE("finalScaffold_1_15001_f.txt","../1_cleanReads/qualityFiltered_1.fq","../1_cleanReads/qualityFiltered_2.fq",self.threadsEntry.get())
 
                     self.logArea.configure(state='normal')
                     self.logArea.insert(tk.END, "*  *  Extracting mapped reads\n")
@@ -826,7 +828,7 @@ class Toplevel1:
                     self.logArea.see(tk.END)
                     self.logArea.configure(state='disabled')
                     self.logArea.update()
-                    bowtiePE("finalScaffold_15001_"+str(assemblyLength -10000 )+"_f.txt","../1_cleanReads/qualityFiltered_1.fq","../1_cleanReads/qualityFiltered_2.fq")
+                    bowtiePE("finalScaffold_15001_"+str(assemblyLength -10000 )+"_f.txt","../1_cleanReads/qualityFiltered_1.fq","../1_cleanReads/qualityFiltered_2.fq",self.threadsEntry.get())
                     self.logArea.configure(state='normal')
                     self.logArea.insert(tk.END, "*  *  Extracting mapped reads\n")
                     self.logArea.see(tk.END)
@@ -880,7 +882,7 @@ class Toplevel1:
                     self.logArea.see(tk.END)
                     self.logArea.configure(state='disabled')
                     self.logArea.update()
-                    bowtiePE("finalScaffold_"+str(assemblyLength -9999 )+"_2000000_f.txt","../1_cleanReads/qualityFiltered_1.fq","../1_cleanReads/qualityFiltered_2.fq")
+                    bowtiePE("finalScaffold_"+str(assemblyLength -9999 )+"_2000000_f.txt","../1_cleanReads/qualityFiltered_1.fq","../1_cleanReads/qualityFiltered_2.fq",self.threadsEntry.get())
                     self.logArea.configure(state='normal')
                     self.logArea.insert(tk.END, "*  *  Extracting mapped reads\n")
                     self.logArea.see(tk.END)
@@ -959,6 +961,7 @@ class Toplevel1:
                 self.logArea.see(tk.END)
                 self.logArea.configure(state='disabled')
                 self.logArea.update()
+                os.chdir("../")
 
 
 
