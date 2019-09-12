@@ -33,7 +33,7 @@ for b in range(2):
         os.system(installationDirectory+"resources/seqtk sample -s"+str(a*b)+" "+read1+" "+str(a)+" >subsample_1.fq")
         os.system(installationDirectory+"resources/seqtk sample -s"+str(a*b)+" "+read2+" "+str(a)+" >subsample_2.fq")
         print "Performing de novo assembly...."
-        os.system(installationDirectory+"resources/SPAdes-3.12.0-Linux/bin/spades.py -1 subsample_1.fq -2 subsample_2.fq --cov-cutoff auto --careful -k 53,63,73,83 -o outputSpades_"+str(a)+"_"+str(b) +" >null 2>&1")
+        os.system(installationDirectory+"resources/SPAdes-3.12.0-Linux/bin/spades.py -1 subsample_1.fq -2 subsample_2.fq --cov-cutoff auto --careful -k 53,63,73,83 -o outputSpades_"+str(a)+"_"+str(b) + " >null 2>&1")
         longestScaffold = 0
         if os.path.isfile("./outputSpades_"+str(a)+"_"+str(b)+"/scaffolds.fasta") == True:
             scaffoldsFile = open("./outputSpades_"+str(a)+"_"+str(b)+"/scaffolds.fasta")

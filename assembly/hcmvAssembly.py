@@ -28,7 +28,7 @@ def vp_start_gui():
 
     root = tk.Tk()
 
-   
+
 
     top = Toplevel1 (root)
     root.mainloop()
@@ -36,14 +36,14 @@ def vp_start_gui():
 
 
 def create_Toplevel1(root, *args, **kwargs):
-    
+
     '''Starting point when module is imported by another program.'''
     global w, w_win, rt
     #rt = root
     w = tk.Toplevel (root)
     #VirHosFilt_support.set_Tk_var()
     top = Toplevel1 (w)
-   
+
     return (w, top)
 
 def destroy_Toplevel1():
@@ -60,9 +60,9 @@ class Toplevel1:
             os.system(installationDirectory+"resources/bowtie2  -1 "+read1+" -2 "+read2+" -x reference -S test.sam -p "+numTh)
             os.system(installationDirectory+"resources/samtools view -bS -h test.sam > test.bam 2>null")
             os.system(installationDirectory+"resources/samtools sort -o test_sorted.bam test.bam >null 2>&1")
-            
 
-    
+
+
         def bwaPE(reference,read1,read2,alName,numThreads,editDist):
             os.system(installationDirectory+"resources/bwa index "+reference+" >null 2>&1")
             os.system(installationDirectory+"resources/bwa aln "+reference+" "+read1+" -t "+numThreads+" -n "+editDist+" -k "+editDist+" >read1.sai 2>null")
@@ -77,7 +77,7 @@ class Toplevel1:
             exit()
 
         def openInputFile():
-            inputFile = tkFileDialog.askopenfilename(initialdir = "~",title = "Select file")
+            inputFile = tkFileDialog.askopenfilename(initialdir = "./",title = "Select file")
             self.inputFileEntry.delete(0,tk.END)
             self.inputFileEntry.insert(0,inputFile)
 
@@ -149,7 +149,7 @@ class Toplevel1:
                     os.system("mkdir -p 1_cleanReads")
                     os.system("mv "+projectName+"_hq_1.fastq ./1_cleanReads/qualityFiltered_1.fq")
                     os.system("mv "+projectName+"_hq_2.fastq ./1_cleanReads/qualityFiltered_2.fq")
-                    
+
 
                     now = datetime.datetime.now()
                     logFile.write("Quality filtering ended at "+now.strftime("%H:%M")+"\n\n")
@@ -207,7 +207,7 @@ class Toplevel1:
                     os.system("mv newRead_1.fastq ./1_cleanReads/"+projectName+"_hq_1.fastq")
                     os.system("mv newRead_2.fastq ./1_cleanReads/"+projectName+"_hq_2.fastq")
                     os.system("rm -f paired_normalized.fq paired.fq")
-                    
+
                     self.logArea.configure(state='normal')
                     self.logArea.insert(tk.END, "*  Running SPAdes....")
                     self.logArea.see(tk.END)
@@ -276,10 +276,27 @@ class Toplevel1:
                     os.system("cp "+installationDirectory+"assembly/scripts/extractSeqByRange.py ./3_scaffoldsOrientation/")
                     os.system("cp "+installationDirectory+"/assembly/scripts/gapPrediction.py ./3_scaffoldsOrientation/")
                     os.system("cp "+installationDirectory+"assembly/scripts/hcmv_genomes.fasta* ./3_scaffoldsOrientation/")
-                    os.system("cp "+installationDirectory+"assembly/scripts/gapfillerlibrary ./3_scaffoldsOrientation/")
                     os.system("cp "+installationDirectory+"assembly/scripts/cap3 ./3_scaffoldsOrientation/")
 
-
+                    os.chdir("3_scaffoldsOrientation")
+                    print "\nCalculating the average insert size......"
+                    self.logArea.configure(state='normal')
+                    self.logArea.insert(tk.END, "*  Calculating the average insert size\n")
+                    self.logArea.see(tk.END)
+                    self.logArea.configure(state='disabled')
+                    self.logArea.update()
+                    bowtiePE("../2_spadesAssembly/scaffolds.fasta","../1_cleanReads/qualityFiltered_1.fq","../1_cleanReads/qualityFiltered_2.fq",self.threadsEntry.get())
+                    os.system("java -jar -XX:ParallelGCThreads=16 "+installationDirectory+"resources/picard.jar CollectInsertSizeMetrics I=test_sorted.bam  O=insert_size_metrics.txt H=insert_size_histogram.pdf M=0.5")
+                    os.system("head -8 insert_size_metrics.txt | tail -2 | cut -f 6 | tail -1 >insert.size")
+                    isize = open("insert.size")
+                    insertSize = isize.readline().rstrip()
+                    isize.close()
+                    print "insertSize",insertSize
+                    self.logArea.configure(state='normal')
+                    self.logArea.insert(tk.END, "*  Insert size = "+insertSize+"\n")
+                    self.logArea.see(tk.END)
+                    self.logArea.configure(state='disabled')
+                    self.logArea.update()
 
                     print "\nAligning the contigs to the merlin reference gneome......"
                     self.logArea.configure(state='normal')
@@ -287,9 +304,9 @@ class Toplevel1:
                     self.logArea.see(tk.END)
                     self.logArea.configure(state='disabled')
                     self.logArea.update()
-                    os.chdir("3_scaffoldsOrientation")
-                    
-                    os.system("python createCenterScaffold.py "+projectName+" "+installationDirectory)
+
+
+                    os.system("python createCenterScaffold.py "+projectName+" "+installationDirectory+" "+insertSize+" "+self.threadsEntry.get())
                     os.system("cp newFinalScaffold.fasta longestScaffold.fasta ")
                     self.logArea.configure(state='normal')
                     self.logArea.insert(tk.END, "*  Filling gaps from existing sequences\n")
@@ -297,7 +314,7 @@ class Toplevel1:
                     self.logArea.configure(state='disabled')
                     self.logArea.update()
                     os.system("python gapPrediction.py longestScaffold.fasta ../1_cleanReads/qualityFiltered_1.fq ../1_cleanReads/qualityFiltered_2.fq "+installationDirectory)
-                    
+
                     finalScaffoldFile = open("finalScaffold.fasta","w")
                     finalScaffoldFile.write(">finalScaffold\n")
                     gapPresent = 0
@@ -312,10 +329,13 @@ class Toplevel1:
                         self.logArea.see(tk.END)
                         self.logArea.configure(state='disabled')
                         self.logArea.update()
-                        os.system(installationDirectory+"resources/GapFiller -l gapfillerlibrary -s filledGenome.fasta")
+                        gfFile = open("gapfillerlib.txt","w")
+                        gfFile.write("lib1 bwa ../1_cleanReads/qualityFiltered_1.fq ../1_cleanReads/qualityFiltered_2.fq "+ insertSize+" 0.25 FR")
+                        gfFile.close()
+                        os.system(installationDirectory+"resources/GapFiller -l gapfillerlib.txt -s filledGenome.fasta -T "+self.threadsEntry.get())
                         os.system("mv finalScaffold.fasta finalScaffold.fasta_beforeGapfilling")
                         os.system("cp standard_output/standard_output.gapfilled.final.fa ./finalScaffold.fasta")
-                    
+
                     now = datetime.datetime.now()
                     self.logArea.configure(state='normal')
                     self.logArea.insert(tk.END, "Scaffolding completed on sample "+projectName+"!!\n")
@@ -364,7 +384,7 @@ class Toplevel1:
 
                     for seq_record in SeqIO.parse("finalScaffold.fasta","fasta"):
                         assemblyLength = len(str(seq_record.seq))
-                    
+
 
                     self.logArea.configure(state='normal')
                     self.logArea.insert(tk.END, "*  Analyzing first portion....\n")
@@ -394,7 +414,7 @@ class Toplevel1:
                     self.logArea.configure(state='disabled')
                     self.logArea.update()
 
-           
+
                     os.system("java -jar -XX:ParallelGCThreads=16 "+installationDirectory+"resources/picard.jar AddOrReplaceReadGroups I=mapped.bam O=rg_added_sorted.bam SO=coordinate RGID=id RGLB=library RGPL=Ilumina RGPU=machine RGSM=Consensus")# >null 2>&1")
                     self.logArea.configure(state='normal')
                     self.logArea.insert(tk.END, "*  *  Deduplicating\n")
@@ -484,13 +504,13 @@ class Toplevel1:
                     self.logArea.see(tk.END)
                     self.logArea.configure(state='disabled')
                     self.logArea.update()
-                    os.system("./extractSeqByRange.py finalScaffold.fasta finalScaffold "+str(assemblyLength - 9999 )+" 2000000 f")
+                    os.system("./extractSeqByRange.py finalScaffold.fasta finalScaffold "+str(assemblyLength - 10000 )+" 2000000 f")
                     self.logArea.configure(state='normal')
                     self.logArea.insert(tk.END, "*  *  Aligning reads to the assembly\n")
                     self.logArea.see(tk.END)
                     self.logArea.configure(state='disabled')
                     self.logArea.update()
-                    bowtiePE("finalScaffold_"+str(assemblyLength -9999 )+"_2000000_f.txt","../1_cleanReads/qualityFiltered_1.fq","../1_cleanReads/qualityFiltered_2.fq",self.threadsEntry.get())
+                    bowtiePE("finalScaffold_"+str(assemblyLength -10000 )+"_2000000_f.txt","../1_cleanReads/qualityFiltered_1.fq","../1_cleanReads/qualityFiltered_2.fq",self.threadsEntry.get())
                     self.logArea.configure(state='normal')
                     self.logArea.insert(tk.END, "*  *  Extracting mapped reads\n")
                     self.logArea.see(tk.END)
@@ -514,9 +534,9 @@ class Toplevel1:
                     self.logArea.see(tk.END)
                     self.logArea.configure(state='disabled')
                     self.logArea.update()
-                    os.system("java -jar "+installationDirectory+"resources/picard.jar CreateSequenceDictionary R=finalScaffold_"+str(assemblyLength - 9999 )+"_2000000_f.txt >null 2>&1")
-                    os.system(installationDirectory+"resources/samtools faidx finalScaffold_"+str(assemblyLength - 9999 )+"_2000000_f.txt")
-                    os.system("java -jar  "+installationDirectory+"resources/GenomeAnalysisTK.jar -T  HaplotypeCaller -R finalScaffold_"+str(assemblyLength - 9999 )+"_2000000_f.txt -I dedupped.bam  -o output.vcf -A StrandAlleleCountsBySample >null 2>&1")
+                    os.system("java -jar "+installationDirectory+"resources/picard.jar CreateSequenceDictionary R=finalScaffold_"+str(assemblyLength - 10000 )+"_2000000_f.txt >null 2>&1")
+                    os.system(installationDirectory+"resources/samtools faidx finalScaffold_"+str(assemblyLength - 10000 )+"_2000000_f.txt")
+                    os.system("java -jar  "+installationDirectory+"resources/GenomeAnalysisTK.jar -T  HaplotypeCaller -R finalScaffold_"+str(assemblyLength - 10000 )+"_2000000_f.txt -I dedupped.bam  -o output.vcf -A StrandAlleleCountsBySample >null 2>&1")
                     os.system(installationDirectory+"resources/filterVCF.py output.vcf >null 2>&1")
                     os.system(installationDirectory+"resources/bgzip -c output.vcf_filtered.vcf > output.vcf_filtered.vcf.gz 2>null")
                     os.system(installationDirectory+"resources/tabix output.vcf_filtered.vcf.gz >null 2>&1")
@@ -525,13 +545,13 @@ class Toplevel1:
                     self.logArea.see(tk.END)
                     self.logArea.configure(state='disabled')
                     self.logArea.update()
-                    os.system("cat finalScaffold_"+str(assemblyLength - 9999 )+"_2000000_f.txt | "+installationDirectory+"resources/bcftools consensus output.vcf_filtered.vcf.gz > finalScaffold_"+str(assemblyLength - 9999 )+"_2000000_f.txt_con.fasta 2>null")
+                    os.system("cat finalScaffold_"+str(assemblyLength - 10000 )+"_2000000_f.txt | "+installationDirectory+"resources/bcftools consensus output.vcf_filtered.vcf.gz > finalScaffold_"+str(assemblyLength - 10000 )+"_2000000_f.txt_con.fasta 2>null")
                     os.system("mv output.vcf output_thirdPortion.vcf")
                     os.system("mv output.vcf_filtered.vcf  output.vcf_filtered_1_15000.vcf")
                     os.system("rm -f test*")
                     os.system("rm -f *.dict")
 
-                    
+
 
                     finalSequence = ""
 
@@ -541,7 +561,7 @@ class Toplevel1:
                     for seq_record in SeqIO.parse("finalScaffold_15001_"+str(assemblyLength -10000 )+"_f.txt_con.fasta","fasta"):
                         finalSequence+=str(seq_record.seq)
 
-                    for seq_record in SeqIO.parse("finalScaffold_"+str(assemblyLength -9999 )+"_2000000_f.txt_con.fasta","fasta"):
+                    for seq_record in SeqIO.parse("finalScaffold_"+str(assemblyLength -10000 )+"_2000000_f.txt_con.fasta","fasta"):
                         finalSequence+=str(seq_record.seq)
 
                     outfile = open(projectName+"_genome.fasta","w")
@@ -617,7 +637,7 @@ class Toplevel1:
                         self.logArea.insert(tk.END, "*  Aligning reads on assembly\n")
                         self.logArea.see(tk.END)
                         self.logArea.configure(state='disabled')
-                        self.logArea.update()    
+                        self.logArea.update()
                         bwaPE("newReference.fasta",read1,read2,"test",self.threadsEntry.get(),"0.02") #Change here the number of threads
                         os.system(installationDirectory+"resources/samtools faidx newReference.fasta >null 2>&1")
                         print "Calculating coverage on assembly...."
@@ -625,13 +645,13 @@ class Toplevel1:
                         self.logArea.insert(tk.END, "*  Looking for low coverage regions \n")
                         self.logArea.see(tk.END)
                         self.logArea.configure(state='disabled')
-                        self.logArea.update()  
+                        self.logArea.update()
                         os.system(installationDirectory+"resources/samtools mpileup -f newReference.fasta test_sorted.bam >finalPileup.txt 2>null")
                         self.logArea.configure(state='normal')
                         self.logArea.insert(tk.END, "*  Masking low coverage regions \n")
                         self.logArea.see(tk.END)
                         self.logArea.configure(state='disabled')
-                        self.logArea.update()  
+                        self.logArea.update()
                         os.system("./maskLowCoverage.py newReference.fasta finalPileup.txt ")
                         ranges = open("Nranges_smooth.txt")
                         line = ranges.readline().rstrip()
@@ -645,7 +665,7 @@ class Toplevel1:
                                 eof = 1
                                 break
                             fields = line.split("\t")
-                            
+
                         previousEnd.append(int(fields[1]))
                         print "Refining the range",line
                         print "Length assembly",len(reference),"From",fields[0],"To",fields[1]
@@ -654,27 +674,27 @@ class Toplevel1:
                         self.logArea.insert(tk.END, "*  Filling region "+line+"....\n")
                         self.logArea.see(tk.END)
                         self.logArea.configure(state='disabled')
-                        self.logArea.update()  
+                        self.logArea.update()
                         if len(line)>2 and int(fields[0])>3000 and int(fields[0])< (len(reference) - 3000) and  int(fields[1])>3000 and int(fields[1])< (len(reference) - 3000):
                             os.system(installationDirectory+"resources/extractSeqByRange.py newReference.fasta finalScaffold "+str(int(fields[0])-1500)+" "+str(int(fields[0])-500)+" f")
                             os.system(installationDirectory+"resources/extractSeqByRange.py newReference.fasta finalScaffold "+str(int(fields[1])+500)+" "+str(int(fields[1])+1500)+" f")
-                            
+
                             numTries = 0
                             while True:
                                 numTries += 1
                                 if numTries ==2:
                                     break
                                 print "Performing joinScaffold_careful algorithm on range",line,"...."
-                                os.system(" python joinScaffolds_careful.py join "+read1+"  "+read2+"  finalScaffold_"+str(int(fields[0])-1500)+"_"+str(int(fields[0])-500)+"_f.txt f finalScaffold_"+str(int(fields[1])+500)+"_"+str(int(fields[1])+1500)+"_f.txt f ")
+                                os.system(" python joinScaffolds_careful.py join "+read1_toFill+"  "+read2_toFill+"  finalScaffold_"+str(int(fields[0])-1500)+"_"+str(int(fields[0])-500)+"_f.txt f finalScaffold_"+str(int(fields[1])+500)+"_"+str(int(fields[1])+1500)+"_f.txt f "+installationDirectory+" "+self.threadsEntry.get())
                                 if os.path.isfile("joined_finalScaffold_"+str(int(fields[0])-1500)+"_"+str(int(fields[0])-500)+"_f.txt_finalScaffold_"+str(int(fields[1])+500)+"_"+str(int(fields[1])+1500)+"_f.txt")==False:
                                     print "Refining range",fields[0],fields[1],"with joinScaffold_careful failed. Now trying joinScaffold on range",line,"...."
-                                    os.system("python joinScaffolds.py join "+read1+"  "+read2+"  finalScaffold_"+str(int(fields[0])-1500)+"_"+str(int(fields[0])-500)+"_f.txt f finalScaffold_"+str(int(fields[1])+500)+"_"+str(int(fields[1])+1500)+"_f.txt f")
+                                    os.system("python joinScaffolds.py join "+read1_toFill+"  "+read2_toFill+"  finalScaffold_"+str(int(fields[0])-1500)+"_"+str(int(fields[0])-500)+"_f.txt f finalScaffold_"+str(int(fields[1])+500)+"_"+str(int(fields[1])+1500)+"_f.txt f "+installationDirectory+" "+self.threadsEntry.get())
                                     if os.path.isfile("joined_finalScaffold_"+str(int(fields[0])-1500)+"_"+str(int(fields[0])-500)+"_f.txt_finalScaffold_"+str(int(fields[1])+500)+"_"+str(int(fields[1])+1500)+"_f.txt")==False:
                                         print  "Both alogrithms failed on range,",line
                                         print "Now performing 30 steps of joinScaffold trivial in both directions and recording the output"
-                                        os.system("python joinScaffolds_trivial.py ../1_cleanReads/qualityFiltered_1.fq ../1_cleanReads/qualityFiltered_2.fq finalScaffold_"+str(int(fields[0])-1500)+"_"+str(int(fields[0])-500)+"_f.txt f finalScaffold_"+str(int(fields[1])+500)+"_"+str(int(fields[1])+1500)+"_f.txt f 30" )
-                                        os.system("mv joinScaffold_trivialSeq.fasta finalScaffold_"+str(int(fields[0])-1500)+"_"+str(int(fields[0])-500)+"_greedy.fasta")
-                                        os.system("python joinScaffolds_trivial.py ../1_cleanReads/qualityFiltered_1.fq ../1_cleanReads/qualityFiltered_2.fq finalScaffold_"+str(int(fields[1])+500)+"_"+str(int(fields[1])+1500)+"_f.txt r finalScaffold_"+str(int(fields[0])-1500)+"_"+str(int(fields[0])-500)+"_f.txt r 30" )
+                                        os.system("python joinScaffolds_trivial.py "+ read1_toFill+" "+read2_toFill+" finalScaffold_"+str(int(fields[0])-1500)+"_"+str(int(fields[0])-500)+"_f.txt f finalScaffold_"+str(int(fields[1])+500)+"_"+str(int(fields[1])+1500)+"_f.txt f 30 "+installationDirectory )
+                                        os.system("mv joinScaffold_trivialSeq.fasta finalScaffold_"+str(int(fields[0])-1500)+"_"+str(int(fields[0])-500)+"_greedy.fasta ")
+                                        os.system("python joinScaffolds_trivial.py "+ read1_toFill+" "+read2_toFill+" finalScaffold_"+str(int(fields[1])+500)+"_"+str(int(fields[1])+1500)+"_f.txt r finalScaffold_"+str(int(fields[0])-1500)+"_"+str(int(fields[0])-500)+"_f.txt r 30 "+installationDirectory )
                                         os.system(installationDirectory+"resources/revcomp joinScaffold_trivialSeq.fasta >temp.fasta; mv temp.fasta joinScaffold_trivialSeq.fasta")
                                         os.system("mv joinScaffold_trivialSeq.fasta finalScaffold_"+str(int(fields[1])+500)+"_"+str(int(fields[1])+1500)+"_greedy.fasta")
 
@@ -694,7 +714,7 @@ class Toplevel1:
                                     newRef = open("newReference.fasta","w")
                                     newRef.write(">finalScaffold\n"+newReference+"\n")
                                     newRef.close()
-             
+
 
                     noRef = []
                     infile2 = open("notRefined.txt")
@@ -714,7 +734,7 @@ class Toplevel1:
                     finalScaffoldFile = open("finalScaffold.fasta","w")
                     finalScaffoldFile.write(">finalScaffold\n"+newRefSeq+"\n")
                     finalScaffoldFile.close()
-                    
+
 
                     now = datetime.datetime.now()
                     logFile.write("Assembly sequence refining ended at "+now.strftime("%H:%M")+"\n")
@@ -728,8 +748,8 @@ class Toplevel1:
                         exit()
 
 
-        
-        
+
+
                 #***************************************************************
                 #********************** 6 Create Consensus *********************
                 #***************************************************************
@@ -751,11 +771,28 @@ class Toplevel1:
                     os.system("cp "+installationDirectory+"assembly/scripts/createConsensus ./6_createConsensus")
                     os.system("cp "+installationDirectory+"assembly/scripts/extractSeqByRange.py ./6_createConsensus")
                     os.system("cp "+installationDirectory+"assembly/scripts/libdeflate.so ./6_createConsensus")
+                    os.system("cp "+installationDirectory+"assembly/scripts/sequence_* ./6_createConsensus")
+                    os.system("cp "+installationDirectory+"assembly/scripts/completeGenome* ./6_createConsensus")
+                    os.system("cp "+installationDirectory+"assembly/scripts/merlinGenome_* ./6_createConsensus")
+
                     os.chdir("6_createConsensus")
+
+                    #Attempts five and three prime ends reconstruction
+                    os.system("python completeGenome.py "+installationDirectory+"  finalScaffold.fasta 0")
+                    if os.path.isfile("newGenome2.fasta") == True:
+                        for seq_record in SeqIO.parse("newGenome2.fasta","fasta"):
+                            newGenome2seq = str(seq_record.seq)
+                            break
+
+                        os.system("mv finalScaffold.fasta finalScaffold_noEnds.fasta")
+                        fs = open("finalScaffold.fasta","w")
+                        fs.write(">finalScaffold\n"+newGenome2seq+"\n")
+                        fs.close()
+
 
                     for seq_record in SeqIO.parse("finalScaffold.fasta","fasta"):
                         assemblyLength = len(str(seq_record.seq))
-                    
+
 
                     self.logArea.configure(state='normal')
                     self.logArea.insert(tk.END, "*  Analyzing first portion....\n")
@@ -776,7 +813,7 @@ class Toplevel1:
                     self.logArea.see(tk.END)
                     self.logArea.configure(state='disabled')
                     self.logArea.update()
-  
+
                     os.system(installationDirectory+"resources/samtools view -bF 4 test_sorted.bam >mapped.bam 2>null")
 
                     self.logArea.configure(state='normal')
@@ -815,7 +852,7 @@ class Toplevel1:
                     os.system("mv output.vcf_filtered.vcf  output.vcf_filtered_1_15000.vcf")
                     os.system("rm -f test*")
                     os.system("rm -f *.dict")
-   
+
 
                     self.logArea.configure(state='normal')
                     self.logArea.insert(tk.END, "*  Analyzing second portion....\n")
@@ -876,13 +913,13 @@ class Toplevel1:
                     self.logArea.see(tk.END)
                     self.logArea.configure(state='disabled')
                     self.logArea.update()
-                    os.system("./extractSeqByRange.py finalScaffold.fasta finalScaffold "+str(assemblyLength - 9999 )+" 2000000 f")
+                    os.system("./extractSeqByRange.py finalScaffold.fasta finalScaffold "+str(assemblyLength - 10000 )+" 2000000 f")
                     self.logArea.configure(state='normal')
                     self.logArea.insert(tk.END, "*  *  Aligning reads to the assembly\n")
                     self.logArea.see(tk.END)
                     self.logArea.configure(state='disabled')
                     self.logArea.update()
-                    bowtiePE("finalScaffold_"+str(assemblyLength -9999 )+"_2000000_f.txt","../1_cleanReads/qualityFiltered_1.fq","../1_cleanReads/qualityFiltered_2.fq",self.threadsEntry.get())
+                    bowtiePE("finalScaffold_"+str(assemblyLength -10000 )+"_2000000_f.txt","../1_cleanReads/qualityFiltered_1.fq","../1_cleanReads/qualityFiltered_2.fq",self.threadsEntry.get())
                     self.logArea.configure(state='normal')
                     self.logArea.insert(tk.END, "*  *  Extracting mapped reads\n")
                     self.logArea.see(tk.END)
@@ -906,9 +943,9 @@ class Toplevel1:
                     self.logArea.see(tk.END)
                     self.logArea.configure(state='disabled')
                     self.logArea.update()
-                    os.system("java -jar "+installationDirectory+"resources/picard.jar CreateSequenceDictionary R=finalScaffold_"+str(assemblyLength - 9999 )+"_2000000_f.txt >null 2>&1")
-                    os.system(installationDirectory+"resources/samtools faidx finalScaffold_"+str(assemblyLength - 9999 )+"_2000000_f.txt")
-                    os.system("java -jar  "+installationDirectory+"resources/GenomeAnalysisTK.jar -T  HaplotypeCaller -R finalScaffold_"+str(assemblyLength - 9999 )+"_2000000_f.txt -I dedupped.bam  -o output.vcf -A StrandAlleleCountsBySample >null 2>&1")
+                    os.system("java -jar "+installationDirectory+"resources/picard.jar CreateSequenceDictionary R=finalScaffold_"+str(assemblyLength - 10000 )+"_2000000_f.txt >null 2>&1")
+                    os.system(installationDirectory+"resources/samtools faidx finalScaffold_"+str(assemblyLength - 10000 )+"_2000000_f.txt")
+                    os.system("java -jar  "+installationDirectory+"resources/GenomeAnalysisTK.jar -T  HaplotypeCaller -R finalScaffold_"+str(assemblyLength - 10000 )+"_2000000_f.txt -I dedupped.bam  -o output.vcf -A StrandAlleleCountsBySample >null 2>&1")
                     os.system(installationDirectory+"resources/filterVCF.py output.vcf >null 2>&1")
                     os.system(installationDirectory+"resources/bgzip -c output.vcf_filtered.vcf > output.vcf_filtered.vcf.gz 2>null")
                     os.system(installationDirectory+"resources/tabix output.vcf_filtered.vcf.gz >null 2>&1")
@@ -917,13 +954,13 @@ class Toplevel1:
                     self.logArea.see(tk.END)
                     self.logArea.configure(state='disabled')
                     self.logArea.update()
-                    os.system("cat finalScaffold_"+str(assemblyLength - 9999 )+"_2000000_f.txt | "+installationDirectory+"resources/bcftools consensus output.vcf_filtered.vcf.gz > finalScaffold_"+str(assemblyLength - 9999 )+"_2000000_f.txt_con.fasta 2>null")
+                    os.system("cat finalScaffold_"+str(assemblyLength - 10000 )+"_2000000_f.txt | "+installationDirectory+"resources/bcftools consensus output.vcf_filtered.vcf.gz > finalScaffold_"+str(assemblyLength - 10000 )+"_2000000_f.txt_con.fasta 2>null")
                     os.system("mv output.vcf output_thirdPortion.vcf")
                     os.system("mv output.vcf_filtered.vcf  output.vcf_filtered_1_15000.vcf")
                     os.system("rm -f test*")
                     os.system("rm -f *.dict")
 
-                    
+
 
                     finalSequence = ""
 
@@ -933,7 +970,7 @@ class Toplevel1:
                     for seq_record in SeqIO.parse("finalScaffold_15001_"+str(assemblyLength -10000 )+"_f.txt_con.fasta","fasta"):
                         finalSequence+=str(seq_record.seq)
 
-                    for seq_record in SeqIO.parse("finalScaffold_"+str(assemblyLength -9999 )+"_2000000_f.txt_con.fasta","fasta"):
+                    for seq_record in SeqIO.parse("finalScaffold_"+str(assemblyLength -10000 )+"_2000000_f.txt_con.fasta","fasta"):
                         finalSequence+=str(seq_record.seq)
 
                     outfile = open(projectName+"_genome.fasta","w")
@@ -955,7 +992,7 @@ class Toplevel1:
                         print "You chose not to run the consensus call step but "+projectName+"_genome.fasta  file is not there. Now exiting......"
                         logFile.write("You chose not to run the consensus call step but "+projectName+"_genome.fasta  file is not there. Now exiting......")
                         exit()
-        
+
                 self.logArea.configure(state='normal')
                 self.logArea.insert(tk.END, "\n\nAll processes completed on sample "+projectName+"!!\n")
                 self.logArea.see(tk.END)
@@ -970,8 +1007,8 @@ class Toplevel1:
         _bgcolor = '#d9d9d9'  # X11 color: 'gray85'
         _fgcolor = '#000000'  # X11 color: 'black'
         _compcolor = '#d9d9d9' # X11 color: 'gray85'
-        _ana1color = '#d9d9d9' # X11 color: 'gray85' 
-        _ana2color = '#ececec' # Closest X11 color: 'gray92' 
+        _ana1color = '#d9d9d9' # X11 color: 'gray85'
+        _ana2color = '#ececec' # Closest X11 color: 'gray92'
         self.style = ttk.Style()
         if sys.platform == "win32":
             self.style.theme_use('winnative')
@@ -989,7 +1026,7 @@ class Toplevel1:
         x = (ws/2) - (w/2)
         y = (hs/2) - (h/2)
 
-        top.geometry('%dx%d+%d+%d' % (w, h, x, y)) 
+        top.geometry('%dx%d+%d+%d' % (w, h, x, y))
         top.title("De novo tool")
         top.configure(highlightcolor="black")
 
@@ -1013,7 +1050,7 @@ class Toplevel1:
         self.exitButton.place(x=550,y=550,width=100,height=30)
         self.exitButton.configure(text="Exit")
 
-        self.verboseChkValue = tk.BooleanVar() 
+        self.verboseChkValue = tk.BooleanVar()
         self.verboseChkValue.set(False)
         self.verboseCheckButton = tk.Checkbutton(top,variable=self.verboseChkValue)
         self.verboseCheckButton.place(x=300,y=90,height=20,width=230)

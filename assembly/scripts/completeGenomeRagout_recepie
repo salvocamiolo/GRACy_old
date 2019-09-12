@@ -1,0 +1,6 @@
+.references = merlinGenome_1_20000
+.target = allSequences
+.blocks = 300,200,100
+
+merlinGenome_1_20000.fasta = ./merlinGenome_1_20000_f.txt 
+allSequences.fasta = ./allSequences.fasta

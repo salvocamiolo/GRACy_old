@@ -211,8 +211,20 @@ class Toplevel1:
                 if not dataset[0] ==".":
                     if not dataset in datasetStatistics:
                         datasetStatistics[dataset] = []
-                    os.system("ln -s "+inputFolder+"/"+dataset+"_1.fastq tempReads_140875_1.fastq")
-                    os.system("ln -s "+inputFolder+"/"+dataset+"_2.fastq tempReads_140875_2.fastq")
+
+                    self.logArea.configure(state='normal')
+                    self.logArea.insert(tk.END, "Starting filtering for dataset "+dataset+"....\n")
+                    self.logArea.see(tk.END)
+                    self.logArea.configure(state='disabled')
+                    self.logArea.update()
+    
+                    os.system("cp "+inputFolder+"/"+dataset+"_1.fastq tempReads_140875_1.fastq")
+                    os.system("cp "+inputFolder+"/"+dataset+"_2.fastq tempReads_140875_2.fastq")
+                    #Check the format of the input fastq file header
+                    fqfile = open("tempReads_140875_1.fastq")
+                    header = fqfile.readline().rstrip()
+                    if " 1" in header:
+                        os.system("python "+installationDirectory+"/assembly/scripts/changeHeaderFormat.py tempReads_140875_1.fastq tempReads_140875_2.fastq")
 
                     self.logArea.configure(state='normal')
                     self.logArea.insert(tk.END, "Calculating the number of reads for dataset "+dataset+"....\n")

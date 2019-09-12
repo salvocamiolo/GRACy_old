@@ -1,0 +1,18 @@
+The five prime end was reconstructed with ragout
+and has a length of 23393
+
+The five end has been cut according to the position of the sequence a
+ and it is now 21433 bp
+
+The five end has been joined to the previously
+assembled genome that is now  230696 bp
+
+The three prime end was reconstructed with ragout
+and has a length of 21382
+
+The five end has been cut according to the position of the sequence a
+ and it is now 20636 bp
+
+The three end has been joined to the previously
+assembled genome that is now  235762 bp
+

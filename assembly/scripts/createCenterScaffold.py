@@ -4,7 +4,8 @@ import os
 
 projectName = sys.argv[1]
 installationDirectory = sys.argv[2]
-
+insertSize = sys.argv[3]
+numThreads = sys.argv[4]
 
 os.system("cp "+installationDirectory+"resources/hcmv_genome.fasta .")
 os.system("cp "+installationDirectory+"assembly/scripts/genome_recepie.rcp  .")
@@ -13,7 +14,7 @@ os.system("cp "+installationDirectory+"assembly/scripts/center_recepie.rcp .")
 
 #new bit
 os.system(installationDirectory+"resources/bowtie2-build merlinGenome_190000_200000_f.txt reference")
-os.system(installationDirectory+"resources/bowtie2  -x reference -1 ../1_cleanReads/"+projectName+"_hq_1.fastq -2 ../1_cleanReads/"+projectName+"_hq_2.fastq -S alignment.sam")
+os.system(installationDirectory+"resources/bowtie2  -x reference -1 ../1_cleanReads/"+projectName+"_hq_1.fastq -2 ../1_cleanReads/"+projectName+"_hq_2.fastq -S alignment.sam -p "+numThreads)
 os.system(installationDirectory+"resources/samtools view -h -Sb alignment.sam >alignment.bam")
 os.system(installationDirectory+"resources/samtools view -F 12 -b alignment.bam >botMapped.bam")
 os.system(installationDirectory+"resources/samtools view -f 4 -F 8 -b alignment.bam >oneMapped.bam")
@@ -96,13 +97,13 @@ print len(centerScaffold)
 if "N" in centerScaffold:
     print "Ns present in the center sequence. Now running gapfiller...."
     gfFile = open("gapfillerlib.txt","w")
-    gfFile.write("lib1 bwa ../1_cleanReads/"+projectName+"_hq_1.fastq ../1_cleanReads/"+projectName+"_hq_2.fastq 300 0.25 FR")
+    gfFile.write("lib1 bwa ../1_cleanReads/qualityFiltered_1.fq ../1_cleanReads/qualityFiltered_2.fq "+ insertSize+" 0.25 FR")
     gfFile.close()
     centerScaffoldFile = bestAlignment[0]+"_"+str(bestAlignment[3])+"_"+str(bestAlignment[4])+"_f.txt"
-    os.system(installationDirectory+"resources/GapFiller -l gapfillerlib.txt -s "+centerScaffoldFile)
+    os.system(installationDirectory+"resources/GapFiller -l gapfillerlib.txt -s "+centerScaffoldFile+" -T "+numThreads)
     os.system("cp ./standard_output/standard_output.gapfilled.final.fa "+centerScaffoldFile)
 
-    
+
 
 
 #Get the 5' and 3' recombination coordinates for the central repetitive region centralScaffold
@@ -131,8 +132,3 @@ else:
 outfile = open("newFinalScaffold.fasta","w")
 outfile.write(">finalScaffold\n"+newScaffold+"\n")
 outfile.close()
-
-
-
-
-

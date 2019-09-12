@@ -28,21 +28,19 @@ sequenceToElongOrientation = sys.argv[5]
 sequenceToReach = sys.argv[6]
 sequenceToReachOrientation = sys.argv[7]
 
+installationDirectory = sys.argv[8]
+numThreads = sys.argv[9]
+
 
 def fuseSequences2(s1,s2):
-    #print "S1"
-    #print "S2"
-    #print s1
-    #print s2
-    #sys.stdin.read(1)
     start = open("s1.fasta","w")
     start.write(">s1\n"+s1+"\n")
     start.close()
     toFuse = open("s2.fasta","w")
     toFuse.write(">s2\n"+s2+"\n")
     toFuse.close()
-    os.system("makeblastdb -dbtype nucl -in s1.fasta  >null 2>&1")
-    os.system("blastn -query s2.fasta -db s1.fasta -outfmt 6 -dust no -soft_masking false -task blastn -out outputBlast.txt  >null 2>&1")
+    os.system(installationDirectory+"/resources/makeblastdb -dbtype nucl -in s1.fasta  >null 2>&1")
+    os.system(installationDirectory+"/resources/blastn -query s2.fasta -db s1.fasta -outfmt 6 -dust no -soft_masking false -task blastn -out outputBlast.txt  >null 2>&1")
     blastFile = open("outputBlast.txt")
 
     downstreamAlignment = []
@@ -53,14 +51,14 @@ def fuseSequences2(s1,s2):
         if not line:
             break
         fields = line.split("\t")
-        if int(fields[9]) > lastNucl and float(fields[2]) > 90.0 and ( int(fields[9])-int(fields[8]) )>30 and float(fields[10]) <0.0001: 
+        if int(fields[9]) > lastNucl and float(fields[2]) > 90.0 and ( int(fields[9])-int(fields[8]) )>30 and float(fields[10]) <0.0001:
             downstreamAlignment = fields
             lastNucl = int(fields[9])
 
     if len(downstreamAlignment) >0:
         newSequence = s1[:int(downstreamAlignment[9])]+s2[int(downstreamAlignment[7]):]
         blastFile.close()
-        return newSequence 
+        return newSequence
     else:
 	blastFile.close()
         return ""
@@ -69,9 +67,9 @@ def fuseSequences2(s1,s2):
 def greedyElongation(seq):
     unmappedSequences = {}
     reference = str(seq)
-    #os.system("mkdir tempor")
 
-    os.system("cd-hit-est  -d 0  -i unmapped.fasta -o unmapped_cdhit.fasta  >null 2>&1")
+
+    os.system(installationDirectory+"/resources/cd-hit-est  -d 0  -i unmapped.fasta -o unmapped_cdhit.fasta  >null 2>&1")
 
     cdhitfile = open("unmapped_cdhit.fasta.clstr")
     #Select only high representated unmapped reads
@@ -103,7 +101,7 @@ def greedyElongation(seq):
                     break
                 numSeqInCluster["cluster"+str(numCluster)] += 1
                 clusters[clusterName].append(((line.split(">"))[1].split("..."))[0])
-                
+
                 if line[0] == ">":
                     numCluster +=1
             if not line:
@@ -116,7 +114,7 @@ def greedyElongation(seq):
         if numSeqInCluster[item] > seqInBiggerScaffold:
             seqInBiggerScaffold = numSeqInCluster[item]
             biggerCluster = item
-    
+
     print "Bigger cluster",biggerCluster,"Size",seqInBiggerScaffold
     #sys.stdin.read(1)
     outcdhitfile = open("tempCdhitFile","w")
@@ -125,24 +123,12 @@ def greedyElongation(seq):
             if sequ in unmapSeq:
                 outcdhitfile.write(">"+sequ+"\n"+unmapSeq[sequ]+"\n")
     outcdhitfile.close()
-    
-    
-    #totSeqInClusters = 0
-    #for item in numSeqInCluster:
-    #    print "Cluster",item,"num",len(clusters[item])
-    
-    #    if len(clusters[item])>2:
-    #        totSeqInClusters += len(clusters[item])
-    #        for sequ in clusters[item]:
-    #            if sequ in unmapSeq:
-    #                outcdhitfile.write(">"+sequ+"\n"+unmapSeq[sequ]+"\n")
-    #    if totSeqInClusters >=3:
-    #        break
-    #outcdhitfile.close()
+
+
+
 
     os.system("mv tempCdhitFile unmapped.fasta")
-    #print "got there"
-    #sys.stdin.read(1)
+
 
 
 
@@ -154,16 +140,12 @@ def greedyElongation(seq):
                 unmappedSequences[locus] = str(seq_record.seq)
     numElong = 0
     while True:
-        #print "Perform the blast of the unmapped sequences"
+
         toAssemble = open("toAssemble.fasta","w")
         toAssemble.write(">toElong\n"+reference[-200:]+"\n")
-        os.system("makeblastdb -in toElong.fasta -dbtype nucl  >null 2>&1")
-        os.system("blastn -query unmapped.fasta -db toElong.fasta -outfmt 6 -num_threads 10 -dust no -soft_masking false -out outputBlast.txt >null 2>&1 ")
-        #print "done"
-        
-        #print "Fine Blast"
-        #sys.stdin.read(1)
-        #print "Fill the toAssemble file"
+        os.system(installationDirectory+"/resources/makeblastdb -in toElong.fasta -dbtype nucl  >null 2>&1")
+        os.system(installationDirectory+"/resources/blastn -query unmapped.fasta -db toElong.fasta -outfmt 6 -num_threads 10 -dust no -soft_masking false -out outputBlast.txt >null 2>&1 ")
+
         blastFile = open("outputBlast.txt")
         while True:
             line = blastFile.readline().rstrip()
@@ -178,18 +160,13 @@ def greedyElongation(seq):
                     toAssemble.write(">"+fields[0]+"\n"+unmappedSequences[fields[0]]+"\n")
 
         toAssemble.close()
-        #print "done"
-        #os.system("cd-hit-est  -d 0 -c 1 -aS 1 -i toAssemble.fasta -o toAssemble_cdhit.fasta")
-        #os.system("mv toAssemble_cdhit.fasta toAssemble.fasta")
+
 
         print "Perform phrap assembly step...."
-        
-        #he following phrap command is replaced by a cap3 command
-        #os.system("phrap -minmatch 15  toAssemble.fasta > phrapAssembly 2>null")
-        os.system("cap3 toAssemble.fasta > cap3Assembly 2>null")
-        #os.system("cp toAssemble.fasta ./tempor/toAssemble.fasta_"+str(numElong))
-        #os.system("cp outputBlast.txt ./tempor/outputBlast.txt_"+str(numElong))
-        #os.system("cp toElong.fasta ./tempor/toElong_"+str(numElong))
+
+
+        os.system(installationDirectory+"resources/cap3 toAssemble.fasta > cap3Assembly 2>null")
+
         numElong += 1
 
         longestScaffold = ""
@@ -204,9 +181,9 @@ def greedyElongation(seq):
         tempScaffold = open("tempScaffold_query.fasta","w")
         tempScaffold.write(">reference\n"+reference[-100:]+"\n")
         tempScaffold.close()
-        
-        os.system("makeblastdb -in tempScaffold.fasta -dbtype nucl  >null 2>&1")
-        os.system("blastn -query tempScaffold_query.fasta -db tempScaffold.fasta -outfmt 6 -num_threads 10 -dust no -soft_masking false -out tempScaffold_outputBlast.txt  >null 2>&1")
+
+        os.system(installationDirectory+"/resources/makeblastdb -in tempScaffold.fasta -dbtype nucl  >null 2>&1")
+        os.system(installationDirectory+"resources/blastn -query tempScaffold_query.fasta -db tempScaffold.fasta -outfmt 6 -num_threads 10 -dust no -soft_masking false -out tempScaffold_outputBlast.txt  >null 2>&1")
         tempScaffold = open("tempScaffold_outputBlast.txt")
         line = tempScaffold.readline().rstrip()
         fieldBlast = line.split("\t")
@@ -214,10 +191,7 @@ def greedyElongation(seq):
             if int(fieldBlast[8]) > int(fieldBlast[9]):
                 longestScaffold = biomodule.reverseComplement(longestScaffold)
             tempScaffold.close()
-            #print "the longest scaffold has size ",len(longestScaffold)
-            #print longestScaffold
-            #print "done"
-            #sys.stdin.read(1)
+
         else:
             print "WARNING! EXTENSION STOPPED FOR MISSING ELONGMENT!!"
             js = open("joined_W_WARNING_"+sequenceToElong+"_"+sequenceToReach,"w")
@@ -228,44 +202,17 @@ def greedyElongation(seq):
 
         sc = fuseSequences2(reference,longestScaffold)
         longestScaffold = sc
-        print "Elonged sequence has now a size of", len(longestScaffold),"nucleotides" 
-        #print longestScaffold
-        #sys.stdin.read(1)
-        
+        print "Elonged sequence has now a size of", len(longestScaffold),"nucleotides"
 
-         #Check whether the produced elonged scaffold is on the right orientation
-        #tempScaffold = open("tempScaffold.fasta","w")
-        #tempScaffold.write(">tempScaffold\n"+longestScaffold+"\n")
-        #tempScaffold.close()
-        #os.system("makeblastdb -in tempScaffold.fasta -dbtype nucl")
-        #os.system("blastn -query ./startingScaffolds/starting.fasta -db tempScaffold.fasta -dust no -soft_masking false -outfmt 6 -out tempScaffold_outputBlast.txt")
-        #tempScaffold = open("tempScaffold_outputBlast.txt")
-        #line = tempScaffold.readline().rstrip()
-        #if int(fieldBlast[8]) > int(fieldBlast[9]):
-        ##fieldBlast = line.split("\t")
-        #    longestScaffold = biomodule.reverseComplement(longestScaffold)
-        #tempScaffold.close()
-        #print "the longest scaffold has size ",len(longestScaffold)
-        #print longestScaffold
-        #print "done"
 
-        #sys.stdin.read(1)
-
-        
-        #print len(longestScaffold),len(reference)
         if len(longestScaffold) <= len(reference):
-            #print "WARNING! EXTENSION STOPPED!!"
-            #js = open("joined_W_WARNING_"+sequenceToElong+"_"+sequenceToReach,"w")
-            #js.write(">joined_W_WARNING_"+sequenceToElong+"_"+sequenceToReach+"\n"+startingSeq[:-1500]+reference)
-            #js.close()
-            #exit()
             return longestScaffold
         else:
             reference = longestScaffold
             toElong = open("toElong.fasta","w")
             toElong.write(">toElong\n"+reference+"\n")
             toElong.close()
-        
+
 
 
 sequences = {}
@@ -297,16 +244,12 @@ while True:
     for seq_record in SeqIO.parse("toElong.fasta","fasta"):
         reference = str(seq_record.seq)
 
-   # os.system("~/bin/bwa index toElong.fasta")
-   # os.system("~/bin/bwa mem toElong.fasta "+ read1 + " " + read2 + " -t 8 > " +projectName+".sam" )
+
     print "Indexing....."
-    os.system("bowtie2-build --threads 10 toElong.fasta toElong  >null 2>&1")
+    os.system(installationDirectory+"/resources/bowtie2-build --threads 10 toElong.fasta toElong  >null 2>&1")
     print "Aligning....."
-    os.system(" bowtie2 --local --very-sensitive-local  -p 10 -x toElong -1 "+ read1 + " -2 " + read2 + " -S "+ projectName+".sam >null 2>&1" )
-    #os.system("samtools view -bS -h " + projectName+".sam >" + projectName +".bam")
-   
-    #collect the softclipped reads
-    #print "Collecting soft clipped reads"
+    os.system(installationDirectory+"/resources/bowtie2 --local --very-sensitive-local  -p "+ numThreads+" -x toElong -1 "+ read1 + " -2 " + read2 + " -S "+ projectName+".sam >null 2>&1" )
+
     alignment = open(projectName+".sam")
     softClipped = open("softclippedReads","w")
     numSoftClipped = 0
@@ -359,7 +302,7 @@ while True:
         js.close()
         exit()
 
-    
+
 
 
 
@@ -367,8 +310,8 @@ while True:
     tempScaffold = open("tempScaffold.fasta","w")
     tempScaffold.write(">tempScaffold\n"+longestScaffold+"\n")
     tempScaffold.close()
-    os.system("makeblastdb -in tempScaffold.fasta -dbtype nucl >null 2>&1 ")
-    os.system("blastn -query toElong.fasta -db tempScaffold.fasta -dust no -soft_masking false -outfmt 6 -out tempScaffold_outputBlast.txt >null 2>&1 ")
+    os.system(installationDirectory+"/resources/makeblastdb -in tempScaffold.fasta -dbtype nucl >null 2>&1 ")
+    os.system(installationDirectory+"resources/blastn -query toElong.fasta -db tempScaffold.fasta -dust no -soft_masking false -outfmt 6 -out tempScaffold_outputBlast.txt >null 2>&1 ")
     tempScaffold = open("tempScaffold_outputBlast.txt")
     line = tempScaffold.readline().rstrip()
     fieldBlast = line.split("\t")
@@ -378,43 +321,10 @@ while True:
     tempScaffold.close()
 
 
-
-    #check if the elonged sequence reached the specified termini portion
-    #print "Longest scaffold", longestScaffold
-    #print "Termini",terminiSeq[:500]
     fusedTermini = fuseSequences2(longestScaffold,terminiSeq[:500])
-    #print "Termini checked"
-    #sys.stdin.read(1)
+
     if not fusedTermini == "":
         js = open("joined_"+sequenceToElong+"_"+sequenceToReach,"w")
         js.write(">joined_"+sequenceToElong+"_"+sequenceToReach+"\n"+startingSeq[:-1800]+fuseSequences2(longestScaffold,terminiSeq))
         js.close()
         exit()
-
-
-    #os.system("cat toElong.fasta termini.fasta > checkTermini.fasta")
-    #os.system("phrap -raw checkTermini.fasta")
-    #os.system("cp checkTermini.fasta ./tempor/checkTermini.fasta"+str(numCycle))
-    #numCycle += 1
-    #os.system("mv tempor tempor"+str(numCycle))
-    #loci = []
-    #for seq_record in SeqIO.parse("checkTermini.fasta.singlets","fasta"):
-    #    loci.append(str(seq_record.id))
-    #if not "termini" in loci:
-    #    endReached = True
-    #    js = open("joined_"+id1+"_"+id2,"w")
-    #    js.write(">joined_"+id1+"_"+id2+"\n"+fuseSequences2(longestScaffold,terminiSeq))#
-
-    #    js.close()
-    #    exit()
-
-
-
-
- 
-    
-
-
-
-
-

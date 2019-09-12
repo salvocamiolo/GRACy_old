@@ -1,0 +1,6 @@
+.references = merlin_215000_235646
+.target = allSequences
+.blocks = 300,200,100
+
+merlin_215000_235646.fasta = ./merlinGenome_215000_235646_f.txt 
+allSequences.fasta = ./allSequences.fasta

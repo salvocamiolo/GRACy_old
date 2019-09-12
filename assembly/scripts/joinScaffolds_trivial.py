@@ -13,6 +13,9 @@ end_o = sys.argv[6]
 
 numCycles = int(sys.argv[7])
 
+installationDirectory = sys.argv[8]
+
+
 
 
 sequences = {}
@@ -48,8 +51,8 @@ def fuseSequences2(s1,s2):
     toFuse = open("s2.fasta","w")
     toFuse.write(">s2\n"+s2+"\n")
     toFuse.close()
-    os.system("makeblastdb -dbtype nucl -in s1.fasta >null 2>&1")
-    os.system("blastn -query s2.fasta -db s1.fasta -outfmt 6 -task blastn  -dust no -soft_masking false -out outputBlast.txt >null 2>&1")
+    os.system(installationDirectory+"/resources/makeblastdb -dbtype nucl -in s1.fasta >null 2>&1")
+    os.system(installationDirectory+"/resources/blastn -query s2.fasta -db s1.fasta -outfmt 6 -task blastn  -dust no -soft_masking false -out outputBlast.txt >null 2>&1")
     blastFile = open("outputBlast.txt")
 
     downstreamAlignment = []
@@ -67,7 +70,7 @@ def fuseSequences2(s1,s2):
     if len(downstreamAlignment) >0:
         newSequence = s1[:int(downstreamAlignment[9])]+s2[int(downstreamAlignment[7]):]
         blastFile.close()
-        return newSequence 
+        return newSequence
     else:
         return ""
 
@@ -96,18 +99,18 @@ while True:
         outputSeq.close()
         exit()
     print "Performing blat cycle ",numCycle
-    
-    for overlap in range(100,30,-10):
+
+    for overlap in range(100,20,-20):
         print "Trying overlap",overlap,"...."
         tempFile = open("tempFasta.fasta","w")
         tempFile.write(">tempFasta\n"+elongedSequence[-overlap:]+"\n")
         tempFile.close()
-        os.system("blat reads.fasta tempFasta.fasta -t=dna -q=dna -out=blast8 output.psl >null 2>&1")
+        os.system(installationDirectory+"/resources/blat reads.fasta tempFasta.fasta -t=dna -q=dna -out=blast8 output.psl -fastMap >null 2>&1")
 
         infile = open("output.psl")
         for homology in range(100,95,-1):
             for score in range(overlap,overlap-5,-1):
-                for alignmentLen in range(80,10,-10):
+                for alignmentLen in range(80,10,-20):
                     infile.seek(0)
                     foundSequences = []
                     while True:
@@ -130,12 +133,12 @@ while True:
                 if len(foundSequences)>=3:
                     break
             if len(foundSequences)>=3:
-                break 
+                break
         if len(foundSequences)>=3:
                 break
-                                  
-                
-            
+
+
+
     consensus = ""
     for a in range(alignmentLen):
         numA = 0
@@ -166,44 +169,20 @@ while True:
                     maxBase = numC
                     calledBase = "C"
         consensus += calledBase
-    
+
 
     for item in foundSequences:
         print item
 
     print "Consensus"
     print consensus
+    if len(consensus) <2:
+        outputSeq.write(">trivialSeq\n"+startSeq[:-700]+elongedSequence+"\n")
+        outputSeq.close()
+        exit()
     elongedSequence = elongedSequence[:-1] + consensus
     print elongedSequence
     print "Score",score
     print "Homology",homology
     print "Alignment length",alignmentLen
     print "Number of found sequences",len(foundSequences)
-
-    #sys.stdin.read(1)
-
-
-    #fusedTermini = fuseSequences2(elongedSequence,terminiSeq)
-    #print "Fine ciclo"
-
-    #if not fusedTermini == "":
-    #    js.write(">joined_"+str(start)+"_"+str(end)+"\n"+fusedTermini)
-    #    js = open("joined_"+str(start)+"_"+str(end),"w")
-    #    js.close()
-    #    exit()
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
