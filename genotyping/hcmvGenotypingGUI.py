@@ -42,12 +42,12 @@ def vp_start_gui():
     '''Starting point when module is the main routine.'''
     global val, w, root
 
-    
+
 
     root = tk.Tk()
     top = Toplevel1 (root)
 
-    
+
 
 
     #top.InputFileButton.bind('<Button-1>',openInputFile)
@@ -57,7 +57,7 @@ def vp_start_gui():
 
 
 def create_Toplevel1(root, *args, **kwargs):
-    
+
     '''Starting point when module is imported by another program.'''
     global w, w_win, rt
     rt = root
@@ -74,7 +74,7 @@ def destroy_Toplevel1():
 
 class Toplevel1:
     def __init__(self, top=None):
-        
+
         def openInputFile():
             inputFile = tkFileDialog.askopenfilename(initialdir = "./",title = "Select an input file")
             self.InputFileEntry.delete(0,tk.END)
@@ -85,7 +85,7 @@ class Toplevel1:
             dbfile = (dbfile.split("/"))[-1]
             self.dbEntry.delete(0,tk.END)
             self.dbEntry.insert(0,dbfile)
-        
+
         def openOutputFolder():
             outputFolder = tkFileDialog.askdirectory(initialdir = "./",title = "Select folder")
             self.OutputFolderEntry.delete(0,tk.END)
@@ -99,12 +99,12 @@ class Toplevel1:
 
             #Initialize variables
             orderedHyperLoci = ["rl5a","rl6","rl12","rl13","ul1","ul9","ul11","ul20","ul73","ul74","ul120","ul139","ul146"]
-            
+
             #numReads = int(self.numReadsEntry.get())
             dbfile = installationDirectory+"genotyping/kmerDB/"+self.dbEntry.get()
             NumThreads = int(self.numThreadsEntry.get())
             inputFile = self.InputFileEntry.get()
-            
+
             if not inputFile == "Please select file...." :
                 if not self.OutputFolderEntry.get() =="Please select a folder....":
                     os.system("mkdir "+self.OutputFolderEntry.get())
@@ -113,13 +113,13 @@ class Toplevel1:
                     while True:
                         read1 = infile.readline().rstrip()
                         if not read1:
-                            break  
+                            break
                         read2 = infile.readline().rstrip()
                         if not read2:
                             break
 
                         datasets.append((read1,read2))
-                    
+
                     numDatasets = len(datasets)
                     progressBarIncrement = 100/(numDatasets*20)
                     step = 0
@@ -146,7 +146,7 @@ class Toplevel1:
                         logFile = open(fileRoot1+"_logFile.txt","w")
                         now = datetime.datetime.now()
                         logFile.write("Genotyping sample "+sampleRoot+"  started at "+now.strftime("%H:%M")+"\n")
-                        
+
                         fileList = "list"+str(rd.randint(0,1000000))+".txt"
                         listFile = open(fileList,"w")
                         listFile.write(read1+"\n"+read2+"\n")
@@ -207,7 +207,7 @@ class Toplevel1:
                         step = step+1
                         self.progressbar['value']=int( step*progressBarIncrement)
                         self.progressbar.update()
-                        
+
                         self.logArea.configure(state='normal')
                         self.logArea.insert(tk.END, "Converting sam to bam....")
                         self.logArea.see(tk.END)
@@ -222,7 +222,7 @@ class Toplevel1:
                         step = step+1
                         self.progressbar['value']=int( step*progressBarIncrement)
                         self.progressbar.update()
-                        
+
                         self.logArea.configure(state='normal')
                         self.logArea.insert(tk.END, "Sorting bam....")
                         self.logArea.see(tk.END)
@@ -256,7 +256,7 @@ class Toplevel1:
                         avCovFile = open("avCoverage.txt")
                         avCov = float(avCovFile.readline().rstrip())
                         avCovFile.close()
-                        detectionTreshold = float(avCov*float(self.CutoffText.get()))  
+                        detectionTreshold = float(avCov*float(self.CutoffText.get()))
                         self.logArea.configure(state='normal')
                         self.logArea.insert(tk.END, "Average coverage for deduplicated reads: "+str(avCov)+"\n")
                         self.logArea.see(tk.END)
@@ -318,7 +318,7 @@ class Toplevel1:
                         self.logArea.see(tk.END)
                         self.logArea.configure(state='disabled')
                         self.logArea.update()
-                        
+
 
                         self.logArea.configure(state='normal')
                         self.logArea.insert(tk.END, "Merging kmer files....")
@@ -412,7 +412,7 @@ class Toplevel1:
                             self.logArea.see(tk.END)
                             self.logArea.configure(state='disabled')
                             self.logArea.update()
-                            
+
                             matchedReads = {}
                             #Collect specific kmers for the genotypes of this gene
                             specificKmerGroup = {}
@@ -423,7 +423,7 @@ class Toplevel1:
                                     for seqs in geneKmers[item]:
                                         specificKmerGroup[item[1]].append(seqs)
 
-                            
+
 
 
                             countSeq = {}
@@ -440,7 +440,7 @@ class Toplevel1:
 
                                 if not gr in numMatchedKmers:
                                     numMatchedKmers[gr] = 0
-                                
+
                                 command = installationDirectory+"resources/jellyfish-2.2.10/bin/jellyfish query mer_counts_merged.jf "
                                 for querySeq in specificKmerGroup[gr]:
                                     command += querySeq
@@ -450,8 +450,8 @@ class Toplevel1:
                                 os.system(command)
 
                                 countFile = open("counts.txt")
-                                
-                                
+
+
                                 while True:
                                     countLine = countFile.readline().rstrip()
                                     if not countLine:
@@ -472,10 +472,10 @@ class Toplevel1:
                             self.logArea.see(tk.END)
                             self.logArea.configure(state='disabled')
                             self.logArea.update()
-                            
+
                             outfile.write(gene)
-                            
-                            
+
+
                             for gr in countSeq:
                                 if countSeq[gr]>0:
                                     percentage = float(countSeq[gr])/float(totCount)
@@ -490,7 +490,7 @@ class Toplevel1:
                             step = step+1
                             self.progressbar['value']=int( step*progressBarIncrement)
                             self.progressbar.update()
-                            
+
 
 
                         now = datetime.datetime.now()
@@ -530,18 +530,18 @@ class Toplevel1:
                 os.system("mkdir "+self.OutputFolderEntry.get())
                 packet = StringIO.StringIO()
                 inputFiles = tkFileDialog.askopenfilenames(initialdir = "./",title = "Select an input file")
-                
+
                 self.logArea.configure(state='normal')
                 self.logArea.insert(tk.END, "Preparing plot....\n")
                 self.logArea.see(tk.END)
                 self.logArea.configure(state='disabled')
                 self.logArea.update()
-                
+
                 #Initialize variables
                 orderedHyperLoci = ["rl5a","rl6","rl12","rl13","ul1","ul9","ul11","ul20","ul73","ul74","ul120","ul139","ul146"]
                 genotypeColors = {}
                 allGenotypes = ["G1","G10","G11","G12","G13","G14","G1A","G1B","G1C","G2","G2A","G2B","G3","G3A","G3B","G4","G4A","G4B","G4C","G4D","G5","G6","G7","G8","G9"]
-                
+
                 legColour = ["#8b8989","#fffaf0","#faebd7","#eed5b7","#9932cc","#cdcdc1","#c1cdc1","#32cd32","#ffe4e1","#2f4f4f","#778899","#000080","#6495ed","#8470ff","#00bfff","#00ffff","#66cdaa","#006400","#8fbc8f","#7fff00","#cd5c5c","#a0522d","#f4a460","#b22222","#ff0000"]
                 #Assign colour to genotypes
                 rd.seed(1200)
@@ -553,13 +553,13 @@ class Toplevel1:
                         genotypeColors[g] = legColour[colorStep-1]
                         #genotypeColors[g]=(float(r())/100.0,float(r())/100.0,float(r())/100)
                         #genotypeColors[g]=(float(colorStep)/100.0,float(90-colorStep+7)/100.0,float(colorStep+21)/100)
-                
+
                 #Plot legend
                 numLeg = 0
                 for gr in genotypeColors:
                     numLeg += 1
                     plt.rc('figure', figsize=(5, 5))
-                    
+
                     plt.subplot(len(genotypeColors),1,numLeg)
                     plt.axis('equal')
                     plt.pie([100],labels=[gr],colors=[genotypeColors[gr]])
@@ -593,7 +593,7 @@ class Toplevel1:
                         samplesToPlot[sampleName] = {}
                 sampleList = []
                 for sample in inputFiles:
-                    sampleList.append(sample.split("/")[-1]) 
+                    sampleList.append(sample.split("/")[-1])
                     sampleName = (sample.split("/"))[-1]
                     genotypes = open(sample)
                     while True:
@@ -602,7 +602,7 @@ class Toplevel1:
                             break
                         fields = line.split("\t")
                         if not fields[0] in samplesToPlot[sampleName]:
-                            samplesToPlot[sampleName][fields[0]] = [] 
+                            samplesToPlot[sampleName][fields[0]] = []
                             for a in range(1,len(fields)-1,+4):
                                 samplesToPlot[sampleName][fields[0]].append(fields[a])
                                 samplesToPlot[sampleName][fields[0]].append(fields[a+1])
@@ -611,9 +611,9 @@ class Toplevel1:
                             #for item in fields[1:]:
                             #    samplesToPlot[sample][fields[0]].append(item)
                     genotypes.close()
-                    
 
-                
+
+
                 print "samplesToPlot"
                 print samplesToPlot
                 print "sampleList"
@@ -640,7 +640,7 @@ class Toplevel1:
                 gd_diagram.draw(format="cicular",orientation="landscape", pagesize='A4', start=0, end=maxLen, circle_core=0.4, tracklines=0, track_size=1,x=0.2)
                 gd_diagram.write("plot.pdf", "PDF",dpi=300)
 
-                
+
                 can = canvas.Canvas(packet, pagesize=letter)
                 startY = 400
                 for sample in sampleList:
@@ -650,7 +650,7 @@ class Toplevel1:
                 packet.seek(0)
                 new_pdf = PdfFileReader(packet)
                 existing_pdf = PdfFileReader(file("plot.pdf", "rb"))
-    
+
                 output = PdfFileWriter()
                 page = existing_pdf.getPage(0)
                 page.mergePage(new_pdf.getPage(0))
@@ -695,7 +695,7 @@ class Toplevel1:
                 self.logArea.update()
 
 
-            
+
 
 
 
@@ -704,10 +704,10 @@ class Toplevel1:
         def exitProgram():
             exit()
 
-        
-            
 
-        
+
+
+
 
 
         '''This class configures and populates the toplevel window.
@@ -715,8 +715,8 @@ class Toplevel1:
         _bgcolor = '#d9d9d9'  # X11 color: 'gray85'
         _fgcolor = '#000000'  # X11 color: 'black'
         _compcolor = '#d9d9d9' # X11 color: 'gray85'
-        _ana1color = '#d9d9d9' # X11 color: 'gray85' 
-        _ana2color = '#ececec' # Closest X11 color: 'gray92' 
+        _ana1color = '#d9d9d9' # X11 color: 'gray85'
+        _ana2color = '#ececec' # Closest X11 color: 'gray92'
         self.style = ttk.Style()
         if sys.platform == "win32":
             self.style.theme_use('winnative')
@@ -733,7 +733,7 @@ class Toplevel1:
         # calculate x and y coordinates for the Tk root window
         x = (ws/2) - (w/2)
         y = (hs/2) - (h/2)
-        top.geometry('%dx%d+%d+%d' % (w, h, x, y)) 
+        top.geometry('%dx%d+%d+%d' % (w, h, x, y))
         top.title("Genotyping")
         top.configure(highlightcolor="black")
 
@@ -781,7 +781,7 @@ class Toplevel1:
         #self.newDB = tk.Button(top)
         #self.newDB.place(x=820, y=40,height=30, width=100)
         #self.newDB.configure(text="New DB")
-        
+
         #self.numReadsLabel = tk.Label(top)
         #self.numReadsLabel.place(x=20, y=100, height=20, width=120)
         #self.numReadsLabel.configure(text="Number of reads")
@@ -796,7 +796,7 @@ class Toplevel1:
 
         self.CutoffText = tk.Entry(top, justify='right')
         self.CutoffText.place(x=20, y=200,height=30, width=150)
-        self.CutoffText.insert(0,"0.2")
+        self.CutoffText.insert(0,"0.02")
 
         self.logFileLabel = tk.Label(top)
         self.logFileLabel.place(x=20,y=280,height=20,width=100)

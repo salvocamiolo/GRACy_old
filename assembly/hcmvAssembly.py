@@ -13,6 +13,7 @@ except ImportError:
 
 import sys,os
 import datetime
+import time
 from Bio import SeqIO
 
 import biomodule
@@ -955,6 +956,7 @@ class Toplevel1:
                     self.logArea.configure(state='disabled')
                     self.logArea.update()
                     os.system("cat finalScaffold_"+str(assemblyLength - 10000 )+"_2000000_f.txt | "+installationDirectory+"resources/bcftools consensus output.vcf_filtered.vcf.gz > finalScaffold_"+str(assemblyLength - 10000 )+"_2000000_f.txt_con.fasta 2>null")
+                    time.sleep(10)
                     os.system("mv output.vcf output_thirdPortion.vcf")
                     os.system("mv output.vcf_filtered.vcf  output.vcf_filtered_1_15000.vcf")
                     os.system("rm -f test*")

@@ -40,7 +40,7 @@ while True:
     if len(fields) >3:
         if fields[2]=="gene":
             geneName = ((fields[8].split("Name="))[1].split(";"))[0]
-            
+
             if not geneName in strand:
                 strand[geneName] = fields[6]
             if not geneName in cdsCoord:
@@ -73,7 +73,7 @@ while True:
             if not geneName in geneCoord and  geneName in cdsCoord:
                 geneCoord[geneName] = (fiveprimeCoord,threeprimeCoord)
 
-            
+
 
 for item in geneCoord:
     print item,geneCoord[item]
@@ -119,7 +119,7 @@ while True:
     outFileName = fileName+"_snpFreq.txt"
     outfile = open(outFileName,"w")
     outfile.write("Position\tRefBase\tTargetBase\tCoverage\tFrequencyRef\tFrequencyTarget\n")
-    
+
     outSEFileName = fileName+"_snpEffect.txt"
     outfileSE = open(outSEFileName,"w")
     outfileSE.write("Position\tStrand\tRelativePosition\tFrequency\tCoverage\tRefBase\tTargetBase\tRefCodon\tTargetCodon\tRefAA\tTargetAA\n")
@@ -140,7 +140,7 @@ while True:
         pos = int(fields[1])
 
         if not pos in snpReads:
-            snpReads[pos] = [] 
+            snpReads[pos] = []
 
         #Calculate frequency
         freqUnits = ((fields[-1].split("="))[-1]).split(",")
@@ -178,11 +178,11 @@ while True:
                             else:
                                 relativePosition += ranges[1] -ranges[0] +1
                                 print "First exonLenfth",relativePosition
-                                introns =1 
+                                introns =1
                         print relativePosition
-                    
-                    
-                
+
+
+
                     print "The mutated base is on gene",item
                     print "The position mutated is at",relativePosition
                     if exonSNP==1 and len(fields[3])==1 and len(fields[4])==1: #Only SNPs are considered at this stage
@@ -200,7 +200,7 @@ while True:
                                 referenceCodon = cdsSequences[item][relativePosition-2:relativePosition+1]
                                 targetCodon = referenceCodon[0]+  fields[4] + referenceCodon[2]
                             print "The snp resides in the codon",referenceCodon
-                    
+
                             print "Target codon",targetCodon
 
 
@@ -236,23 +236,26 @@ while True:
                                 referenceCodon = cdsSequences[item][relativePosition-2:relativePosition+1]
                                 targetCodon = referenceCodon[0]+  newBase + referenceCodon[2]
                             print "The snp resides in the codon",referenceCodon
-                    
+
                             print "Target codon",targetCodon
+
+                        if targetCodon in codon_table and referenceCodon in codon_table:
+                            outfileSE.write(item+"\t"+str(pos)+"\t"+strand[item]+"\t"+str(relativePosition)+"\t"+str(frequency)+"\t"+str(coverage)+"\t"+refBase+"\t"+ newBase +"\t"+referenceCodon+"\t"+targetCodon+"\t"+codon_table[referenceCodon]+"\t"+codon_table[targetCodon]+"\n")
+                        else:
+                            outfileSE.write(item+"\t"+str(pos)+"\t"+strand[item]+"\t"+str(relativePosition)+"\t"+str(frequency)+"\t"+str(coverage)+"\t"+refBase+"\t"+ newBase +"\t"+referenceCodon+"\t"+targetCodon+"\t"+"N_containing_codon"+"\t"+"N_containing_codon"+"\n")
+
+
                     
-                        outfileSE.write(item+"\t"+str(pos)+"\t"+strand[item]+"\t"+str(relativePosition)+"\t"+str(frequency)+"\t"+str(coverage)+"\t"+refBase+"\t"+ newBase +"\t"+referenceCodon+"\t"+targetCodon+"\t"+codon_table[referenceCodon]+"\t"+codon_table[targetCodon]+"\n")
-                    
-                    
-                    
-                    
-                    
-                    
+
+
+
                     else:
                         print "This SNPs is probbaly into an intron"
                     print "The record in the vcf file is",fields[3],fields[4]
-                    
+
 
     #Calculate frequency of each snp
-    snpFreq = {} 
+    snpFreq = {}
     for position in snpReads:
         if not position in snpFreq:
             snpFreq[position] = []
@@ -266,28 +269,9 @@ while True:
 
 
     for position in snpFreq:
-        for snp in snpFreq[position]: 
+        for snp in snpFreq[position]:
             outfile.write(str(position)+"\t"+str(snp[0])+"\t"+str(snp[1])+"\t"+str(snp[4])+"\t"+str(float(snp[2])*100)[:5]+"\t"+str(float(snp[3])*100)[:5]+"\n")
 
-    
+
     infile.close()
     outfile.close()
-
-
-    
-    
-
-
-
-
-
-    
-
-
-
-
-
-
-
-
-                
