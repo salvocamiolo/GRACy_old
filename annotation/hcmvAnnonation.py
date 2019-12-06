@@ -28,7 +28,7 @@ def vp_start_gui():
 
     root = tk.Tk()
 
-   
+
 
     top = Toplevel1 (root)
     root.mainloop()
@@ -36,7 +36,7 @@ def vp_start_gui():
 
 
 def create_Toplevel1(root, *args, **kwargs):
-    
+
     '''Starting point when module is imported by another program.'''
     global w, w_win, rt
     rt = root
@@ -53,7 +53,7 @@ def destroy_Toplevel1():
 
 class Toplevel1:
     def __init__(self, top=None):
-        
+
         def openInputFile():
             inputFile = tkFileDialog.askopenfilename(initialdir = "./",title = "Select an input file")
             self.inputFileEntry.delete(0,tk.END)
@@ -140,7 +140,7 @@ class Toplevel1:
                         self.logArea.insert(tk.END, "Found "+bestProt+"\n")
                         self.logArea.see(tk.END)
                         self.logArea.configure(state='disabled')
-                        self.logArea.update()   
+                        self.logArea.update()
                         #print "Best match in the following protein:",bestProt
 
                         sequence = str(protSeqs[bestProt].seq)
@@ -153,12 +153,12 @@ class Toplevel1:
                         self.logArea.insert(tk.END, "Retrieving model....\n")
                         self.logArea.see(tk.END)
                         self.logArea.configure(state='disabled')
-                        self.logArea.update() 
+                        self.logArea.update()
                         os.system(installationDirectory+"resources/exonerate --model protein2genome tempFasta.fasta "+genomeName+" --showtargetgff -s 0 -n 1 --forcegtag --minintron 35  >outputExonerate")
-                       
-                    
-                    
-                        #Check Exonerate output ***************************************************************** 
+
+
+
+                        #Check Exonerate output *****************************************************************
                         #Check the proteins gave a match in the target genome
                         exResult = open("outputExonerate")
                         line = exResult.readline().rstrip()
@@ -169,7 +169,7 @@ class Toplevel1:
                                 warnings.append("Missing gene: locus "+locus+" did not provide any alignment")
                         exResult.close()
 
-                        
+
                         #Reconstruct Exons  **********************************************************************
                         exResult = open("outputExonerate")
                         while not line == "# --- START OF GFF DUMP ---":
@@ -197,20 +197,20 @@ class Toplevel1:
                                     else:
                                         if (int(fields[4]) - int(fields[3])) > (int(int(gene[locus][1])) - int(int(gene[locus][0]))):
                                             gene[locus] = (fields[3],fields[4],fields[6])
-                                
+
                                 if fields[2] == "exon":
                                     if not locus in exon:
                                         exon[locus] = []
                                     exon[locus].append((fields[3],fields[4],fields[6]))
                                     if "frameshifts" in fields[8]:
                                         warnings.append("Frameshifts in exon "+str(fields[3])+" "+str(fields[4])+" "+fields[8])
-                    
+
                         newList = sorted(exon[locus], key=lambda x: x[1])
                         exon[locus] = newList
-                    
+
 
                         #Reconstruct CDS  ***********************************************************
-                        cdsSeq = "" 
+                        cdsSeq = ""
                         if exon[locus][0][2]=="+":   #************* Positive strand
                             for item in exon[locus]:
                                 cdsSeq+=genomeSeq[int(item[0])-1:int(item[1])]
@@ -230,7 +230,7 @@ class Toplevel1:
                         if not  cdsSeq[:3]=="ATG" or not (cdsSeq[-3:]=="TGA" or cdsSeq[-3:]=="TAA" or cdsSeq[-3:]=="TAG" ):
 
                             notes = "\n"+locus+"\n"
-                            
+
 
 
 
@@ -245,7 +245,7 @@ class Toplevel1:
                                             gene[locus] = (int(exon[locus][0][0])-a*3-3,int(gene[locus][1]),gene[locus][2])
                                             cdsSeq = ""
                                             for item in exon[locus]:
-                                                cdsSeq+=genomeSeq[int(item[0])-1:int(item[1])]     
+                                                cdsSeq+=genomeSeq[int(item[0])-1:int(item[1])]
                                             foundStartCodon = True
                                             notes += "- Start codon refined  "+str(a)+" codons upstream\n"
                                             numCodonRefines = a
@@ -262,7 +262,7 @@ class Toplevel1:
                                             gene[locus] = (int(exon[locus][0][0])+a*3+3,int(gene[locus][1]),gene[locus][2])
                                             cdsSeq = ""
                                             for item in exon[locus]:
-                                                cdsSeq+=genomeSeq[int(item[0])-1:int(item[1])]     
+                                                cdsSeq+=genomeSeq[int(item[0])-1:int(item[1])]
                                             foundStartCodon = True
                                             notes += "- Start codon refined  "+str(a)+" codons upstream\n"
                                             numCodonRefines = a
@@ -284,7 +284,7 @@ class Toplevel1:
                                             gene[locus] = (int(gene[locus][0]),int(exon[locus][-1][1])+a*3+3,gene[locus][2])
                                             cdsSeq = ""
                                             for a in range(len(exon[locus])-1,-1,-1):
-                                                cdsSeq+=bm.reverseComplement(genomeSeq[ int(exon[locus][a][0])-1: int(exon[locus][a][1]) ])   
+                                                cdsSeq+=bm.reverseComplement(genomeSeq[ int(exon[locus][a][0])-1: int(exon[locus][a][1]) ])
                                             foundStartCodon = 1
                                             notes += "- Start codon refined  "+str(a)+" codons upstream\n"
                                             numCodonRefines = a
@@ -303,7 +303,7 @@ class Toplevel1:
                                             gene[locus] = (int(gene[locus][0]),int(exon[locus][-1][1])-a*3-3,gene[locus][2])
                                             cdsSeq = ""
                                             for a in range(len(exon[locus])-1,-1,-1):
-                                                cdsSeq+=bm.reverseComplement(genomeSeq[ int(exon[locus][a][0])-1: int(exon[locus][a][1]) ])   
+                                                cdsSeq+=bm.reverseComplement(genomeSeq[ int(exon[locus][a][0])-1: int(exon[locus][a][1]) ])
                                             foundStartCodon = 1
                                             notes += "- Start codon refined  "+str(a)+" codons upstream\n"
                                             numCodonRefines = a
@@ -313,7 +313,7 @@ class Toplevel1:
                                             notes += "- No Start codon found "
                                             break
 
-                                
+
 
 
                             # Look for Stop codon at the end of the sequence or closely ********************
@@ -327,7 +327,7 @@ class Toplevel1:
                                             gene[locus] = (int(gene[locus][0]), int(exon[locus][0][1])+a*3+3, gene[locus][2])
                                             cdsSeq = ""
                                             for item in exon[locus]:
-                                                cdsSeq+=genomeSeq[int(item[0])-1:int(item[1])]     
+                                                cdsSeq+=genomeSeq[int(item[0])-1:int(item[1])]
                                             foundStopCodon = True
                                             notes += "- Stop codon refined "+str(a)+" codon upstream\n"
                                             break
@@ -345,13 +345,13 @@ class Toplevel1:
                                             gene[locus] =(int(exon[locus][0][0])-a*3, int(gene[locus][1]),gene[locus][2])
                                             cdsSeq = ""
                                             for b in range(len(exon[locus])-1,-1,-1):
-                                                cdsSeq+=bm.reverseComplement(genomeSeq[ int(exon[locus][b][0])-1: int(exon[locus][b][1]) ])    
+                                                cdsSeq+=bm.reverseComplement(genomeSeq[ int(exon[locus][b][0])-1: int(exon[locus][b][1]) ])
                                             foundStopCodon = True
                                             notes += "- Stop codon refined "+str(a)+" codon upstream\n"
                                             break
 
                             warnFile.write(notes+"\n")
-                        
+
 
                         if foundStartCodon == True and foundStopCodon == True and numCodonRefines <5: # Write gff and cds file ********************
                             if  notes == "":
@@ -408,7 +408,7 @@ class Toplevel1:
                                             gffNote = "note=Stop codon interrupts coding sequence. "
                                             notes += "The coding sequence is interrupted by a stop codon\n"
                                             break
-                                
+
                             if not len(cdsSeq)%3 == 0:
                                 cdsGood = False
                                 notes += "The coding sequence is interrupted by a stop codon\n"
@@ -416,9 +416,9 @@ class Toplevel1:
                                     gffNote = "note= insertions/deletions lead to broken codons."
                                 else:
                                     gffNote +="Insertions/deletions lead to broken codons."
-                                
 
-                                
+
+
 
                             if cdsGood == True:  # CDS passed quality check
                                 if exon[locus][0][2]=="+":   #************* Positive strand
@@ -431,7 +431,7 @@ class Toplevel1:
                                         else:
                                             gffFile.write(assemblyName+"\texonerate\t"+"CDS"+"\t"+str(item[0])+"\t"+str(item[1])+"\t.\t"+str(item[2])+"\t.\tID="+locus+"_cds"+str(numExon)+";Parent="+locus+"_mRNA;Name="+locus+".1;Product="+locus+"\n")
                                         numExon += 1
-                                    
+
 
                                 else: # *********************** Negative Strand
                                     gffFile.write(assemblyName+"\texonerate\t"+"gene"+"\t"+str(int(gene[locus][0])-3)+"\t"+str(int(gene[locus][1]))+"\t.\t"+str(gene[locus][2])+"\t.\tID="+locus+"_gene;Name="+locus+";Product="+locus+"\n")
@@ -456,7 +456,7 @@ class Toplevel1:
                                     for item in exon[locus]:
                                         gffFile.write(assemblyName+"\texonerate\t"+"misc_feature"+"\t"+str(item[0])+"\t"+str(item[1])+"\t.\t"+str(item[2])+"\t.\tID="+locus+"_cds"+str(numExon)+";Parent="+locus+"_mRNA;Name="+locus+".1;Product="+locus+";"+gffNote+"-CDS\n")
                                         numExon += 1
-                                    
+
 
                                 else: # *********************** Negative Strand
                                     gffFile.write(assemblyName+"\texonerate\t"+"gene"+"\t"+str(int(gene[locus][0])-3)+"\t"+str(int(gene[locus][1]))+"\t.\t"+str(gene[locus][2])+"\t.\tID="+locus+"_gene;Name="+locus+";Product="+locus+";"+gffNote+"-gene\n")
@@ -471,24 +471,24 @@ class Toplevel1:
 
 
 
-                        
+
 
                         if foundStartCodon == False or foundStopCodon == False or numCodonRefines >=5:
                             self.logArea.configure(state='normal')
                             self.logArea.insert(tk.END, "Annotation needs refinement....\n")
                             self.logArea.see(tk.END)
                             self.logArea.configure(state='disabled')
-                            self.logArea.update() 
+                            self.logArea.update()
                             print "Annotation needs refinement"
                             exResult.close()
                             #  ***************************************************************************
                             #  ************************* Annotation refinement ***************************
                             #  ***************************************************************************
-                            
+
 
                             os.system(installationDirectory+"resources/exonerate --model protein2genome tempFasta.fasta "+genomeName+" --showtargetgff -s 0 -n 1 --refine full --forcegtag --minintron 35 >outputExonerate")
-                            
-                            #Check Exonerate output ***************************************************************** 
+
+                            #Check Exonerate output *****************************************************************
                             #Check the proteins gave a match in the target genome
                             exResult = open("outputExonerate")
                             line = exResult.readline().rstrip()
@@ -499,7 +499,7 @@ class Toplevel1:
                                     warnings.append("Missing gene: locus "+locus+" did not provide any alignment")
                             exResult.close()
 
-                            
+
                             #Reconstruct Exons  **********************************************************************
                             exResult = open("outputExonerate")
                             while not line == "# --- START OF GFF DUMP ---":
@@ -527,20 +527,20 @@ class Toplevel1:
                                         else:
                                             if (int(fields[4]) - int(fields[3])) > (int(int(gene[locus][1])) - int(int(gene[locus][0]))):
                                                 gene[locus] = (fields[3],fields[4],fields[6])
-                                    
+
                                     if fields[2] == "exon":
                                         if not locus in exon:
                                             exon[locus] = []
                                         exon[locus].append((fields[3],fields[4],fields[6]))
                                         if "frameshifts" in fields[8]:
                                             warnings.append("Frameshifts in exon "+str(fields[3])+" "+str(fields[4])+" "+fields[8])
-                        
+
                             newList = sorted(exon[locus], key=lambda x: x[1])
                             exon[locus] = newList
 
 
                             #Reconstruct CDS  ***********************************************************
-                            cdsSeq = "" 
+                            cdsSeq = ""
                             if exon[locus][0][2]=="+":   #************* Positive strand
                                 for item in exon[locus]:
                                     cdsSeq+=genomeSeq[int(item[0])-1:int(item[1])]
@@ -560,7 +560,7 @@ class Toplevel1:
                             if not  cdsSeq[:3]=="ATG" or not (cdsSeq[-3:]=="TGA" or cdsSeq[-3:]=="TAA" or cdsSeq[-3:]=="TAG" ):
 
                                 notes = locus+" - after refinement \n"
-                                
+
 
 
 
@@ -575,7 +575,7 @@ class Toplevel1:
                                                 gene[locus] = (int(exon[locus][0][0])-a*3-3,int(gene[locus][1]),gene[locus][2])
                                                 cdsSeq = ""
                                                 for item in exon[locus]:
-                                                    cdsSeq+=genomeSeq[int(item[0])-1:int(item[1])]     
+                                                    cdsSeq+=genomeSeq[int(item[0])-1:int(item[1])]
                                                 foundStartCodon = True
                                                 notes += "- Start codon refined  "+str(a)+" codons upstream\n"
                                                 numCodonRefines = a
@@ -592,7 +592,7 @@ class Toplevel1:
                                                 gene[locus] = (int(exon[locus][0][0])+a*3+3,int(gene[locus][1]),gene[locus][2])
                                                 cdsSeq = ""
                                                 for item in exon[locus]:
-                                                    cdsSeq+=genomeSeq[int(item[0])-1:int(item[1])]     
+                                                    cdsSeq+=genomeSeq[int(item[0])-1:int(item[1])]
                                                 foundStartCodon = True
                                                 notes += "- Start codon refined  "+str(a)+" codons upstream\n"
                                                 numCodonRefines = a
@@ -614,7 +614,7 @@ class Toplevel1:
                                                 gene[locus] = (int(gene[locus][0]),int(exon[locus][-1][1])+a*3+3,gene[locus][2])
                                                 cdsSeq = ""
                                                 for a in range(len(exon[locus])-1,-1,-1):
-                                                    cdsSeq+=bm.reverseComplement(genomeSeq[ int(exon[locus][a][0])-1: int(exon[locus][a][1]) ])   
+                                                    cdsSeq+=bm.reverseComplement(genomeSeq[ int(exon[locus][a][0])-1: int(exon[locus][a][1]) ])
                                                 foundStartCodon = 1
                                                 notes += "- Start codon refined  "+str(a)+" codons upstream\n"
                                                 numCodonRefines = a
@@ -636,7 +636,7 @@ class Toplevel1:
                                                 gene[locus] = (int(gene[locus][0]),int(exon[locus][-1][1])-a*3-3,gene[locus][2])
                                                 cdsSeq = ""
                                                 for a in range(len(exon[locus])-1,-1,-1):
-                                                    cdsSeq+=bm.reverseComplement(genomeSeq[ int(exon[locus][a][0])-1: int(exon[locus][a][1]) ])   
+                                                    cdsSeq+=bm.reverseComplement(genomeSeq[ int(exon[locus][a][0])-1: int(exon[locus][a][1]) ])
                                                 foundStartCodon = 1
                                                 notes += "- Start codon refined  "+str(a)+" codons upstream\n"
                                                 numCodonRefines = a
@@ -657,7 +657,7 @@ class Toplevel1:
                                                 gene[locus] = (int(gene[locus][0]), int(exon[locus][0][1])+a*3+3, gene[locus][2])
                                                 cdsSeq = ""
                                                 for item in exon[locus]:
-                                                    cdsSeq+=genomeSeq[int(item[0])-1:int(item[1])]     
+                                                    cdsSeq+=genomeSeq[int(item[0])-1:int(item[1])]
                                                 foundStopCodon = True
                                                 notes += "- Stop codon refined "+str(a)+" codon upstream\n"
                                                 break
@@ -675,7 +675,7 @@ class Toplevel1:
                                                 gene[locus] =(int(exon[locus][0][0])-a*3, int(gene[locus][1]),gene[locus][2])
                                                 cdsSeq = ""
                                                 for b in range(len(exon[locus])-1,-1,-1):
-                                                    cdsSeq+=bm.reverseComplement(genomeSeq[ int(exon[locus][b][0])-1: int(exon[locus][b][1]) ])    
+                                                    cdsSeq+=bm.reverseComplement(genomeSeq[ int(exon[locus][b][0])-1: int(exon[locus][b][1]) ])
                                                 foundStopCodon = 1
                                                 notes += "- Stop codon refined "+str(a)+" codon upstream\n"
                                                 break
@@ -740,9 +740,9 @@ class Toplevel1:
                                         gffNote = "note= insertions/deletions lead to broken codons."
                                     else:
                                         gffNote +="Insertions/deletions lead to broken codons."
-                                    
 
-                                    
+
+
 
                                 if cdsGood == True:  # CDS passed quality check
                                     notes += "\n"+ locus+" - after refinement \n"+"Good CDS!"
@@ -752,19 +752,19 @@ class Toplevel1:
                                         gffFile.write(assemblyName+"\texonerate\t"+"mRNA"+"\t"+str(int(gene[locus][0]))+"\t"+str(int(gene[locus][1])+3)+"\t.\t"+str(gene[locus][2])+"\t.\tID="+locus+"_mRNA;Parent="+locus+"_gene;Name="+locus+".1;Product="+locus+"\n")
                                         numExon = 1
                                         for item in exon[locus]:
-                                            if item == exon[locus][-1]: 
+                                            if item == exon[locus][-1]:
                                                 gffFile.write(assemblyName+"\texonerate\t"+"CDS"+"\t"+str(item[0])+"\t"+str(int(item[1])+3)+"\t.\t"+str(item[2])+"\t.\tID="+locus+"_cds"+str(numExon)+";Parent="+locus+"_mRNA;Name="+locus+".1;Product="+locus+"\n")
                                             else:
                                                 gffFile.write(assemblyName+"\texonerate\t"+"CDS"+"\t"+str(item[0])+"\t"+str(item[1])+"\t.\t"+str(item[2])+"\t.\tID="+locus+"_cds"+str(numExon)+";Parent="+locus+"_mRNA;Name="+locus+".1;Product="+locus+"\n")
                                             numExon += 1
-                                        
+
 
                                     else: # *********************** Negative Strand
                                         gffFile.write(assemblyName+"\texonerate\t"+"gene"+"\t"+str(int(gene[locus][0])-3)+"\t"+str(int(gene[locus][1]))+"\t.\t"+str(gene[locus][2])+"\t.\tID="+locus+"_gene;Name="+locus+";Product="+locus+"\n")
                                         gffFile.write(assemblyName+"\texonerate\t"+"mRNA"+"\t"+str(int(gene[locus][0])-3)+"\t"+str(int(gene[locus][1]))+"\t.\t"+str(gene[locus][2])+"\t.\tID="+locus+"_mRNA;Parent="+locus+"_gene;Name="+locus+".1;Product="+locus+"\n")
                                         numExon = 1
                                         for item in exon[locus]:
-                                            if item == exon[locus][0]:# and len(exon[locus]) == 1: 
+                                            if item == exon[locus][0]:# and len(exon[locus]) == 1:
                                                 gffFile.write(assemblyName+"\texonerate\t"+"CDS"+"\t"+str(int(item[0])-3)+"\t"+str(item[1])+"\t.\t"+str(item[2])+"\t.\tID="+locus+"_cds"+str(numExon)+";Parent="+locus+"_mRNA;Name="+locus+".1;Product="+locus+"\n")
                                             else:
                                                 gffFile.write(assemblyName+"\texonerate\t"+"CDS"+"\t"+str(item[0])+"\t"+str(item[1])+"\t.\t"+str(item[2])+"\t.\tID="+locus+"_cds"+str(numExon)+";Parent="+locus+"_mRNA;Name="+locus+".1;Product="+locus+"\n")
@@ -782,7 +782,7 @@ class Toplevel1:
                                         for item in exon[locus]:
                                             gffFile.write(assemblyName+"\texonerate\t"+"misc_feature"+"\t"+str(item[0])+"\t"+str(item[1])+"\t.\t"+str(item[2])+"\t.\tID="+locus+"_cds"+str(numExon)+";Parent="+locus+"_mRNA;Name="+locus+".1;Product="+locus+";"+gffNote+"-CDS\n")
                                             numExon += 1
-                                        
+
 
                                     else: # *********************** Negative Strand
                                         gffFile.write(assemblyName+"\texonerate\t"+"gene"+"\t"+str(int(gene[locus][0])-3)+"\t"+str(int(gene[locus][1]))+"\t.\t"+str(gene[locus][2])+"\t.\tID="+locus+"_gene;Name="+locus+";Product="+locus+";"+gffNote+"-gene\n")
@@ -803,7 +803,7 @@ class Toplevel1:
                                     for item in exon[locus]:
                                         gffFile.write(assemblyName+"\texonerate\t"+"misc_feature"+"\t"+str(item[0])+"\t"+str(item[1])+"\t.\t"+str(item[2])+"\t.\tID="+locus+"_cds"+str(numExon)+";Parent="+locus+"_mRNA;Name="+locus+".1;Product="+locus+";"+gffNote+"-CDS\n")
                                         numExon += 1
-                                        
+
 
                                 else: # *********************** Negative Strand
                                     gffFile.write(assemblyName+"\texonerate\t"+"gene"+"\t"+str(int(gene[locus][0])-3)+"\t"+str(int(gene[locus][1]))+"\t.\t"+str(gene[locus][2])+"\t.\tID="+locus+"_gene;Name="+locus+";Product="+locus+";"+gffNote+"-gene\n")
@@ -814,16 +814,16 @@ class Toplevel1:
                                         numExon += 1
 
                                 cdsFile.write(">"+locus+" " +gffNote+"-CDS\n"+cdsSeq+"\n")
-                            
 
 
 
-                    os.system("rm tempFasta.fasta outputExonerate outputBlast.txt -f")   
+
+                    os.system("rm tempFasta.fasta outputExonerate outputBlast.txt -f")
                     cdsFile.close()
                     gffFile.close()
                     warnFile.close()
 
-                    #Translate valid cds in proteins 
+                    #Translate valid cds in proteins
 
                     sequences = SeqIO.to_dict(SeqIO.parse(suffixName+"_cds.fasta","fasta"))
 
@@ -837,7 +837,11 @@ class Toplevel1:
 
                     os.system("mv "+suffixName+"* "+outputFolder)
 
-
+            self.logArea.configure(state='normal')
+            self.logArea.insert(tk.END, "\n\nAnnotations completed!\n")
+            self.logArea.see(tk.END)
+            self.logArea.configure(state='disabled')
+            self.logArea.update()
 
 
 
@@ -847,8 +851,8 @@ class Toplevel1:
         _bgcolor = '#d9d9d9'  # X11 color: 'gray85'
         _fgcolor = '#000000'  # X11 color: 'black'
         _compcolor = '#d9d9d9' # X11 color: 'gray85'
-        _ana1color = '#d9d9d9' # X11 color: 'gray85' 
-        _ana2color = '#ececec' # Closest X11 color: 'gray92' 
+        _ana1color = '#d9d9d9' # X11 color: 'gray85'
+        _ana2color = '#ececec' # Closest X11 color: 'gray92'
         self.style = ttk.Style()
         if sys.platform == "win32":
             self.style.theme_use('winnative')
@@ -866,7 +870,7 @@ class Toplevel1:
         x = (ws/2) - (w/2)
         y = (hs/2) - (h/2)
 
-        top.geometry('%dx%d+%d+%d' % (w, h, x, y)) 
+        top.geometry('%dx%d+%d+%d' % (w, h, x, y))
         top.title("Annotation tool")
         top.configure(highlightcolor="black")
 

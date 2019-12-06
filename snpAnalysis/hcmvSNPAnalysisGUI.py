@@ -175,7 +175,7 @@ class Toplevel1:
                         self.logArea.configure(state='disabled')
                         self.logArea.update()
                         os.system(installationDirectory+"resources/prinseq -fastq trimmed_dedup_1.fastq  -fastq2 trimmed_dedup_2.fastq -min_qual_mean 25 -trim_qual_right 30 -trim_ns_right 20  -trim_qual_window 5 -trim_qual_step 1 -min_len 80 -out_bad null -out_good trimmed_dedup_pr")
-                        os.system(installationDirectory+"snpAnalysis/trimPolyN.py trimmed_dedup_pr_1.fastq trimmed_dedup_pr_2.fastq")
+                        os.system("python "+installationDirectory+"snpAnalysis/trimPolyN.py trimmed_dedup_pr_1.fastq trimmed_dedup_pr_2.fastq")
 
                         self.logArea.configure(state='normal')
                         self.logArea.insert(tk.END, "*  Reads alignment on reference\n")
