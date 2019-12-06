@@ -23,7 +23,7 @@ def vp_start_gui():
 
     root = tk.Tk()
 
-   
+
 
     top = Toplevel1 (root)
     root.mainloop()
@@ -31,7 +31,7 @@ def vp_start_gui():
 
 
 def create_Toplevel1(root, *args, **kwargs):
-    
+
     '''Starting point when module is imported by another program.'''
     global w, w_win, rt
     rt = root
@@ -48,14 +48,14 @@ def destroy_Toplevel1():
 
 class Toplevel1:
     def __init__(self, top=None):
-        
-        
+
+
         def openReferenceFile():
             referenceFile = tkFileDialog.askopenfilename(initialdir = "./",title = "Select reference file")
             self.referenceFileEntry.delete(0,tk.END)
             self.referenceFileEntry.insert(0,referenceFile)
             self.referenceFileEntry.icursor(100)
-        
+
         def openCDSFile():
             cdsFile = tkFileDialog.askopenfilename(initialdir = "./",title = "Select CDS file")
             self.cdsFileEntry.delete(0,tk.END)
@@ -70,7 +70,7 @@ class Toplevel1:
             pos2plotFile = tkFileDialog.askopenfilename(initialdir = "./",title = "Select file")
             self.posToPlotEntry.delete(0,tk.END)
             self.posToPlotEntry.insert(0,pos2plotFile)
-        
+
         def openInputFile():
             inputFile = tkFileDialog.askopenfilename(initialdir = "./",title = "Select input file")
             self.inputFileEntry.delete(0,tk.END)
@@ -110,7 +110,7 @@ class Toplevel1:
                     #***********************************************************************
 
                     infile.close()
-                    
+
                     os.system(installationDirectory+"resources/bowtie2-build "+referenceFile+" reference -q")
                     infile = open(self.inputFileEntry.get())
 
@@ -122,12 +122,12 @@ class Toplevel1:
                         read2 = infile.readline().rstrip()
                         if not read1:
                             break
-                        
+
                         if ".fastq" in read1:
                             sampleName = ((read1.split("/"))[-1].split("_1.fastq"))[0]
                         if ".fq" in read1:
                             sampleName = ((read1.split("/"))[-1].split("_1.fq"))[0]
-                        
+
                         print "Analising sample",sampleName
                         self.logArea.configure(state='normal')
                         self.logArea.insert(tk.END, "Analising sample"+sampleName+"....\n")
@@ -147,7 +147,7 @@ class Toplevel1:
                         self.logArea.configure(state='disabled')
                         self.logArea.update()
 
-                        
+
 
                         print "Reads quality filtering before alignment"
                         print "Running Trimgalore"
@@ -174,8 +174,8 @@ class Toplevel1:
                         self.logArea.see(tk.END)
                         self.logArea.configure(state='disabled')
                         self.logArea.update()
-                        os.system(installationDirectory+"resources/prinseq -fastq trimmed_dedup_1.fastq  -fastq2 trimmed_dedup_2.fastq -min_qual_mean 25 -trim_qual_right 30  -trim_qual_window 15 -trim_qual_step 5 -min_len 80 -out_bad null -out_good trimmed_dedup_pr")
-
+                        os.system(installationDirectory+"resources/prinseq -fastq trimmed_dedup_1.fastq  -fastq2 trimmed_dedup_2.fastq -min_qual_mean 25 -trim_qual_right 30 -trim_ns_right 20  -trim_qual_window 5 -trim_qual_step 1 -min_len 80 -out_bad null -out_good trimmed_dedup_pr")
+                        os.system(installationDirectory+"snpAnalysis/trimPolyN.py trimmed_dedup_pr_1.fastq trimmed_dedup_pr_2.fastq")
 
                         self.logArea.configure(state='normal')
                         self.logArea.insert(tk.END, "*  Reads alignment on reference\n")
@@ -191,13 +191,13 @@ class Toplevel1:
 
                         print "Aigning reads to reference"
                         os.system(installationDirectory+"resources/bowtie2 --end-to-end -1 trimmed_dedup_pr_1.fastq -2 trimmed_dedup_pr_2.fastq -x reference -S alignment.sam -p "+numThreads)
-                        
+
                         self.logArea.configure(state='normal')
                         self.logArea.insert(tk.END, "*  *  Converting sam to bam....\n")
                         self.logArea.see(tk.END)
                         self.logArea.configure(state='disabled')
                         self.logArea.update()
-                        
+
                         print "Converting sam to bam"
                         os.system(installationDirectory+"resources/samtools view -bS -h alignment.sam >alignment.bam")
 
@@ -210,6 +210,15 @@ class Toplevel1:
                         print "Sorting bam"
                         os.system(installationDirectory+"resources/samtools sort -o "+sampleName+"_alignment_sorted.bam alignment.bam")
 
+                        self.logArea.configure(state='normal')
+                        self.logArea.insert(tk.END, "*  *  Marking duplicates....\n")
+                        self.logArea.see(tk.END)
+                        self.logArea.configure(state='disabled')
+                        self.logArea.update()
+
+                        print "Marking duplicates "
+                        os.system("java -jar -XX:ParallelGCThreads="+str(numThreads)+" "+installationDirectory+"resources/picard.jar  AddOrReplaceReadGroups I="+sampleName+"_alignment_sorted.bam O=rg_added_sorted.bam SO=coordinate RGID=id RGLB=library RGPL=Ilumina RGPU=machine RGSM=Consensus")
+                        os.system("java -jar -XX:ParallelGCThreads="+str(numThreads)+" "+installationDirectory+"resources/picard.jar MarkDuplicates I=rg_added_sorted.bam O=markedDuplicates.bam CREATE_INDEX=true VALIDATION_STRINGENCY=SILENT M=output.metrics")
 
                         print "Calling snps with lofreq"
                         #Analyze snps with lowfreq
@@ -218,8 +227,8 @@ class Toplevel1:
                         self.logArea.see(tk.END)
                         self.logArea.configure(state='disabled')
                         self.logArea.update()
-                        os.system(installationDirectory+"resources/lofreq call -f "+referenceFile+" -o "+sampleName+"_SNPs.vcf "+sampleName+"_alignment_sorted.bam")
-                        
+                        os.system(installationDirectory+"resources/lofreq call -f "+referenceFile+" -o "+sampleName+"_SNPs.vcf markedDuplicates.bam")
+
                         #Analyze indes using the GATK pipeline
 
                         self.logArea.configure(state='normal')
@@ -227,27 +236,8 @@ class Toplevel1:
                         self.logArea.see(tk.END)
                         self.logArea.configure(state='disabled')
                         self.logArea.update()
-                        self.logArea.configure(state='normal')
-                        self.logArea.insert(tk.END, "*  *  Extracting mapped reads\n")
-                        self.logArea.see(tk.END)
-                        self.logArea.configure(state='disabled')
-                        self.logArea.update()
-                        os.system(installationDirectory+"resources/samtools view -bF 4 "+sampleName+"_alignment_sorted.bam >mapped.bam")
-                        self.logArea.configure(state='normal')
-                        self.logArea.insert(tk.END, "*  *  Adding group names....\n")
-                        self.logArea.see(tk.END)
-                        self.logArea.configure(state='disabled')
-                        self.logArea.update()
 
-                        os.system("java -jar -XX:ParallelGCThreads="+numThreads+" "+installationDirectory+"resources/picard.jar AddOrReplaceReadGroups I=mapped.bam O=rg_added_sorted.bam SO=coordinate RGID=id RGLB=library RGPL=Ilumina RGPU=machine RGSM=Consensus")
-                        self.logArea.configure(state='normal')
-                        self.logArea.insert(tk.END, "*  *  Deduplicating....\n")
-                        self.logArea.see(tk.END)
-                        self.logArea.configure(state='disabled')
-                        self.logArea.update()
-                        os.system("java -jar -XX:ParallelGCThreads="+numThreads+" "+installationDirectory+"resources/picard.jar MarkDuplicates I=rg_added_sorted.bam O=dedupped.bam  CREATE_INDEX=true VALIDATION_STRINGENCY=SILENT M=output.metrics")
-                        os.system("java -jar "+installationDirectory+"resources/picard.jar CreateSequenceDictionary R="+referenceFile)
-                        
+
                         os.system(installationDirectory+"resources/samtools faidx "+referenceFile)
 
                         self.logArea.configure(state='normal')
@@ -255,14 +245,14 @@ class Toplevel1:
                         self.logArea.see(tk.END)
                         self.logArea.configure(state='disabled')
                         self.logArea.update()
-                        os.system("java -jar  "+installationDirectory+"resources/GenomeAnalysisTK.jar -T  HaplotypeCaller -R "+referenceFile+" -I dedupped.bam  -o output.vcf -A StrandAlleleCountsBySample")
+                        os.system("java -jar  "+installationDirectory+"resources/GenomeAnalysisTK.jar -T  HaplotypeCaller -R "+referenceFile+" -I markedDuplicates.bam  -o output.vcf -A StrandAlleleCountsBySample")
                         os.system("mv output.vcf "+sampleName+"_indels.vcf")
-                            
-                        
+
+
                         os.system("mv "+sampleName+"_alignment_sorted.bam "+outputFolder+"/")
                         os.system("mv *.vcf "+outputFolder+"/")
                         os.system("rm alignment* -f")
-                        os.system("rm -f inputFastUniq *_val_1.fq *_val_2.fq trimmed_dedup_*")
+                        os.system("rm -f inputFastUniq *_val_1.fq *_val_2.fq trimmed_dedup_* markedDuplicates.bam rg_added_sorted.bam")
                         os.system(" ls "+outputFolder+"/*SNPs.vcf >vcfFilesToExamine")
                         os.system("python "+installationDirectory+"snpAnalysis/polyAn.py vcfFilesToExamine"+" "+self.cdsFileEntry.get()+" "+self.gffFileEntry.get())
                         os.system("rm vcfFilesToExamine *.dict *.fai mapped.bam rg_added_sorted.bam *trimming_report.txt")
@@ -270,7 +260,7 @@ class Toplevel1:
                         os.system("python "+installationDirectory+"snpAnalysis/buildTable.py file2Plot")
                         os.system("mv  *_snpEffect.txt *_snpFreq.txt snpTable.txt "+outputFolder+"/" )
 
-                        
+
 
                 if suffix == "vcf":
                     self.logArea.configure(state='normal')
@@ -283,9 +273,9 @@ class Toplevel1:
                     os.system("ls *_snpEffect.txt > file2Plot")
                     os.system("python "+installationDirectory+"snpAnalysis/buildTable.py file2Plot")
                     os.system("mv  *_snpEffect.txt *_snpFreq.txt snpTable.txt"+outputFolder+"/" )
-                    
 
-                    
+
+
 
                 if not suffix == "fastq" and not suffix == "vcf" and not suffix == "fq":
                     self.logArea.configure(state='normal')
@@ -304,8 +294,8 @@ class Toplevel1:
         _bgcolor = '#d9d9d9'  # X11 color: 'gray85'
         _fgcolor = '#000000'  # X11 color: 'black'
         _compcolor = '#d9d9d9' # X11 color: 'gray85'
-        _ana1color = '#d9d9d9' # X11 color: 'gray85' 
-        _ana2color = '#ececec' # Closest X11 color: 'gray92' 
+        _ana1color = '#d9d9d9' # X11 color: 'gray85'
+        _ana2color = '#ececec' # Closest X11 color: 'gray92'
         self.style = ttk.Style()
         if sys.platform == "win32":
             self.style.theme_use('winnative')
@@ -323,7 +313,7 @@ class Toplevel1:
         x = (ws/2) - (w/2)
         y = (hs/2) - (h/2)
 
-        top.geometry('%dx%d+%d+%d' % (w, h, x, y)) 
+        top.geometry('%dx%d+%d+%d' % (w, h, x, y))
         top.title("Annotation tool")
         top.configure(highlightcolor="black")
 
@@ -419,7 +409,7 @@ class Toplevel1:
         self.numThreadsEntry = tk.Entry(top,justify='right')
         self.numThreadsEntry.place(x=20,y=240,width=100,height=30)
         self.numThreadsEntry.insert(0,"8")
-        
+
         self.runButton = tk.Button(top,command=mainAlgorithm)
         self.runButton.place(x=780,y=240,width=100,height=30)
         self.runButton.configure(text="Run")
@@ -431,7 +421,7 @@ class Toplevel1:
         self.exitButton = tk.Button(top,command=exitProgram)
         self.exitButton.place(x=660,y=240,width=100,height=30)
         self.exitButton.configure(text="Exit")
-   
+
         self.logFileLabel = tk.Label(top)
         self.logFileLabel.place(x=20,y=280,height=20,width=100)
         self.logFileLabel.configure(text="Log window")
