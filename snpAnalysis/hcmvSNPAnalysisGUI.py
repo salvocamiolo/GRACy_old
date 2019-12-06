@@ -134,6 +134,8 @@ class Toplevel1:
                         self.logArea.see(tk.END)
                         self.logArea.configure(state='disabled')
                         self.logArea.update()
+                        sampleTempFolder = sampleName+"_4864985345_tempFolder"
+                        os.system("mkdir -p "+sampleTempFolder)
 
                         self.logArea.configure(state='normal')
                         self.logArea.insert(tk.END, "*  Reads quality filtering before alignment\n")
@@ -153,7 +155,7 @@ class Toplevel1:
                         print "Running Trimgalore"
                         prefix1 = ((read1.split("/"))[-1]).replace(".fastq","")
                         prefix2 = ((read2.split("/"))[-1]).replace(".fastq","")
-                        os.system(installationDirectory+"resources/trim_galore --paired -q 30  "+read1+" "+read2)
+                        os.system(installationDirectory+"resources/trim_galore --paired -q 0  "+read1+" "+read2)
 
                         self.logArea.configure(state='normal')
                         self.logArea.insert(tk.END, "*  *  Performing deduplication....\n")
@@ -165,7 +167,7 @@ class Toplevel1:
                         print "Performing deduplication"
                         os.system("echo "+prefix1+"_val_1.fq > inputFastUniq")
                         os.system("echo "+prefix2+"_val_2.fq >> inputFastUniq")
-                        os.system(installationDirectory+"resources/fastuniq -i inputFastUniq -t q -o trimmed_dedup_1.fastq -p trimmed_dedup_2.fastq")
+                        os.system(installationDirectory+"resources/fastuniq -i inputFastUniq -t q -o "+sampleName+"_trimmed_dedup_1.fastq -p "+sampleName+"_trimmed_dedup_2.fastq")
 
                         print "Performing prinseq quality filtering"
 
@@ -174,7 +176,7 @@ class Toplevel1:
                         self.logArea.see(tk.END)
                         self.logArea.configure(state='disabled')
                         self.logArea.update()
-                        os.system(installationDirectory+"resources/prinseq -fastq trimmed_dedup_1.fastq  -fastq2 trimmed_dedup_2.fastq -min_qual_mean 25 -trim_qual_right 30 -trim_ns_right 20  -trim_qual_window 5 -trim_qual_step 1 -min_len 80 -out_bad null -out_good trimmed_dedup_pr")
+                        os.system(installationDirectory+"resources/prinseq -fastq "+sampleName+"_trimmed_dedup_1.fastq  -fastq2 "+sampleName+"_trimmed_dedup_2.fastq -min_qual_mean 25 -trim_qual_right 30 -trim_ns_right 20  -trim_qual_window 5 -trim_qual_step 1 -min_len 80 -out_bad null -out_good "+sampleName+"_trimmed_dedup_pr")
                         os.system("python "+installationDirectory+"snpAnalysis/trimPolyN.py trimmed_dedup_pr_1.fastq trimmed_dedup_pr_2.fastq")
 
                         self.logArea.configure(state='normal')
@@ -190,7 +192,7 @@ class Toplevel1:
                         self.logArea.update()
 
                         print "Aigning reads to reference"
-                        os.system(installationDirectory+"resources/bowtie2 --end-to-end -1 trimmed_dedup_pr_1.fastq -2 trimmed_dedup_pr_2.fastq -x reference -S alignment.sam -p "+numThreads)
+                        os.system(installationDirectory+"resources/bowtie2 --end-to-end -1 "+sampleName+"_trimmed_dedup_pr_1.fastq -2 "+sampleName+"_trimmed_dedup_pr_2.fastq -x reference -S "+sampleName+"_alignment.sam -p "+numThreads)
 
                         self.logArea.configure(state='normal')
                         self.logArea.insert(tk.END, "*  *  Converting sam to bam....\n")
@@ -199,7 +201,7 @@ class Toplevel1:
                         self.logArea.update()
 
                         print "Converting sam to bam"
-                        os.system(installationDirectory+"resources/samtools view -bS -h alignment.sam >alignment.bam")
+                        os.system(installationDirectory+"resources/samtools view -bS -h "+sampleName+"_alignment.sam > "+sampleName+"_alignment.bam")
 
                         self.logArea.configure(state='normal')
                         self.logArea.insert(tk.END, "*  *  Sorting bam....\n")
@@ -208,18 +210,21 @@ class Toplevel1:
                         self.logArea.update()
 
                         print "Sorting bam"
-                        os.system(installationDirectory+"resources/samtools sort -o "+sampleName+"_alignment_sorted.bam alignment.bam")
+                        os.system(installationDirectory+"resources/samtools sort -o "+sampleName+"_alignment_sorted.bam "+sampleName+"_alignment.bam")
 
-                        self.logArea.configure(state='normal')
-                        self.logArea.insert(tk.END, "*  *  Marking duplicates....\n")
-                        self.logArea.see(tk.END)
-                        self.logArea.configure(state='disabled')
-                        self.logArea.update()
+                        if self.dedupChkValue.get()==True:
+                            self.logArea.configure(state='normal')
+                            self.logArea.insert(tk.END, "*  *  Marking duplicates....\n")
+                            self.logArea.see(tk.END)
+                            self.logArea.configure(state='disabled')
+                            self.logArea.update()
 
-                        print "Marking duplicates "
-                        os.system("java -jar -XX:ParallelGCThreads="+str(numThreads)+" "+installationDirectory+"resources/picard.jar  AddOrReplaceReadGroups I="+sampleName+"_alignment_sorted.bam O=rg_added_sorted.bam SO=coordinate RGID=id RGLB=library RGPL=Ilumina RGPU=machine RGSM=Consensus")
-                        os.system("java -jar -XX:ParallelGCThreads="+str(numThreads)+" "+installationDirectory+"resources/picard.jar MarkDuplicates I=rg_added_sorted.bam O=markedDuplicates.bam CREATE_INDEX=true VALIDATION_STRINGENCY=SILENT M=output.metrics")
+                            print "Marking duplicates "
+                            os.system("java -jar -XX:ParallelGCThreads="+str(numThreads)+" "+installationDirectory+"resources/picard.jar  AddOrReplaceReadGroups I="+sampleName+"_alignment_sorted.bam O="+sampleName+"_rg_added_sorted.bam SO=coordinate RGID=id RGLB=library RGPL=Ilumina RGPU=machine RGSM=Consensus")
+                            os.system("java -jar -XX:ParallelGCThreads="+str(numThreads)+" "+installationDirectory+"resources/picard.jar MarkDuplicates I="+sampleName+"_rg_added_sorted.bam O="+sampleName+"_markedDuplicates.bam CREATE_INDEX=true VALIDATION_STRINGENCY=SILENT M=output.metrics")
 
+                        else:
+                            os.system("mv "+sampleName+"_alignment_sorted.bam "+sampleName+"_markedDuplicates.bam")
                         print "Calling snps with lofreq"
                         #Analyze snps with lowfreq
                         self.logArea.configure(state='normal')
@@ -227,7 +232,7 @@ class Toplevel1:
                         self.logArea.see(tk.END)
                         self.logArea.configure(state='disabled')
                         self.logArea.update()
-                        os.system(installationDirectory+"resources/lofreq call -f "+referenceFile+" -o "+sampleName+"_SNPs.vcf markedDuplicates.bam")
+                        os.system(installationDirectory+"resources/lofreq call -q "+str(self.BaseQualEntry.get()) +" -f "+referenceFile+" -o "+sampleName+"_SNPs.vcf "+sampleName+"_markedDuplicates.bam")
 
                         #Analyze indes using the GATK pipeline
 
@@ -245,20 +250,22 @@ class Toplevel1:
                         self.logArea.see(tk.END)
                         self.logArea.configure(state='disabled')
                         self.logArea.update()
-                        os.system("java -jar  "+installationDirectory+"resources/GenomeAnalysisTK.jar -T  HaplotypeCaller -R "+referenceFile+" -I markedDuplicates.bam  -o output.vcf -A StrandAlleleCountsBySample")
-                        os.system("mv output.vcf "+sampleName+"_indels.vcf")
+                        os.system("java -jar  "+installationDirectory+"resources/GenomeAnalysisTK.jar -T  HaplotypeCaller -R "+referenceFile+" -I "+sampleName+"_markedDuplicates.bam  -o "+sampleName+"_output.vcf -A StrandAlleleCountsBySample")
+                        os.system("mv "+sampleName+"_output.vcf "+sampleName+"_indels.vcf")
 
 
                         os.system("mv "+sampleName+"_alignment_sorted.bam "+outputFolder+"/")
-                        os.system("mv *.vcf "+outputFolder+"/")
-                        os.system("rm alignment* -f")
-                        os.system("rm -f inputFastUniq *_val_1.fq *_val_2.fq trimmed_dedup_* markedDuplicates.bam rg_added_sorted.bam")
-                        os.system(" ls "+outputFolder+"/*SNPs.vcf >vcfFilesToExamine")
+                        os.system("mv *.vcf "+sampleTempFolder+"/")
+                        os.system("rm "+sampleName+"_alignment* -f")
+                        os.system("rm -f inputFastUniq "+prefix1+"_val_1.fq "+prefix2+"_val_2.fq  "+sampleName+"_trimmed_dedup_* "+sampleName+"_markedDuplicates.bam "+sampleName+"_rg_added_sorted.bam")
+                        os.system(" ls "+sampleTempFolder+"/*SNPs.vcf >vcfFilesToExamine")
                         os.system("python "+installationDirectory+"snpAnalysis/polyAn.py vcfFilesToExamine"+" "+self.cdsFileEntry.get()+" "+self.gffFileEntry.get())
                         os.system("rm vcfFilesToExamine *.dict *.fai mapped.bam rg_added_sorted.bam *trimming_report.txt")
                         os.system("ls *_snpEffect.txt > file2Plot")
                         os.system("python "+installationDirectory+"snpAnalysis/buildTable.py file2Plot")
                         os.system("mv  *_snpEffect.txt *_snpFreq.txt snpTable.txt "+outputFolder+"/" )
+                        os.system("mv "+sampleTempFolder+"/* ./"+outputFolder+"/")
+                        os.system("rm -rf "+sampleTempFolder)
 
 
 
@@ -409,6 +416,22 @@ class Toplevel1:
         self.numThreadsEntry = tk.Entry(top,justify='right')
         self.numThreadsEntry.place(x=20,y=240,width=100,height=30)
         self.numThreadsEntry.insert(0,"8")
+
+        self.BaseQualLabel = tk.Label(top)
+        self.BaseQualLabel.configure(text="Base Qual. cutoff")
+        self.BaseQualLabel.place(x=120,y=220,width=120,height=20)
+
+        self.BaseQualEntry = tk.Entry(top,justify='right')
+        self.BaseQualEntry.place(x=130,y=240,width=100,height=30)
+        self.BaseQualEntry.insert(0,"30")
+
+
+
+        self.dedupChkValue = tk.BooleanVar()
+        self.dedupChkValue.set(True)
+        self.dedupCheckButton = tk.Checkbutton(top,variable=self.dedupChkValue)
+        self.dedupCheckButton.place(x=240,y=250,height=20,width=140)
+        self.dedupCheckButton.configure(text="Perform deduplication")
 
         self.runButton = tk.Button(top,command=mainAlgorithm)
         self.runButton.place(x=780,y=240,width=100,height=30)
