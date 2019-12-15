@@ -27,7 +27,7 @@ def vp_start_gui():
 
     root = tk.Tk()
 
-   
+
 
     top = Toplevel1 (root)
     root.mainloop()
@@ -35,7 +35,7 @@ def vp_start_gui():
 
 
 def create_Toplevel1(root, *args, **kwargs):
-    
+
     '''Starting point when module is imported by another program.'''
     global w, w_win, rt
     rt = root
@@ -52,7 +52,7 @@ def destroy_Toplevel1():
 
 class Toplevel1:
     def __init__(self, top=None):
-        
+
         def launchQC():
             os.system("python "+installationDirectory+"qualityCheck/readsQualityCheck.py "+installationDirectory+" &")
 
@@ -79,8 +79,8 @@ class Toplevel1:
         _bgcolor = '#d9d9d9'  # X11 color: 'gray85'
         _fgcolor = '#000000'  # X11 color: 'black'
         _compcolor = '#d9d9d9' # X11 color: 'gray85'
-        _ana1color = '#d9d9d9' # X11 color: 'gray85' 
-        _ana2color = '#ececec' # Closest X11 color: 'gray92' 
+        _ana1color = '#d9d9d9' # X11 color: 'gray85'
+        _ana2color = '#ececec' # Closest X11 color: 'gray92'
         self.style = ttk.Style()
         if sys.platform == "win32":
             self.style.theme_use('winnative')
@@ -98,7 +98,7 @@ class Toplevel1:
         x = (ws/2) - (w/2)
         y = (hs/2) - (h/2)
 
-        top.geometry('%dx%d+%d+%d' % (w, h, x, y)) 
+        top.geometry('%dx%d+%d+%d' % (w, h, x, y))
         top.title("GRACy")
         top.configure(highlightcolor="black")
 

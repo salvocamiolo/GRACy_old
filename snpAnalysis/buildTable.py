@@ -5,7 +5,7 @@ import sys
 
 
 file2AnalyzeFile = sys.argv[1]
-position2Plot = set()  
+position2Plot = set()
 snpsPerSample = {}
 
 filesToOpen = open(file2AnalyzeFile)
@@ -14,10 +14,10 @@ while True:
     sample = filesToOpen.readline().rstrip()
     if not sample:
         break
-    
+
     infile = open(sample)
     infile.readline()
-    
+
     while True:
         line = infile.readline().rstrip()
         if not line:
@@ -30,7 +30,7 @@ while True:
             snpsPerSample[sample][(fields[0],fields[1],fields[3],fields[8],fields[9],fields[10],fields[11])] = fields[4]
         
 
-outfile = open("snpTable.txt","w")
+outfile = open(file2AnalyzeFile+"_snpTable.txt","w")
 outfile.write("Sample\tGene\tPosGenome\tPosGene\tRefCodon\tAltCodon\t")
 for a in snpsPerSample:
     outfile.write(str(a)+"\t")
@@ -45,4 +45,3 @@ for item in position2Plot:
         else:
             outfile.write("-\t")
     outfile.write("\n")
-

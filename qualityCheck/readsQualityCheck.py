@@ -11,6 +11,8 @@ except ImportError:
     py3 = True
 
 import Tkinter, Tkconstants, tkFileDialog
+from PIL import ImageTk, Image
+import tkFont
 
 import sys
 from os import listdir
@@ -35,7 +37,7 @@ def vp_start_gui():
 
 
 def create_Toplevel1(root, *args, **kwargs):
-    
+
     '''Starting point when module is imported by another program.'''
     global w, w_win, rt
     rt = root
@@ -88,8 +90,8 @@ class Toplevel1:
                 if not line:
                     break
                 fields = line.split("\t")
-                position.append(int(fields[1])) 
-                coverage.append(int(fields[2])) 
+                position.append(int(fields[1]))
+                coverage.append(int(fields[2]))
                 windowSize +=1
                 if windowSize == 200:
                     avPos += 200
@@ -145,7 +147,7 @@ class Toplevel1:
             codes = {}
             if self.recodeSampleChkValue.get() == True:
                 rcodefile = open(self.recodingFileEntry.get())
-                
+
 
                 while True:
                     line = rcodefile.readline().rstrip()
@@ -163,10 +165,10 @@ class Toplevel1:
                         codes[item+"_2.fastq"] = item+"_2.fastq"
 
 
-                    
+
 
             #Start filtering
-            
+
             statisticsToReport = []
             statisticsToReport.append("Original reads")
             datasetStatistics = {}
@@ -217,7 +219,7 @@ class Toplevel1:
                     self.logArea.see(tk.END)
                     self.logArea.configure(state='disabled')
                     self.logArea.update()
-    
+
                     os.system("cp "+inputFolder+"/"+dataset+"_1.fastq tempReads_140875_1.fastq")
                     os.system("cp "+inputFolder+"/"+dataset+"_2.fastq tempReads_140875_2.fastq")
                     #Check the format of the input fastq file header
@@ -235,7 +237,7 @@ class Toplevel1:
                     step+=1
                     self.progressbar['value']= int( (step*progressBarIncrement) )
                     numreads = open("numReads_140875")
-                    
+
                     numberOfReads = int(((numreads.readline().rstrip()).split(" "))[0])/2
                     originalReadsNumber = numberOfReads
                     datasetStatistics[dataset].append(numberOfReads)
@@ -269,7 +271,7 @@ class Toplevel1:
                         self.logArea.see(tk.END)
                         self.logArea.configure(state='disabled')
                         self.logArea.update()
-    
+
                         step+=1
                         self.progressbar['value']= int( (step*progressBarIncrement) )
                         self.progressbar.update()
@@ -280,7 +282,7 @@ class Toplevel1:
                         self.logArea.see(tk.END)
                         self.logArea.configure(state='disabled')
                         self.logArea.update()
-                        os.system(installationDirectory+"resources/samtools view -bS -h hostAlignment_140875.sam >hostAlignment_140875.bam") 
+                        os.system(installationDirectory+"resources/samtools view -bS -h hostAlignment_140875.sam >hostAlignment_140875.bam")
                         self.logArea.configure(state='normal')
                         self.logArea.insert(tk.END, "Done!\n")
                         self.logArea.see(tk.END)
@@ -328,17 +330,17 @@ class Toplevel1:
                         self.logArea.see(tk.END)
                         self.logArea.configure(state='disabled')
                         self.logArea.update()
-    
+
 
 
                         #step += 1
                         #self.progressbar['value']=int( (step/numStep)*100)
                         self.progressbar.update()
-                        time.sleep(2)     
+                        time.sleep(2)
 
                     if self.removeAdaptersChkValue.get() == True:
                         suffixCode += "_tr"
-        
+
                         self.logArea.configure(state='normal')
                         self.logArea.insert(tk.END, "Trimming reads for dataset "+dataset+"....")
                         self.logArea.see(tk.END)
@@ -386,7 +388,7 @@ class Toplevel1:
                         self.logArea.see(tk.END)
                         self.logArea.configure(state='disabled')
                         self.logArea.update()
-                        
+
 
 
 
@@ -431,7 +433,7 @@ class Toplevel1:
                         self.logArea.see(tk.END)
                         self.logArea.configure(state='disabled')
                         self.logArea.update()
-                        
+
 
                     if self.al2RefChkValue.get() == True:
                         self.logArea.configure(state='normal')
@@ -448,8 +450,8 @@ class Toplevel1:
                         self.logArea.see(tk.END)
                         self.logArea.configure(state='disabled')
                         self.logArea.update()
-                        
-                        
+
+
                         self.logArea.configure(state='normal')
                         self.logArea.insert(tk.END, "Convert sam to bam....")
                         self.logArea.see(tk.END)
@@ -505,7 +507,7 @@ class Toplevel1:
                         avCov = float(avCovFile.readline().rstrip())
                         avCovFile.close()
                         print "Average coverage",avCov
-                        
+
                         datasetStatistics[dataset].append(avCov)
 
                         os.system(installationDirectory+"resources/samtools view -F 4 alignment_140875.sam | wc -l > readsMapping_140875")
@@ -515,7 +517,7 @@ class Toplevel1:
                         readsMappingFile = open("readsMapping_140875")
                         readsMapping = float(readsMappingFile.readline().rstrip())
                         readsMappingFile.close()
-                        
+
                         datasetStatistics[dataset].append(str(readsMapping))
                         datasetStatistics[dataset].append(str(readsMapping*100/originalReadsNumber)[:4])
 
@@ -543,7 +545,7 @@ class Toplevel1:
                             self.logArea.see(tk.END)
                             self.logArea.configure(state='disabled')
                             self.logArea.update()
-                            
+
                             self.logArea.configure(state='normal')
                             self.logArea.insert(tk.END, "Converting sam to bam....")
                             self.logArea.see(tk.END)
@@ -558,7 +560,7 @@ class Toplevel1:
                             self.logArea.see(tk.END)
                             self.logArea.configure(state='disabled')
                             self.logArea.update()
-                            
+
                             self.logArea.configure(state='normal')
                             self.logArea.insert(tk.END, "Sorting bam file....")
                             self.logArea.see(tk.END)
@@ -573,7 +575,7 @@ class Toplevel1:
                             self.logArea.see(tk.END)
                             self.logArea.configure(state='disabled')
                             self.logArea.update()
-                            
+
                             self.logArea.configure(state='normal')
                             self.logArea.insert(tk.END, "Calculating coverage for deduplicated dataset "+dataset+"....")
                             self.logArea.see(tk.END)
@@ -596,7 +598,7 @@ class Toplevel1:
                             self.logArea.update()
 
                             print "Average coverage for deduplicated ",avCov
-                            
+
                             datasetStatistics[dataset].append(avCov)
 
                             os.system(installationDirectory+"resources/samtools view -F 4 alignment_140875.sam | wc -l > readsMapping_140875")
@@ -606,7 +608,7 @@ class Toplevel1:
                             readsMappingFile = open("readsMapping_140875")
                             readsMapping = float(readsMappingFile.readline().rstrip())
                             readsMappingFile.close()
-                            
+
                             datasetStatistics[dataset].append(str(readsMapping))
                             datasetStatistics[dataset].append(str(readsMapping*100/originalReadsNumber)[:4])
 
@@ -627,14 +629,14 @@ class Toplevel1:
                     self.logArea.see(tk.END)
                     self.logArea.configure(state='disabled')
                     self.logArea.update()
-                    
+
                     os.system("mv tempReads_140875_1.fastq "+outputFolder+"/"+codes[dataset+"_1.fastq"].replace("_1.fastq","")+suffixCode+"_1.fastq")
                     os.system("mv tempReads_140875_2.fastq "+outputFolder+"/"+codes[dataset+"_2.fastq"].replace("_2.fastq","")+suffixCode+"_2.fastq")
                     if self.deduplicateChkValue.get() == True:
                         os.system("mv "+dedupFileName1+" "+outputFolder+"/")
                         os.system("mv "+dedupFileName2+" "+outputFolder+"/")
                     os.system("mv "+codes[dataset+"_1.fastq"].replace("_1.fastq","")+"* "+outputFolder+"/")
-                    
+
                     for a in range(len(statisticsToReport)):
                         print statisticsToReport[a],datasetStatistics[dataset][a]
 
@@ -646,7 +648,7 @@ class Toplevel1:
                         print item
                         for a in datasetStatistics[item]:
                             print str(a)+"\t"
-                    print "\n" 
+                    print "\n"
 
 
             outfile = open("summaryTable.txt","w")
@@ -662,19 +664,19 @@ class Toplevel1:
                     outfile.write(str(datasetStatistics[item][a])+"\t")
                 outfile.write("\n")
 
-            
+
             outfile.close()
             os.system("mv summaryTable.txt "+outputFolder+"/")
             os.system("rm -f coverage.txt *140875*")
 
         #*******************************************************
         #********************* Main algorithm end ************
-        #*******************************************************      
-
-               
+        #*******************************************************
 
 
-        
+
+
+
 
 
         '''This class configures and populates the selflevel window.
@@ -682,8 +684,8 @@ class Toplevel1:
         _bgcolor = '#d9d9d9'  # X11 color: 'gray85'
         _fgcolor = '#000000'  # X11 color: 'black'
         _compcolor = '#d9d9d9' # X11 color: 'gray85'
-        _ana1color = '#d9d9d9' # X11 color: 'gray85' 
-        _ana2color = '#ececec' # Closest X11 color: 'gray92' 
+        _ana1color = '#d9d9d9' # X11 color: 'gray85'
+        _ana2color = '#ececec' # Closest X11 color: 'gray92'
         self.style = ttk.Style()
         if sys.platform == "win32":
             self.style.theme_use('winnative')
@@ -701,12 +703,17 @@ class Toplevel1:
         x = (ws/2) - (w/2)
         y = (hs/2) - (h/2)
 
-        top.geometry('%dx%d+%d+%d' % (w, h, x, y)) 
-        top.title("Quality checker")
+        top.geometry('%dx%d+%d+%d' % (w, h, x, y))
+        top.title("Reads filtering")
         top.configure(highlightcolor="black")
 
+        gmail=ImageTk.PhotoImage(file=installationDirectory+'resources/Reads_filtering_page.jpg')
+        self.lab=tk.Label(image=gmail)
+        self.lab.photo=gmail
+        self.lab.pack()
 
-        
+
+
 
         self.inputFolderLabel = tk.Label(top)
         self.inputFolderLabel.place(x=20,y=20,height=20, width=80)
@@ -716,7 +723,7 @@ class Toplevel1:
         self.inputFolderEntry.place(x=20,y=40,height=30, width = 300)
         self.inputFolderEntry.insert(0,"Please select folder....")
         self.inputFolderEntry.xview(-1)
-     
+
 
         self.inputFolderButton = tk.Button(top,command=openInputFolder)
         self.inputFolderButton.place(x=340,y=40,height=30,width=100)
@@ -791,31 +798,31 @@ class Toplevel1:
         self.tasksFrame.configure(borderwidth="2")
         self.tasksFrame.configure(relief='groove')
 
-        self.removeHumanChkValue = tk.BooleanVar() 
+        self.removeHumanChkValue = tk.BooleanVar()
         self.removeHumanChkValue.set(False)
         self.removeHumanCheckButton = tk.Checkbutton(top,variable=self.removeHumanChkValue)
         self.removeHumanCheckButton.place(x=520,y=60,height=20,width=170)
         self.removeHumanCheckButton.configure(text="Remove human reads")
 
-        self.removeAdaptersChkValue = tk.BooleanVar() 
+        self.removeAdaptersChkValue = tk.BooleanVar()
         self.removeAdaptersChkValue.set(False)
         self.removeAdaptersCheckButton = tk.Checkbutton(top,variable=self.removeAdaptersChkValue)
         self.removeAdaptersCheckButton.place(x=520,y=100,height=20,width=115)
         self.removeAdaptersCheckButton.configure(text="Trim adapters")
 
-        self.recodeSampleChkValue = tk.BooleanVar() 
+        self.recodeSampleChkValue = tk.BooleanVar()
         self.recodeSampleChkValue.set(False)
         self.recodeSamplesCheckButton = tk.Checkbutton(top,variable=self.recodeSampleChkValue)
         self.recodeSamplesCheckButton.place(x=520,y=140,height=20,width=170)
         self.recodeSamplesCheckButton.configure(text="Recode sample names")
 
-        self.deduplicateChkValue = tk.BooleanVar() 
+        self.deduplicateChkValue = tk.BooleanVar()
         self.deduplicateChkValue.set(False)
         self.deduplicateCheckButton = tk.Checkbutton(top,variable=self.deduplicateChkValue)
         self.deduplicateCheckButton.place(x=520,y=180,height=20,width=220)
         self.deduplicateCheckButton.configure(text="Deduplicate clonal fragments")
 
-        self.al2RefChkValue = tk.BooleanVar() 
+        self.al2RefChkValue = tk.BooleanVar()
         self.al2RefChkValue.set(False)
         self.al2RefCheckButton = tk.Checkbutton(top,variable=self.al2RefChkValue)
         self.al2RefCheckButton.place(x=520,y=220,height=20,width=190)
@@ -858,4 +865,3 @@ class Toplevel1:
 
 if __name__ == '__main__':
     vp_start_gui()
-

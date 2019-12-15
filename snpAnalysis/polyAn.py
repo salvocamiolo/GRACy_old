@@ -116,11 +116,11 @@ while True:
     pathFileNameParts = (experiment.split("/"))[:-1]
     pathFilename = "/".join(pathFileNameParts)
 
-    outFileName = fileName+"_snpFreq.txt"
+    outFileName = experiment+"_snpFreq.txt"
     outfile = open(outFileName,"w")
     outfile.write("Position\tRefBase\tTargetBase\tCoverage\tFrequencyRef\tFrequencyTarget\n")
 
-    outSEFileName = fileName+"_snpEffect.txt"
+    outSEFileName = experiment+"_snpEffect.txt"
     outfileSE = open(outSEFileName,"w")
     outfileSE.write("Position\tStrand\tRelativePosition\tFrequency\tCoverage\tRefBase\tTargetBase\tRefCodon\tTargetCodon\tRefAA\tTargetAA\n")
 
@@ -245,7 +245,7 @@ while True:
                             outfileSE.write(item+"\t"+str(pos)+"\t"+strand[item]+"\t"+str(relativePosition)+"\t"+str(frequency)+"\t"+str(coverage)+"\t"+refBase+"\t"+ newBase +"\t"+referenceCodon+"\t"+targetCodon+"\t"+"N_containing_codon"+"\t"+"N_containing_codon"+"\n")
 
 
-                    
+
 
 
 
