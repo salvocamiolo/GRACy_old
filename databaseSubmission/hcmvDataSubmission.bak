@@ -10,9 +10,8 @@ except ImportError:
     import tkinter.ttk as ttk
     py3 = True
 import Tkinter, Tkconstants, tkFileDialog
-from PIL import ImageTk, Image
-import sys
 
+import sys
 installationDirectory = sys.argv[1]
 import os
 import time
@@ -398,7 +397,7 @@ class Toplevel1:
             [('selected', _compcolor), ('active',_ana2color)])
 
         w=900
-        h=550
+        h=500
         ws = root.winfo_screenwidth() # width of the screen
         hs = root.winfo_screenheight() # height of the screen
         # calculate x and y coordinates for the Tk root window
@@ -407,9 +406,9 @@ class Toplevel1:
 
         top.geometry('%dx%d+%d+%d' % (w, h, x, y)) 
         top.title("Data submission tool")
-        top.configure(highlightcolor="black",background="white")
+        top.configure(highlightcolor="black")
 
-        self.runToSubmitFileLabel = tk.Label(top,highlightthickness=0,background="white",borderwidth=0,foreground="#204949")
+        self.runToSubmitFileLabel = tk.Label(top)
         self.runToSubmitFileLabel.configure(text="Samples to submit")
         self.runToSubmitFileLabel.place(x=20,y=20,width=130,height=20)
 
@@ -417,11 +416,11 @@ class Toplevel1:
         self.runToSubmitFileEntry.place(x=20,y=40,width=300,height=30)
         self.runToSubmitFileEntry.insert(0,"Please select a file....")
 
-        self.runToSubmitButton = tk.Button(command=openRunToSubmit,background="#204949",foreground="white")
+        self.runToSubmitButton = tk.Button(command=openRunToSubmit)
         self.runToSubmitButton.place(x=330,y=40,width=100,height=30)
         self.runToSubmitButton.configure(text="Open file")
 
-        self.fastqFolderLabel = tk.Label(top,highlightthickness=0,background="white",borderwidth=0,foreground="#204949")
+        self.fastqFolderLabel = tk.Label()
         self.fastqFolderLabel.configure(text="Fastq folder")
         self.fastqFolderLabel.place(x=20,y=80,width=80,height=20)
 
@@ -429,11 +428,11 @@ class Toplevel1:
         self.fastqFolderEntry.place(x=20,y=100,width=300,height=30)
         self.fastqFolderEntry.insert(0,"Please select a folder....")
 
-        self.fastqFolderButton = tk.Button(top,command=openFastqFolder,background="#204949",foreground="white")
+        self.fastqFolderButton = tk.Button(top,command=openFastqFolder)
         self.fastqFolderButton.place(x=330,y=100,width=100,height=30)
         self.fastqFolderButton.configure(text="Open folder")
 
-        self.fastqInfoLabel = tk.Label(top,highlightthickness=0,background="white",borderwidth=0,foreground="#204949")
+        self.fastqInfoLabel = tk.Label(top)
         self.fastqInfoLabel.configure(text="Fastq info table")
         self.fastqInfoLabel.place(x=20,y=140,width=110,height=20)
 
@@ -441,12 +440,12 @@ class Toplevel1:
         self.fastqInfoEntry.place(x=20,y=160,width=300,height=30)
         self.fastqInfoEntry.insert(0,"Please select a file....")
 
-        self.fastqInfoFileButton = tk.Button(top,command=openFastqInfoFile,background="#204949",foreground="white")
+        self.fastqInfoFileButton = tk.Button(top,command=openFastqInfoFile)
         self.fastqInfoFileButton.place(x=330,y=160,width=100,height=30)
         self.fastqInfoFileButton.configure(text="Open file")
 
 
-        self.projectInfoLabel = tk.Label(top,highlightthickness=0,background="white",borderwidth=0,foreground="#204949")
+        self.projectInfoLabel = tk.Label(top)
         self.projectInfoLabel.configure(text="Project info table")
         self.projectInfoLabel.place(x=470,y=20,width=110,height=20)
 
@@ -454,12 +453,12 @@ class Toplevel1:
         self.projectInfoEntry.place(x=470,y=40,width=300,height=30)
         self.projectInfoEntry.insert(0,"Please select a file....")
 
-        self.projectInfoButton = tk.Button(top,command=openProjectInfoFile,background="#204949",foreground="white")
+        self.projectInfoButton = tk.Button(top,command=openProjectInfoFile)
         self.projectInfoButton.place(x=780,y=40,width=100,height=30)
         self.projectInfoButton.configure(text="Open file")
 
 
-        self.sampleInfoLabel = tk.Label(top,highlightthickness=0,background="white",borderwidth=0,foreground="#204949")
+        self.sampleInfoLabel = tk.Label(top)
         self.sampleInfoLabel.configure(text="Samples info Table")
         self.sampleInfoLabel.place(x=470,y=80,width=130,height=20)
 
@@ -467,12 +466,12 @@ class Toplevel1:
         self.sampleInfoEntry.place(x=470,y=100,width=300,height=30)
         self.sampleInfoEntry.insert(0,"Please select a file....")
 
-        self.sampleInfoButton = tk.Button(top,command=openSampleInfoFile,background="#204949",foreground="white")
+        self.sampleInfoButton = tk.Button(top,command=openSampleInfoFile)
         self.sampleInfoButton.place(x=780,y=100,width=100,height=30)
         self.sampleInfoButton.configure(text="Open file")
 
 
-        self.usernameLabel = tk.Label(top,highlightthickness=0,background="white",borderwidth=0,foreground="#204949")
+        self.usernameLabel = tk.Label(top)
         self.usernameLabel.configure(text="Username")
         self.usernameLabel.place(x=470,y=140,width=75,height=20)
 
@@ -480,7 +479,7 @@ class Toplevel1:
         self.usernameEntry.place(x=470,y=160,width=200,height=30)
         self.usernameEntry.insert(0,"myENA_Username")
 
-        self.passwordLabel = tk.Label(top,highlightthickness=0,background="white",borderwidth=0,foreground="#204949")
+        self.passwordLabel = tk.Label(top)
         self.passwordLabel.configure(text="Password")
         self.passwordLabel.place(x=680,y=140,width=75,height=20)
 
@@ -490,53 +489,47 @@ class Toplevel1:
 
         self.createProjectchkValue = tk.BooleanVar() 
         self.createProjectchkValue.set(True)
-        self.createProjectCheckButton = tk.Checkbutton(top,variable=self.createProjectchkValue,highlightthickness=0,background="white",borderwidth=0,foreground="#204949")
+        self.createProjectCheckButton = tk.Checkbutton(top,variable=self.createProjectchkValue)
         self.createProjectCheckButton.place(x=20,y=230,height=20,width=150)
         self.createProjectCheckButton.configure(text="Create new Project")
         #createProjectCheckButton.bind('<Button-1>',selectKraken)
 
         self.createSampleschkValue = tk.BooleanVar() 
         self.createSampleschkValue.set(True)
-        self.createSamplesCheckButton = tk.Checkbutton(top,variable=self.createProjectchkValue,highlightthickness=0,background="white",borderwidth=0,foreground="#204949")
+        self.createSamplesCheckButton = tk.Checkbutton(top,variable=self.createProjectchkValue)
         self.createSamplesCheckButton.place(x=200,y=230,height=20,width=170)
         self.createSamplesCheckButton.configure(text="Create new Sample(s)")
 
         self.testSubmissionchkValue = tk.BooleanVar() 
         self.testSubmissionchkValue.set(True)
-        self.testSubmissionCheckButton = tk.Checkbutton(top,variable=self.testSubmissionchkValue,highlightthickness=0,background="white",borderwidth=0,foreground="#204949")
+        self.testSubmissionCheckButton = tk.Checkbutton(top,variable=self.testSubmissionchkValue)
         self.testSubmissionCheckButton.place(x=380,y=230,height=20,width=150)
         self.testSubmissionCheckButton.configure(text="Test submission")
 
 
-        self.runButton = tk.Button(top,command=readsSubmission,background="#204949",foreground="white")
-        self.runButton.place(x=680,y=500,width=200,height=30)
+        self.runButton = tk.Button(top,command=readsSubmission)
+        self.runButton.place(x=780,y=220,width=100,height=30)
         self.runButton.configure(text="Submit")
 
-        #self.exitButton = tk.Button(top,command=exitProgram)
-        #self.exitButton.place(x=660,y=220,width=100,height=30)
-        #self.exitButton.configure(text="Exit")
+        self.exitButton = tk.Button(top,command=exitProgram)
+        self.exitButton.place(x=660,y=220,width=100,height=30)
+        self.exitButton.configure(text="Exit")
        
 
-        self.logFileLabel = tk.Label(top,highlightthickness=0,background="white",borderwidth=0,foreground="#204949")
+        self.logFileLabel = tk.Label(top)
         self.logFileLabel.place(x=20,y=270,height=20,width=100)
         self.logFileLabel.configure(text="Log window")
 
         self.logFrame = tk.Frame(top)
-        self.logFrame.place(x=20, y=290, height=240, width=640)
+        self.logFrame.place(x=20, y=290, height=180, width=860)
         self.logFrame.configure(relief='groove')
         self.logFrame.configure(borderwidth="2")
         self.logFrame.configure(relief='groove')
         self.logFrame.configure(width=125)
         self.logArea = tk.Text(top,state='disabled')
-        self.logArea.place(x=25,y=295,height=230, width=630)
+        self.logArea.place(x=25,y=295,height=170, width=850)
         self.logArea.configure(background="white",borderwidth=5)
         self.logArea.configure(selectbackground="#c4c4c4")
-
-	image = Image.open(installationDirectory+"resources/imagesInterface/IconsFinal/DB.jpg")
-        photo1 =ImageTk.PhotoImage(image)
-        logoLabel = tk.Label(top, compound=tk.TOP,height=200,width=200,image=photo1,borderwidth=0,highlightthickness=0)
-        logoLabel.place(x=680,y=290)
-        logoLabel.image = photo1
 
 
         

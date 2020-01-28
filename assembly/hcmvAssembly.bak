@@ -9,7 +9,7 @@ try:
 except ImportError:
     import tkinter.ttk as ttk
     py3 = True
-from PIL import ImageTk, Image
+
 
 import sys,os
 import datetime
@@ -775,11 +775,12 @@ class Toplevel1:
                     os.system("cp "+installationDirectory+"assembly/scripts/sequence_* ./6_createConsensus")
                     os.system("cp "+installationDirectory+"assembly/scripts/completeGenome* ./6_createConsensus")
                     os.system("cp "+installationDirectory+"assembly/scripts/merlinGenome_* ./6_createConsensus")
+                    os.system("cp "+installationDirectory+"assembly/scripts/biomodule* ./6_createConsensus")
 
                     os.chdir("6_createConsensus")
 
                     #Attempts five and three prime ends reconstruction
-                    os.system("python completeGenome.py "+installationDirectory+"  finalScaffold.fasta 0")
+                    os.system("python completeGenome2.py "+installationDirectory+"  finalScaffold.fasta 0")
                     if os.path.isfile("newGenome2.fasta") == True:
                         for seq_record in SeqIO.parse("newGenome2.fasta","fasta"):
                             newGenome2seq = str(seq_record.seq)
@@ -1021,7 +1022,7 @@ class Toplevel1:
             [('selected', _compcolor), ('active',_ana2color)])
 
         w=670
-        h=400
+        h=600
         ws = root.winfo_screenwidth() # width of the screen
         hs = root.winfo_screenheight() # height of the screen
         # calculate x and y coordinates for the Tk root window
@@ -1030,9 +1031,9 @@ class Toplevel1:
 
         top.geometry('%dx%d+%d+%d' % (w, h, x, y))
         top.title("De novo tool")
-        top.configure(highlightcolor="black",background="white")
+        top.configure(highlightcolor="black")
 
-        self.inputFileLabel = tk.Label(top,highlightthickness=0,background="white",borderwidth=0,foreground="#204949")
+        self.inputFileLabel = tk.Label(top)
         self.inputFileLabel.configure(text="Samples list file")
         self.inputFileLabel.place(x=20,y=20,width=110,height=20)
 
@@ -1040,21 +1041,21 @@ class Toplevel1:
         self.inputFileEntry.place(x=20,y=40,width=520,height=30)
         self.inputFileEntry.insert(0,"Please select file....")
 
-        self.inputFileButton = tk.Button(top,command=openInputFile,background="#204949",foreground="white")
+        self.inputFileButton = tk.Button(top,command=openInputFile)
         self.inputFileButton.place(x=550,y=40,width=100,height=30)
         self.inputFileButton.configure(text="Open file")
 
-        self.runButton = tk.Button(top,command=performAssembly,background="#204949",foreground="white")
-        self.runButton.place(x=450,y=350,width=200,height=30)
+        self.runButton = tk.Button(top,command=performAssembly)
+        self.runButton.place(x=550,y=510,width=100,height=30)
         self.runButton.configure(text="Run")
 
-        #self.exitButton = tk.Button(top,command=exitProgram)
-        #self.exitButton.place(x=550,y=550,width=100,height=30)
-        #self.exitButton.configure(text="Exit")
+        self.exitButton = tk.Button(top,command=exitProgram)
+        self.exitButton.place(x=550,y=550,width=100,height=30)
+        self.exitButton.configure(text="Exit")
 
         self.verboseChkValue = tk.BooleanVar()
         self.verboseChkValue.set(False)
-        self.verboseCheckButton = tk.Checkbutton(top,variable=self.verboseChkValue,highlightthickness=0,background="white",borderwidth=0,foreground="#204949")
+        self.verboseCheckButton = tk.Checkbutton(top,variable=self.verboseChkValue)
         self.verboseCheckButton.place(x=300,y=90,height=20,width=230)
         self.verboseCheckButton.configure(text="Do no delete intermediate files")
 
@@ -1062,32 +1063,26 @@ class Toplevel1:
         self.threadsEntry.place(x=20,y=80,width=30,height=30)
         self.threadsEntry.insert(0,"8")
 
-        self.threadsLabel = tk.Label(top,highlightthickness=0,background="white",borderwidth=0,foreground="#204949")
+        self.threadsLabel = tk.Label(top)
         self.threadsLabel.configure(text="Number of threads")
         self.threadsLabel.place(x=60,y=90,width=130,height=20)
 
 
-        self.logFileLabel = tk.Label(top,highlightthickness=0,background="white",borderwidth=0,foreground="#204949")
-        self.logFileLabel.place(x=20,y=120,height=20,width=80)
+        self.logFileLabel = tk.Label(top)
+        self.logFileLabel.place(x=20,y=120,height=20,width=100)
         self.logFileLabel.configure(text="Log window")
 
         self.logFrame = tk.Frame(top)
-        self.logFrame.place(x=20, y=140, height=240, width=420)
+        self.logFrame.place(x=20, y=140, height=440, width=520)
         self.logFrame.configure(relief='groove')
         self.logFrame.configure(borderwidth="2")
         self.logFrame.configure(relief='groove')
         self.logFrame.configure(width=125)
         self.logArea = tk.Text(top,state='disabled')
-        self.logArea.place(x=25,y=145,height=230, width=410)
+        self.logArea.place(x=25,y=145,height=430, width=510)
         self.logArea.configure(background="white",borderwidth=5)
         self.logArea.configure(selectbackground="#c4c4c4")
 
-
-	image = Image.open(installationDirectory+"resources/imagesInterface/IconsFinal/Assembly.jpg")
-        photo1 =ImageTk.PhotoImage(image)
-        logoLabel = tk.Label(top, compound=tk.TOP,height=200,width=200,image=photo1,borderwidth=0,highlightthickness=0)
-        logoLabel.place(x=450,y=140)
-        logoLabel.image = photo1
 
 
 

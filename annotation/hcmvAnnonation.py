@@ -14,6 +14,7 @@ import Tkinter, Tkconstants, tkFileDialog
 import sys
 from Bio import SeqIO
 import biomodule as bm
+from PIL import ImageTk, Image
 
 import time
 import os
@@ -863,7 +864,7 @@ class Toplevel1:
             [('selected', _compcolor), ('active',_ana2color)])
 
         w=900
-        h=400
+        h=450
         ws = root.winfo_screenwidth() # width of the screen
         hs = root.winfo_screenheight() # height of the screen
         # calculate x and y coordinates for the Tk root window
@@ -872,9 +873,9 @@ class Toplevel1:
 
         top.geometry('%dx%d+%d+%d' % (w, h, x, y))
         top.title("Annotation tool")
-        top.configure(highlightcolor="black")
+        top.configure(highlightcolor="black",background="white")
 
-        self.inputFileLabel = tk.Label(top)
+        self.inputFileLabel = tk.Label(top,highlightthickness=0,background="white",borderwidth=0,foreground="#204949")
         self.inputFileLabel.configure(text="Input file")
         self.inputFileLabel.place(x=20,y=20,width=70,height=20)
 
@@ -882,12 +883,12 @@ class Toplevel1:
         self.inputFileEntry.place(x=20,y=40,width=750,height=30)
         self.inputFileEntry.insert(0,"Please select a genomes list....")
 
-        self.inputFileButton = tk.Button(top,command=openInputFile)
+        self.inputFileButton = tk.Button(top,command=openInputFile,background="#204949",foreground="white")
         self.inputFileButton.place(x=780,y=40,width=100,height=30)
         self.inputFileButton.configure(text="Open file")
 
 
-        self.outputFolderLabel = tk.Label(top)
+        self.outputFolderLabel = tk.Label(top,highlightthickness=0,background="white",borderwidth=0,foreground="#204949")
         self.outputFolderLabel.configure(text="Output folder")
         self.outputFolderLabel.place(x=20,y=100,width=90,height=20)
 
@@ -895,32 +896,38 @@ class Toplevel1:
         self.outputFolderEntry.place(x=20,y=120,width=750,height=30)
         self.outputFolderEntry.insert(0,"Please select an output folder....")
 
-        self.outputFolderButton = tk.Button(top,command=openOutputFolder)
+        self.outputFolderButton = tk.Button(top,command=openOutputFolder,background="#204949",foreground="white")
         self.outputFolderButton.place(x=780,y=120,width=100,height=30)
         self.outputFolderButton.configure(text="Open folder")
 
 
 
-        self.runButton = tk.Button(top,command=mainAnnotationAlgorithm)
-        self.runButton.place(x=780,y=300,width=100,height=30)
+        self.runButton = tk.Button(top,command=mainAnnotationAlgorithm,background="#204949",foreground="white")
+        self.runButton.place(x=720,y=400,width=160,height=30)
         self.runButton.configure(text="Run")
 
-        self.runButton = tk.Button(top,command=exitProgram)
-        self.runButton.place(x=780,y=350,width=100,height=30)
-        self.runButton.configure(text="Exit")
+        #self.runButton = tk.Button(top,command=exitProgram,highlightthickness=0,background="white",borderwidth=0,foreground="#204949")
+        #self.runButton.place(x=780,y=350,width=100,height=30)
+        #self.runButton.configure(text="Exit")
 
-        self.logFileLabel = tk.Label(top)
+        self.logFileLabel = tk.Label(top,highlightthickness=0,background="white",borderwidth=0,foreground="#204949")
         self.logFileLabel.place(x=20,y=180,height=20,width=100)
         self.logFileLabel.configure(text="Log window")
 
         self.logFrame = tk.Frame(top)
-        self.logFrame.place(x=20, y=200, height=180, width=750)
+        self.logFrame.place(x=20, y=200, height=230, width=670)
         self.logFrame.configure(relief='groove')
         self.logFrame.configure(borderwidth="2")
         self.logArea = tk.Text(top,state='disabled')
-        self.logArea.place(x=25,y=205,height=170, width=740)
+        self.logArea.place(x=25,y=205,height=220, width=660)
         self.logArea.configure(background="white",borderwidth=5)
         self.logArea.configure(selectbackground="#c4c4c4")
+
+	image = Image.open(installationDirectory+"resources/imagesInterface/IconsFinal/Annotation.jpg")
+        photo1 =ImageTk.PhotoImage(image)
+        logoLabel = tk.Label(top, compound=tk.TOP,height=200,width=200,image=photo1,borderwidth=0,highlightthickness=0)
+        logoLabel.place(x=700,y=190)
+        logoLabel.image = photo1
 
 
 
