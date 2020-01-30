@@ -14,6 +14,7 @@ import Tkinter, Tkconstants, tkFileDialog
 import sys
 from Bio import SeqIO
 import biomodule as bm
+from PIL import ImageTk, Image
 
 import time
 import os
@@ -155,7 +156,6 @@ class Toplevel1:
                                 bestCoverage = alignmentLength
                                 bestProt = blastField[0]
 
-
                         self.logArea.configure(state='normal')
                         self.logArea.insert(tk.END, "Found "+bestProt+"\n")
                         self.logArea.see(tk.END)
@@ -250,7 +250,6 @@ class Toplevel1:
                         if not  cdsSeq[:3]=="ATG" or not (cdsSeq[-3:]=="TGA" or cdsSeq[-3:]=="TAA" or cdsSeq[-3:]=="TAG" ):
 
                             notes = "\n"+locus+"\n"
-                            notes += "Either the start or the stop codon was not found. Searching nearby....\n"
 
 
 
@@ -259,11 +258,9 @@ class Toplevel1:
                             if exon[locus][0][2]=="+":   #************* Positive strand
                                 if not cdsSeq[:3]=="ATG":
                                     foundStartCodon = False
-                                    print "- Looking for start codon upstream....\n"
                                     for a in range(len(sequence)-len(cdsSeq)/3+30):
                                         newStart = genomeSeq[int(exon[locus][0][0])-1-a*3-3:int(exon[locus][0][0])-1-a*3]
                                         if newStart == "ATG":
-                                            notes += "Valid start codon found upstream!\n"
                                             exon[locus][0]=(int(exon[locus][0][0])-a*3-3,exon[locus][0][1],exon[locus][0][2])
                                             gene[locus] = (int(exon[locus][0][0])-a*3-3,int(gene[locus][1]),gene[locus][2])
                                             cdsSeq = ""
@@ -275,146 +272,119 @@ class Toplevel1:
                                             break
                                         if newStart == "TGA" or newStart == "TAA" or newStart=="TAG":
                                             foundStartCodon = False
-                                            notes += "- Found a stop codon while searching for start codon upstream!\nStart codon could not be found upstream\n"
+                                            notes += "- No Start codon found "
                                             break
                                     #If the new start codon was not found in the region upstream then the downstream region is searched
-                                    if foundStartCodon == False:
-                                        notes += "- Looking for start codon downstream....\n"
-                                        for a in range(len(sequence)-len(cdsSeq)/3+30):
-                                            newStart = genomeSeq[int(exon[locus][0][0])-1+a*3+3:int(exon[locus][0][0])-1+a*3]
-                                            if newStart == "ATG":
-                                                notes += "Valid start codon found downstream!\n"
-                                                exon[locus][0]=(int(exon[locus][0][0])+a*3+3,exon[locus][0][1],exon[locus][0][2])
-                                                gene[locus] = (int(exon[locus][0][0])+a*3+3,int(gene[locus][1]),gene[locus][2])
-                                                cdsSeq = ""
-                                                for item in exon[locus]:
-                                                    cdsSeq+=genomeSeq[int(item[0])-1:int(item[1])]
-                                                foundStartCodon = True
-                                                notes += "- Start codon refined  "+str(a)+" codons downstream\n"
-                                                numCodonRefines = a
-                                                break
-                                            if newStart == "TGA" or newStart == "TAA" or newStart=="TAG":
-                                                foundStartCodon = False
-                                                notes += "- Found a stop codon while searching for start codon downstream!\nStart codon could not be found downstream\n"
-                                                break
-                                        if foundStartCodon == False:
-                                            notes += "Start codon could not be found at this stage\n"
-
-                            else: # *********************** Negative Strand
-                                if not cdsSeq[:3]=="ATG" or not (cdsSeq[:3] =="TTG" and locus=="RL6"): #RL6 start with alternative start codon
-                                    foundStartCodon = False
-                                    notes += "- Looking for start codon upstream....\n"
                                     for a in range(len(sequence)-len(cdsSeq)/3+30):
-                                        #print "New start codons"
-                                        newStart = bm.reverseComplement(genomeSeq[int(exon[locus][-1][1])+a*3:int(exon[locus][-1][1])+a*3+3])
-                                        #print newStart
+                                        newStart = genomeSeq[int(exon[locus][0][0])-1+a*3+3:int(exon[locus][0][0])-1+a*3]
                                         if newStart == "ATG":
-                                            notes += "Valid start codon found upstream!\n"
-                                            exon[locus][-1]=(int(exon[locus][-1][0]),int(exon[locus][-1][1])+a*3+3,exon[locus][-1][2])
-                                            gene[locus] = (int(gene[locus][0]),int(exon[locus][-1][1])+a*3+3,gene[locus][2])
+                                            exon[locus][0]=(int(exon[locus][0][0])+a*3+3,exon[locus][0][1],exon[locus][0][2])
+                                            gene[locus] = (int(exon[locus][0][0])+a*3+3,int(gene[locus][1]),gene[locus][2])
                                             cdsSeq = ""
-                                            for a1 in range(len(exon[locus])-1,-1,-1):
-                                                cdsSeq+=bm.reverseComplement(genomeSeq[ int(exon[locus][a1][0])-1: int(exon[locus][a1][1]) ])
+                                            for item in exon[locus]:
+                                                cdsSeq+=genomeSeq[int(item[0])-1:int(item[1])]
                                             foundStartCodon = True
                                             notes += "- Start codon refined  "+str(a)+" codons upstream\n"
                                             numCodonRefines = a
                                             break
                                         if newStart == "TGA" or newStart == "TAA" or newStart=="TAG":
                                             foundStartCodon = False
-                                            notes += "- Found a stop codon while searching for start codon upstream!\nStart codon could not be found upstream\n"
+                                            notes += "- No Start codon found "
                                             break
-                                #If the new start codon was not found in the region upstream then the downstream region is searched
-                                    if foundStartCodon == False:
-                                        notes += "- Looking for start codon downstream....\n"
 
-                                        for a in range(len(sequence)-len(cdsSeq)/3+30):
-                                            #print "New start codons"
-                                            newStart = bm.reverseComplement(genomeSeq[int(exon[locus][-1][1])-a*3-3:int(exon[locus][-1][1])-a*3])
-
-                                            #print newStart
-                                            if newStart == "ATG":
-                                                notes += "Valid start codon found downstream!\n"
-                                                exon[locus][-1]=(int(exon[locus][-1][0]),int(exon[locus][-1][1])-a*3,exon[locus][-1][2])
-                                                gene[locus] = (int(gene[locus][0]),int(exon[locus][-1][1])-a*3,gene[locus][2])
-                                                cdsSeq = ""
-                                                for a1 in range(len(exon[locus])-1,-1,-1):
-                                                    cdsSeq+=bm.reverseComplement(genomeSeq[ int(exon[locus][a1][0])-1: int(exon[locus][a1][1]) ])
-                                                foundStartCodon = True
-                                                notes += "- Start codon refined  "+str(a)+" codons downstream\n"
-                                                numCodonRefines = a
-                                                break 
+                            else: # *********************** Negative Strand
+                                if not cdsSeq[:3]=="ATG" or not (cdsSeq[:3] =="TTG" and locus=="RL6"): #RL6 start with alternative start codon
+                                    foundStartCodon = False
+                                    for a in range(len(sequence)-len(cdsSeq)/3+30):
+                                        #print "New start codons"
+                                        newStart = bm.reverseComplement(genomeSeq[int(exon[locus][-1][1])+a*3:int(exon[locus][-1][1])+a*3+3])
+                                        #print newStart
+                                        if newStart == "ATG":
+                                            exon[locus][-1]=(int(exon[locus][-1][0]),int(exon[locus][-1][1])+a*3+3,exon[locus][-1][2])
+                                            gene[locus] = (int(gene[locus][0]),int(exon[locus][-1][1])+a*3+3,gene[locus][2])
+                                            cdsSeq = ""
+                                            for a in range(len(exon[locus])-1,-1,-1):
+                                                cdsSeq+=bm.reverseComplement(genomeSeq[ int(exon[locus][a][0])-1: int(exon[locus][a][1]) ])
+                                            foundStartCodon = 1
+                                            notes += "- Start codon refined  "+str(a)+" codons upstream\n"
+                                            numCodonRefines = a
+                                            break
                                         if newStart == "TGA" or newStart == "TAA" or newStart=="TAG":
                                             foundStartCodon = False
-                                            notes += "- Found a stop codon while searching for start codon downstream! \nStart codon could not be found downstream\n"
+                                            notes += "- No Start codon found "
                                             break
-
-                                        if foundStartCodon == False:
-                                            notes += "Start codon could not be found at this stage\n"
+                                #If the new start codon was not found in the region upstream then the downstream region is searched
+                                    for a in range(len(sequence)-len(cdsSeq)/3+30):
+                                        #print "New start codons"
+                                        newStart = bm.reverseComplement(genomeSeq[int(exon[locus][-1][1])-a*3:int(exon[locus][-1][1])-a*3-3])
+                                        #print newStart
+                                        if newStart == "ATG":
+                                            exon[locus][-1]=(int(exon[locus][-1][0]),int(exon[locus][-1][1])-a*3-3,exon[locus][-1][2])
+                                            gene[locus] = (int(gene[locus][0]),int(exon[locus][-1][1])-a*3-3,gene[locus][2])
+                                            cdsSeq = ""
+                                            for a in range(len(exon[locus])-1,-1,-1):
+                                                cdsSeq+=bm.reverseComplement(genomeSeq[ int(exon[locus][a][0])-1: int(exon[locus][a][1]) ])
+                                            foundStartCodon = 1
+                                            notes += "- Start codon refined  "+str(a)+" codons upstream\n"
+                                            numCodonRefines = a
+                                            break
+                                        if newStart == "TGA" or newStart == "TAA" or newStart=="TAG":
+                                            foundStartCodon = False
+                                            notes += "- No Start codon found "
+                                            break
 
 
 
 
                             # Look for Stop codon at the end of the sequence or closely ********************
                             if exon[locus][0][2]=="+":   #************* Positive strand
-                                print "We start from", cdsSeq[-3:]
                                 if not cdsSeq[-3:]=="TGA" and not cdsSeq[-3:]=="TAA" and not cdsSeq[-3:]=="TAG":
-                                    notes += "- Looking for stop codon downstream....\n"
                                     foundStopCodon = False
                                     for a in range(len(sequence)-len(cdsSeq)/3+30):
                                         newStop = genomeSeq[int(exon[locus][-1][1])+a*3:int(exon[locus][-1][1])+a*3+3]
                                         if newStop == "TAA" or newStop=="TGA" or newStop=="TAG":
-                                            notes += "Valid stop codon found downstream\n"
-                                            exon[locus][0]=(int(exon[locus][0][0]),int(exon[locus][-1][1])+a*3,exon[locus][0][2])
-                                            gene[locus] = (int(gene[locus][0]), int(exon[locus][-1][1])+a*3, gene[locus][2])
+                                            exon[locus][0]=(int(exon[locus][0][0]),int(exon[locus][0][1])+a*3+3,exon[locus][0][2])
+                                            gene[locus] = (int(gene[locus][0]), int(exon[locus][0][1])+a*3+3, gene[locus][2])
                                             cdsSeq = ""
                                             for item in exon[locus]:
                                                 cdsSeq+=genomeSeq[int(item[0])-1:int(item[1])]
                                             foundStopCodon = True
-                                            notes += "- Stop codon refined " + \
-                                                str(a)+" codon downstream\n"
+                                            notes += "- Stop codon refined "+str(a)+" codon upstream\n"
                                             break
 
 
                             else: # *********************** Negative Strand
                                 if not cdsSeq[-3:]=="TGA" and not cdsSeq[-3:]=="TAA" and not cdsSeq[-3:]=="TAG":
-                                    notes += "- Looking for stop codon downstream....\n"
+                                    foundStopCodon = False
                                     for a in range(len(sequence)-len(cdsSeq)/3+30):
                                         #print "New Stop codons"
                                         newStop = bm.reverseComplement(genomeSeq[int(exon[locus][0][0])-1-a*3-3:int(exon[locus][0][0])-1-a*3])
                                         #print newStop
                                         if newStop == "TAA" or newStop=="TGA" or newStop=="TAG":
-                                            notes += "Valid stop codon found downstream\n"
                                             exon[locus][0]=(int(exon[locus][0][0])-a*3,exon[locus][0][1],exon[locus][0][2])
                                             gene[locus] =(int(exon[locus][0][0])-a*3, int(gene[locus][1]),gene[locus][2])
                                             cdsSeq = ""
                                             for b in range(len(exon[locus])-1,-1,-1):
                                                 cdsSeq+=bm.reverseComplement(genomeSeq[ int(exon[locus][b][0])-1: int(exon[locus][b][1]) ])
                                             foundStopCodon = True
-                                            notes += "- Stop codon refined " + \
-                                                str(a)+" codon(s) downstream\n"
+                                            notes += "- Stop codon refined "+str(a)+" codon upstream\n"
                                             break
 
-                            
+                            warnFile.write(notes+"\n")
 
-                        
+
                         if foundStartCodon == True and foundStopCodon == True and numCodonRefines <5: # Write gff and cds file ********************
-                            #warnFile.write("A valid ORF for gene "+locus+" after prediction refinement\n")
                             if  notes == "":
-                                notes = "A valid ORF has been found for gene "+locus+"!\n"
-                            else:
-                                notes += "A valid ORF has been found for gene "+locus+"!\n"
+                                notes = "\n"+locus+"\n"
                             gffNote = ""
                             #  ******************* Check CDS integrity
                             cdsGood = True
-                            plausablePrediction = True
                             for a in range(0,len(cdsSeq)-3,+3):
                                 if cdsSeq[a:a+3] == "TAA" or cdsSeq[a:a+3] == "TGA" or cdsSeq[a:a+3] == "TAG":
                                     # Check if the shorter sequence is compatible with one of the models
                                     newProtLen = float(a)/3.0
-                                    plausablePrediction = False
                                     for protein in protSeqs:
                                         if newProtLen / float(len(protSeqs[protein].seq)) >= 0.9:
-                                            plausablePrediction = True
                                             if exon[locus][0][2]=="+":  #Check it if the strand is positive
                                                 newmRNALength = 0
                                                 newExonSet = {}
@@ -453,28 +423,27 @@ class Toplevel1:
                                                 exon[locus][0] = (exon[locus][0][0], exon[locus][0][1]-6,exon[locus][0][2])
                                                 #print exon[locus][0][1]
                                             break
-                            
-                            if plausablePrediction == False:
-                                cdsGood = False
-                                gffNote = "note=Stop codon interrupts coding sequence. "
-                                notes += "- The coding sequence is interrupted by a stop codon\n"
-                                
+                                        else:
+                                            cdsGood = False
+                                            gffNote = "note=Stop codon interrupts coding sequence. "
+                                            notes += "The coding sequence is interrupted by a stop codon\n"
+                                            break
 
                             if not len(cdsSeq)%3 == 0:
                                 cdsGood = False
-                                notes += "- The coding sequence length is not multiple of 3\n"
+                                notes += "The coding sequence is interrupted by a stop codon\n"
                                 if not gffNote == "" :
-                                    gffNote = "note= The coding sequence length is not multiple of 3"
+                                    gffNote = "note= insertions/deletions lead to broken codons."
                                 else:
-                                    gffNote +=". The coding sequence length is not multiple of 3"
+                                    gffNote +="Insertions/deletions lead to broken codons."
 
 
 
 
                             if cdsGood == True:  # CDS passed quality check
                                 if exon[locus][0][2]=="+":   #************* Positive strand
-                                    gffFile.write(assemblyName+"\texonerate\t"+"gene"+"\t"+str(int(exon[locus][0][0]))+"\t"+str(int(exon[locus][-1][1]))+"\t.\t"+str(gene[locus][2])+"\t.\tID="+locus+"_gene;Name="+locus+";Product="+locus+"\n")
-                                    gffFile.write(assemblyName+"\texonerate\t"+"mRNA"+"\t"+str(int(exon[locus][0][0]))+"\t"+str(int(exon[locus][-1][1]))+"\t.\t"+str(gene[locus][2])+"\t.\tID="+locus+"_mRNA;Parent="+locus+"_gene;Name="+locus+".1;Product="+locus+"\n")
+                                    gffFile.write(assemblyName+"\texonerate\t"+"gene"+"\t"+str(int(gene[locus][0]))+"\t"+str(int(gene[locus][1])+3)+"\t.\t"+str(gene[locus][2])+"\t.\tID="+locus+"_gene;Name="+locus+";Product="+locus+"\n")
+                                    gffFile.write(assemblyName+"\texonerate\t"+"mRNA"+"\t"+str(int(gene[locus][0]))+"\t"+str(int(gene[locus][1])+3)+"\t.\t"+str(gene[locus][2])+"\t.\tID="+locus+"_mRNA;Parent="+locus+"_gene;Name="+locus+".1;Product="+locus+"\n")
                                     numExon = 1
                                     for item in exon[locus]:
                                         if item == exon[locus][-1]: #If this is the last exon include the stop codon in the coordinates
@@ -485,8 +454,8 @@ class Toplevel1:
 
 
                                 else: # *********************** Negative Strand
-                                    gffFile.write(assemblyName+"\texonerate\t"+"gene"+"\t"+str(int(exon[locus][-1][1]))+"\t"+str(int(exon[locus][0][0]))+"\t.\t"+str(gene[locus][2])+"\t.\t"+str(gene[locus][2])+"\t.\tID="+locus+"_gene;Name="+locus+";Product="+locus+"\n")
-                                    gffFile.write(assemblyName+"\texonerate\t"+"mRNA"+"\t"+str(int(exon[locus][-1][1]))+"\t"+str(int(exon[locus][0][0]))+"\t.\t"+str(gene[locus][2])+"\t.\tID="+locus+"_mRNA;Parent="+locus+"_gene;Name="+locus+".1;Product="+locus+"\n")
+                                    gffFile.write(assemblyName+"\texonerate\t"+"gene"+"\t"+str(int(gene[locus][0])-3)+"\t"+str(int(gene[locus][1]))+"\t.\t"+str(gene[locus][2])+"\t.\tID="+locus+"_gene;Name="+locus+";Product="+locus+"\n")
+                                    gffFile.write(assemblyName+"\texonerate\t"+"mRNA"+"\t"+str(int(gene[locus][0])-3)+"\t"+str(int(gene[locus][1]))+"\t.\t"+str(gene[locus][2])+"\t.\tID="+locus+"_mRNA;Parent="+locus+"_gene;Name="+locus+".1;Product="+locus+"\n")
                                     numExon = 1
                                     for item in exon[locus]:
                                         if item == exon[locus][0]:# and len(exon[locus]) == 1: #If this is the first exon include the stop codon in the coordinates
@@ -498,7 +467,7 @@ class Toplevel1:
                                 cdsFile.write(">"+locus+" +\n"+cdsSeq+"\n")
 
                             else: # CDS DID NOT passed quality check
-                                #warnFile.write(notes+"\n")
+                                warnFile.write(notes+"\n")
                                 gffNote += "Pseudo "
                                 if exon[locus][0][2]=="+":   #************* Positive strand
                                     gffFile.write(assemblyName+"\texonerate\t"+"gene"+"\t"+str(int(gene[locus][0]))+"\t"+str(int(gene[locus][1])+3)+"\t.\t"+str(gene[locus][2])+"\t.\tID="+locus+"_gene;Name="+locus+";Product="+locus+"\t"+gffNote+"-gene\n")
@@ -518,15 +487,13 @@ class Toplevel1:
                                         numExon += 1
 
                                 cdsFile.write(">"+locus+" +\n"+cdsSeq+"\n")
-                        
-                            warnFile.write(notes+"\n")
 
 
 
 
-                        else:
-                        #if foundStartCodon == False or foundStopCodon == False or numCodonRefines >=5:
-                            notes += "The prediction was not successfull! Now attempting a refinement....\n"
+
+
+                        if foundStartCodon == False or foundStopCodon == False or numCodonRefines >=5:
                             self.logArea.configure(state='normal')
                             self.logArea.insert(tk.END, "Annotation needs refinement....\n")
                             self.logArea.see(tk.END)
@@ -549,9 +516,9 @@ class Toplevel1:
                                 line = exResult.readline().rstrip()
                                 if line is None:
                                     print "WARNING no protein found for ", locus
-                                    warnings.append(
-                                        "Missing gene: locus "+locus+" did not provide any alignment")
+                                    warnings.append("Missing gene: locus "+locus+" did not provide any alignment")
                             exResult.close()
+
 
                             #Reconstruct Exons  **********************************************************************
                             exResult = open("outputExonerate")
@@ -559,8 +526,7 @@ class Toplevel1:
                                 line = exResult.readline().rstrip()
                                 if line is None:
                                     #print "WARNING no protein found for ", locus
-                                    warnings.append(
-                                        "Missing gene: locus "+locus+" did not provide any alignment")
+                                    warnings.append("Missing gene: locus "+locus+" did not provide any alignment")
                             for a in range(10):
                                 line = exResult.readline().rstrip()
 
@@ -572,307 +538,241 @@ class Toplevel1:
                                 line = exResult.readline().rstrip()
                                 if line is None:
                                     #print "WARNING no protein found for ", locus
-                                    warnings.append(
-                                        "Missing gene: locus "+locus+" did not provide any alignment")
+                                    warnings.append("Missing gene: locus "+locus+" did not provide any alignment")
                                 fields = line.split("\t")
                                 if not line == "# --- END OF GFF DUMP ---":
-                                    if fields[2] == "gene":
+                                    if fields[2]=="gene":
                                         if not locus in gene:
-                                            gene[locus] = (
-                                                fields[3], fields[4], fields[6])
+                                            gene[locus] = (fields[3],fields[4],fields[6])
                                         else:
                                             if (int(fields[4]) - int(fields[3])) > (int(int(gene[locus][1])) - int(int(gene[locus][0]))):
-                                                gene[locus] = (
-                                                    fields[3], fields[4], fields[6])
+                                                gene[locus] = (fields[3],fields[4],fields[6])
 
                                     if fields[2] == "exon":
                                         if not locus in exon:
                                             exon[locus] = []
-                                        exon[locus].append(
-                                            (fields[3], fields[4], fields[6]))
+                                        exon[locus].append((fields[3],fields[4],fields[6]))
                                         if "frameshifts" in fields[8]:
-                                            warnings.append(
-                                                "Frameshifts in exon "+str(fields[3])+" "+str(fields[4])+" "+fields[8])
+                                            warnings.append("Frameshifts in exon "+str(fields[3])+" "+str(fields[4])+" "+fields[8])
 
                             newList = sorted(exon[locus], key=lambda x: x[1])
                             exon[locus] = newList
 
+
                             #Reconstruct CDS  ***********************************************************
                             cdsSeq = ""
-                            if exon[locus][0][2] == "+":  # ************* Positive strand
+                            if exon[locus][0][2]=="+":   #************* Positive strand
                                 for item in exon[locus]:
-                                    cdsSeq += genomeSeq[int(item[0]) -
-                                                        1:int(item[1])]
+                                    cdsSeq+=genomeSeq[int(item[0])-1:int(item[1])]
                                 cdsSeq += genomeSeq[int(item[1]):int(item[1])+3]
 
-                            else:  # *********************** Negative Strand
-                                for a in range(len(exon[locus])-1, -1, -1):
-                                    cdsSeq += bm.reverseComplement(
-                                        genomeSeq[int(exon[locus][a][0])-1: int(exon[locus][a][1])])
-                                cdsSeq += bm.reverseComplement(
-                                    genomeSeq[int(exon[locus][a][0])-4:int(exon[locus][a][0])-1])
+                            else: # *********************** Negative Strand
+                                for a in range(len(exon[locus])-1,-1,-1):
+                                    cdsSeq+=bm.reverseComplement(genomeSeq[ int(exon[locus][a][0])-1: int(exon[locus][a][1]) ])
+                                cdsSeq += bm.reverseComplement(genomeSeq[int(exon[locus][a][0])-4 :int(exon[locus][a][0])-1])
 
-                            
 
-                            # Check CDS integrity *********************************************************
+
+
+                            # Check CDS completness *********************************************************
                             foundStartCodon = True
                             foundStopCodon = True
-                            if not cdsSeq[:3] == "ATG" or not (cdsSeq[-3:] == "TGA" or cdsSeq[-3:] == "TAA" or cdsSeq[-3:] == "TAG"):
+                            if not  cdsSeq[:3]=="ATG" or not (cdsSeq[-3:]=="TGA" or cdsSeq[-3:]=="TAA" or cdsSeq[-3:]=="TAG" ):
 
-                                
-                                notes += "Either the start or the stop codon was not found. Searching nearby....\n"
+                                notes = locus+" - after refinement \n"
+
+
+
 
                                 # Look for ATG at the beginning of the sequence or closely ********************
-                                if exon[locus][0][2] == "+":  # ************* Positive strand
-                                    if not cdsSeq[:3] == "ATG":
+                                if exon[locus][0][2]=="+":   #************* Positive strand
+                                    if not cdsSeq[:3]=="ATG":
                                         foundStartCodon = False
-                                        print "- Looking for start codon upstream....\n"
                                         for a in range(len(sequence)-len(cdsSeq)/3+30):
-                                            newStart = genomeSeq[int(
-                                                exon[locus][0][0])-1-a*3-3:int(exon[locus][0][0])-1-a*3]
+                                            newStart = genomeSeq[int(exon[locus][0][0])-1-a*3-3:int(exon[locus][0][0])-1-a*3]
                                             if newStart == "ATG":
-                                                notes += "Valid start codon found upstream!\n"
-                                                exon[locus][0] = (
-                                                    int(exon[locus][0][0])-a*3-3, exon[locus][0][1], exon[locus][0][2])
-                                                gene[locus] = (
-                                                    int(exon[locus][0][0])-a*3-3, int(gene[locus][1]), gene[locus][2])
+                                                exon[locus][0]=(int(exon[locus][0][0])-a*3-3,exon[locus][0][1],exon[locus][0][2])
+                                                gene[locus] = (int(exon[locus][0][0])-a*3-3,int(gene[locus][1]),gene[locus][2])
                                                 cdsSeq = ""
                                                 for item in exon[locus]:
-                                                    cdsSeq += genomeSeq[int(
-                                                        item[0])-1:int(item[1])]
+                                                    cdsSeq+=genomeSeq[int(item[0])-1:int(item[1])]
                                                 foundStartCodon = True
-                                                notes += "- Start codon refined  " + \
-                                                    str(a)+" codons upstream\n"
+                                                notes += "- Start codon refined  "+str(a)+" codons upstream\n"
                                                 numCodonRefines = a
                                                 break
-                                            if newStart == "TGA" or newStart == "TAA" or newStart == "TAG":
+                                            if newStart == "TGA" or newStart == "TAA" or newStart=="TAG":
                                                 foundStartCodon = False
-                                                notes += "- Found a stop codon while searching for start codon upstream!\nStart codon could not be found upstream\n"
+                                                notes += "- No Start codon found "
                                                 break
-                                        #If the new start codon was not found in the region upstream then the downstream region is searched
-                                        if foundStartCodon == False:
-                                            notes += "- Looking for start codon downstream....\n"
-                                            for a in range(len(sequence)-len(cdsSeq)/3+30):
-                                                newStart = genomeSeq[int(
-                                                    exon[locus][0][0])-1+a*3+3:int(exon[locus][0][0])-1+a*3]
-                                                if newStart == "ATG":
-                                                    notes += "Valid start codon found downstream!\n"
-                                                    exon[locus][0] = (
-                                                        int(exon[locus][0][0])+a*3+3, exon[locus][0][1], exon[locus][0][2])
-                                                    gene[locus] = (
-                                                        int(exon[locus][0][0])+a*3+3, int(gene[locus][1]), gene[locus][2])
-                                                    cdsSeq = ""
-                                                    for item in exon[locus]:
-                                                        cdsSeq += genomeSeq[int(
-                                                            item[0])-1:int(item[1])]
-                                                    foundStartCodon = True
-                                                    notes += "- Start codon refined  " + \
-                                                        str(a) + \
-                                                        " codons upstream\n"
-                                                    numCodonRefines = a
-                                                    break
-                                                if newStart == "TGA" or newStart == "TAA" or newStart == "TAG":
-                                                    foundStartCodon = False
-                                                    notes += "- Found a stop codon while searching for start codon downstream!\nStart codon could not be found downstream\n"
-                                                    break
+                                #If the new start codon was not found in the region upstream then the downstream region is searched
+                                        for a in range(len(sequence)-len(cdsSeq)/3+30):
+                                            newStart = genomeSeq[int(exon[locus][0][0])-1+a*3+3:int(exon[locus][0][0])-1+a*3]
+                                            if newStart == "ATG":
+                                                exon[locus][0]=(int(exon[locus][0][0])+a*3+3,exon[locus][0][1],exon[locus][0][2])
+                                                gene[locus] = (int(exon[locus][0][0])+a*3+3,int(gene[locus][1]),gene[locus][2])
+                                                cdsSeq = ""
+                                                for item in exon[locus]:
+                                                    cdsSeq+=genomeSeq[int(item[0])-1:int(item[1])]
+                                                foundStartCodon = True
+                                                notes += "- Start codon refined  "+str(a)+" codons upstream\n"
+                                                numCodonRefines = a
+                                                break
+                                            if newStart == "TGA" or newStart == "TAA" or newStart=="TAG":
+                                                foundStartCodon = False
+                                                notes += "- No Start codon found "
+                                                break
 
-                                else:  # *********************** Negative Strand
-                                    # RL6 start with alternative start codon
-                                    if not cdsSeq[:3] == "ATG" or not (cdsSeq[:3] == "TTG" and locus == "RL6"):
+                                else: # *********************** Negative Strand
+                                    if not cdsSeq[:3]=="ATG" or not (cdsSeq[:3] =="TTG" and locus=="RL6"): #RL6 start with a non canonical start codon
                                         foundStartCodon = False
-                                        notes += "- Looking for start codon upstream....\n"
                                         for a in range(len(sequence)-len(cdsSeq)/3+30):
                                             #print "New start codons"
-                                            newStart = bm.reverseComplement(
-                                                genomeSeq[int(exon[locus][-1][1])+a*3:int(exon[locus][-1][1])+a*3+3])
+                                            newStart = bm.reverseComplement(genomeSeq[int(exon[locus][-1][1])+a*3:int(exon[locus][-1][1])+a*3+3])
                                             #print newStart
                                             if newStart == "ATG":
-                                                notes += "Valid start codon found upstrean!\n"
-                                                exon[locus][-1] = (int(exon[locus][-1][0]), int(
-                                                    exon[locus][-1][1])+a*3+3, exon[locus][-1][2])
-                                                gene[locus] = (int(gene[locus][0]), int(
-                                                    exon[locus][-1][1])+a*3+3, gene[locus][2])
+                                                exon[locus][-1]=(int(exon[locus][-1][0]),int(exon[locus][-1][1])+a*3+3,exon[locus][-1][2])
+                                                gene[locus] = (int(gene[locus][0]),int(exon[locus][-1][1])+a*3+3,gene[locus][2])
                                                 cdsSeq = ""
-                                                for a1 in range(len(exon[locus])-1, -1, -1):
-                                                    cdsSeq += bm.reverseComplement(
-                                                        genomeSeq[int(exon[locus][a1][0])-1: int(exon[locus][a1][1])])
-                                                foundStartCodon = True
-                                                notes += "- Start codon refined  " + \
-                                                    str(a)+" codons upstream\n"
+                                                for a in range(len(exon[locus])-1,-1,-1):
+                                                    cdsSeq+=bm.reverseComplement(genomeSeq[ int(exon[locus][a][0])-1: int(exon[locus][a][1]) ])
+                                                foundStartCodon = 1
+                                                notes += "- Start codon refined  "+str(a)+" codons upstream\n"
                                                 numCodonRefines = a
                                                 break
-                                            if newStart == "TGA" or newStart == "TAA" or newStart == "TAG":
+                                            if newStart == "TGA" or newStart == "TAA" or newStart=="TAG":
                                                 foundStartCodon = False
-                                                notes += "- Found a stop codon while searching for start codon upstream!\nStart codon could not be found upstream\n"
+                                                notes += "- No Start codon found "
                                                 break
                                     #If the new start codon was not found in the region upstream then the downstream region is searched
-                                        if foundStartCodon == False:
-                                            notes += "- Looking for start codon downstream....\n"
-                                            for a in range(len(sequence)-len(cdsSeq)/3+30):
-                                                #print "New start codons"
-                                                newStart = bm.reverseComplement(genomeSeq[int(exon[locus][-1][1])-a*3-3:int(exon[locus][-1][1])-a*3])
-                                                #print newStart
-                                                if newStart == "ATG":
-                                                    notes += "Valid start codon found dowstream!\n"
-                                                    exon[locus][-1] = (int(exon[locus][-1][0]), int(exon[locus][-1][1])-a*3, exon[locus][-1][2])
-                                                    gene[locus] = (int(gene[locus][0]), int(
-                                                        exon[locus][-1][1])-a*3-3, gene[locus][2])
-                                                    cdsSeq = ""
-                                                    for a1 in range(len(exon[locus])-1, -1, -1):
-                                                        cdsSeq += bm.reverseComplement(
-                                                            genomeSeq[int(exon[locus][a1][0])-1: int(exon[locus][a1][1])])
-                                                    foundStartCodon = True
-                                                    notes += "- Start codon refined  " + \
-                                                        str(a) + \
-                                                        " codons dowstream\n"
-                                                    numCodonRefines = a
-                                                    break
-                                                if newStart == "TGA" or newStart == "TAA" or newStart == "TAG":
-                                                    foundStartCodon = False
-                                                    notes += "- Found a stop codon while searching for start codon downstream! \nStart codon could not be found downstream\n"
-                                                    break
-                                        if foundStartCodon == False:
-                                            notes += "Start codon could not be found at this stage\n"
+                                        for a in range(len(sequence)-len(cdsSeq)/3+30):
+                                            #print "New start codons"
+                                            newStart = bm.reverseComplement(genomeSeq[int(exon[locus][-1][1])-a*3-3:int(exon[locus][-1][1])-a*3])
+                                            #print newStart
 
+
+
+                                            if newStart == "ATG":
+                                                exon[locus][-1]=(int(exon[locus][-1][0]),int(exon[locus][-1][1])-a*3-3,exon[locus][-1][2])
+                                                gene[locus] = (int(gene[locus][0]),int(exon[locus][-1][1])-a*3-3,gene[locus][2])
+                                                cdsSeq = ""
+                                                for a in range(len(exon[locus])-1,-1,-1):
+                                                    cdsSeq+=bm.reverseComplement(genomeSeq[ int(exon[locus][a][0])-1: int(exon[locus][a][1]) ])
+                                                foundStartCodon = 1
+                                                notes += "- Start codon refined  "+str(a)+" codons upstream\n"
+                                                numCodonRefines = a
+                                                break
+                                            if newStart == "TGA" or newStart == "TAA" or newStart=="TAG":
+                                                foundStartCodon = False
+                                                notes += "- No Start codon found "
+                                                break
 
                                 # Look for Stop codon at the end of the sequence or closely ********************
-                                if exon[locus][0][2] == "+":  # ************* Positive strand
-                                    if not cdsSeq[-3:] == "TGA" and not cdsSeq[-3:] == "TAA" and not cdsSeq[-3:] == "TAG":
-                                        notes += "- Looking for stop codon downstream....\n"
+                                if exon[locus][0][2]=="+":   #************* Positive strand
+                                    if not cdsSeq[-3:]=="TGA" and not cdsSeq[-3:]=="TAA" and not cdsSeq[-3:]=="TAG":
                                         foundStopCodon = False
                                         for a in range(len(sequence)-len(cdsSeq)/3+30):
-                                            newStop = genomeSeq[int(
-                                                exon[locus][-1][1])+a*3:int(exon[locus][-1][1])+a*3+3]
-                                            if newStop == "TAA" or newStop == "TGA" or newStop == "TAG":
-                                                notes = + "Valid stop codon found downstream!\n"
-                                                exon[locus][0] = (int(exon[locus][0][0]), int(
-                                                    exon[locus][-1][1])+a*3, exon[locus][0][2])
-                                                gene[locus] = (int(gene[locus][0]), int(
-                                                    exon[locus][-1][1])+a*3, gene[locus][2])
+                                            newStop = genomeSeq[int(exon[locus][-1][1])+a*3:int(exon[locus][-1][1])+a*3+3]
+                                            if newStop == "TAA" or newStop=="TGA" or newStop=="TAG":
+                                                exon[locus][0]=(int(exon[locus][0][0]),int(exon[locus][0][1])+a*3+3,exon[locus][0][2])
+                                                gene[locus] = (int(gene[locus][0]), int(exon[locus][0][1])+a*3+3, gene[locus][2])
                                                 cdsSeq = ""
                                                 for item in exon[locus]:
-                                                    cdsSeq += genomeSeq[int(
-                                                        item[0])-1:int(item[1])]
+                                                    cdsSeq+=genomeSeq[int(item[0])-1:int(item[1])]
                                                 foundStopCodon = True
-                                                notes += "- Stop codon refined " + \
-                                                    str(a) + \
-                                                    " codon downstream\n"
+                                                notes += "- Stop codon refined "+str(a)+" codon upstream\n"
                                                 break
 
-                                else:  # *********************** Negative Strand
-                                    if not cdsSeq[-3:] == "TGA" and not cdsSeq[-3:] == "TAA" and not cdsSeq[-3:] == "TAG":
-                                        foundStopCodon = False
-                                        notes += "- Looking for stop codon downstream....\n"
+
+                                else: # *********************** Negative Strand
+                                    if not cdsSeq[-3:]=="TGA" and not cdsSeq[-3:]=="TAA" and not cdsSeq[-3:]=="TAG":
+                                        foundStopCodon = 0
                                         for a in range(len(sequence)-len(cdsSeq)/3+30):
                                             #print "New Stop codons"
-                                            newStop = bm.reverseComplement(
-                                                genomeSeq[int(exon[locus][0][0])-1-a*3-3:int(exon[locus][0][0])-1-a*3])
+                                            newStop = bm.reverseComplement(genomeSeq[int(exon[locus][0][0])-1-a*3-3:int(exon[locus][0][0])-1-a*3])
                                             #print newStop
-                                            if newStop == "TAA" or newStop == "TGA" or newStop == "TAG":
-                                                notes += "Valid stop codon found downstream!\n"
-                                                exon[locus][0] = (
-                                                    int(exon[locus][0][0])-a*3, exon[locus][0][1], exon[locus][0][2])
-                                                gene[locus] = (
-                                                    int(exon[locus][0][0])-a*3, int(gene[locus][1]), gene[locus][2])
+                                            if newStop == "TAA" or newStop=="TGA" or newStop=="TAG":
+                                                exon[locus][0]=(int(exon[locus][0][0])-a*3,exon[locus][0][1],exon[locus][0][2])
+                                                gene[locus] =(int(exon[locus][0][0])-a*3, int(gene[locus][1]),gene[locus][2])
                                                 cdsSeq = ""
-                                                for b in range(len(exon[locus])-1, -1, -1):
-                                                    cdsSeq += bm.reverseComplement(
-                                                        genomeSeq[int(exon[locus][b][0])-1: int(exon[locus][b][1])])
-                                                foundStopCodon = True
-                                                notes += "- Stop codon refined " + \
-                                                    str(a) + \
-                                                    " codon downstream\n"
+                                                for b in range(len(exon[locus])-1,-1,-1):
+                                                    cdsSeq+=bm.reverseComplement(genomeSeq[ int(exon[locus][b][0])-1: int(exon[locus][b][1]) ])
+                                                foundStopCodon = 1
+                                                notes += "- Stop codon refined "+str(a)+" codon upstream\n"
                                                 break
 
-                                warnFile.write(notes)#+"\n")
+                                warnFile.write(notes+"\n")
 
-                            # Write gff and cds file ********************
-                            if foundStartCodon == True and foundStopCodon == True:
-                                warnFile.write("A valid ORF for gene "+locus+" after prediction refinement!\n")
-                                if notes == "":
-                                    notes = "A valid ORF for gene "+locus+" after prediction refinement!\n"
-                                else:
-                                    notes += "A valid ORF has been found for gene "+locus+" after prediction refinement!\n"
-                                gffNote = ""
-                                #  ******************* Check CDS integrity
+
+
+                            if foundStartCodon == True and foundStopCodon == True: # Write gff and cds file ********************
                                 cdsGood = True
-                                plausablePrediction = True
-                                for a in range(0, len(cdsSeq)-3, +3):
+                            #  ******************* Check CDS integrity
+                                for a in range(0,len(cdsSeq)-3,+3):
                                     if cdsSeq[a:a+3] == "TAA" or cdsSeq[a:a+3] == "TGA" or cdsSeq[a:a+3] == "TAG":
                                         # Check if the shorter sequence is compatible with one of the models
                                         newProtLen = float(a)/3.0
-                                        plausablePrediction = False
                                         for protein in protSeqs:
                                             if newProtLen / float(len(protSeqs[protein].seq)) >= 0.9:
-                                                plausablePrediction = True
-                                                # Check it if the strand is positive
-                                                if exon[locus][0][2] == "+":
+                                                if exon[locus][0][2]=="+":  #Check it if the strand is positive
                                                     newmRNALength = 0
                                                     newExonSet = {}
                                                     if not locus in newExonSet:
                                                         newExonSet[locus] = []
                                                     for item in exon[locus]:
                                                         if int(item[1])-int(item[0]) + newmRNALength > a+3:
-                                                            newExonSet[locus].append(
-                                                                (int(item[0]), int(item[0]) + a - newmRNALength - 1, item[2]))
+                                                            newExonSet[locus].append((int(item[0]),int(item[0]) + a+3 - newmRNALength -1 ,item[2]))
                                                             exon[locus] = newExonSet[locus]
-                                                            gene[locus] = (int(gene[locus][0]), int(
-                                                                item[0]) + a - newmRNALength - 1, gene[locus][2])
+                                                            gene[locus] = (int(gene[locus][0]),int(item[0]) + a+3 - newmRNALength -1 ,gene[locus][2])
                                                             break
                                                         else:
-                                                            newmRNALength += int(
-                                                                item[1]) - int(item[0])
-                                                            newExonSet[locus].append(
-                                                                (int(item[0]), int(item[1]), item[2]))
+                                                            newmRNALength += int(item[1]) - int(item[0])
+                                                            newExonSet[locus].append((int(item[0]),int(item[1]),item[2]))
                                                     cdsSeq = cdsSeq[:a+3]
-                                                else:  # Check it if the strand is negative
+                                                else:  #Check it if the strand is negative
                                                     newmRNALength = 0
                                                     newExonSet = {}
                                                     if not locus in newExonSet:
                                                         newExonSet[locus] = []
-                                                    for a in range(len(exon[locus])-1, -1, -1):
+                                                    for a in range(len(exon[locus])-1,-1,-1):
                                                         if int(exon[locus][a][1])-int(exon[locus][a][0]) + newmRNALength > a+3:
-                                                            newExonSet[locus].append(
-                                                                (int(exon[locus][a][1]) - a + newmRNALength, int(exon[locus][a][1]), exon[locus][a][2]))
-                                                            #print "Previous exon locus",exon[locus]
+                                                            newExonSet[locus].append((int(exon[locus][a][1]) - a -3 + newmRNALength, int(exon[locus][a][1]),exon[locus][a][2]))
                                                             exon[locus] = newExonSet[locus]
-                                                            #print "after exon locus",exon[locus]
-                                                            #print gene[locus]
-                                                            #gene[locus] = (int(exon[locus][a][1]) - a  + newmRNALength, int(gene[locus][1]), gene[locus][2])
+                                                            gene[locus] = (int(exon[locus][a][1]) - a -3 + newmRNALength, int(gene[locus][1]), gene[locus][2])
                                                             break
 
                                                         else:
-                                                            newmRNALength = int(
-                                                                exon[locus][a][1]) - int(exon[locus][a][0])
-                                                            newExonSet[locus].append(
-                                                                (int(exon[locus][a][0]), int(exon[locus][a][1]), exon[locus][a][2]))
+                                                            newmRNALength = int(exon[locus][a][1]) - int(exon[locus][a][0])
+                                                            newExonSet[locus].append((int(exon[locus][a][0]),int(exon[locus][a][1]),exon[locus][a][2]))
                                                     cdsSeq = cdsSeq[:a+3]
-                                                    #print exon[locus][0][1]
-                                                    exon[locus][0] = (
-                                                        exon[locus][0][0], exon[locus][0][1]-6, exon[locus][0][2])
-                                                    #print exon[locus][0][1]
-                                                break
-                                if plausablePrediction==False:
-                                    cdsGood = False
-                                    gffNote = "note=Stop codon interrupts coding sequence. "
-                                    notes += "- The coding sequence is interrupted by a stop codon\n"
-                                    break
+                                                    exon[locus][0] = (exon[locus][0][0], exon[locus][0][1]-6,exon[locus][0][2])
 
-                                if not len(cdsSeq) % 3 == 0:
+                                                break
+                                            else:
+                                                cdsGood = False
+                                                gffNote = "note=Stop codon interrupts coding sequence. "
+                                                notes += "The coding sequence is interrupted by a stop codon\n"
+                                                break
+
+                                if not len(cdsSeq)%3 == 0:
                                     cdsGood = False
-                                    notes += "- The coding sequence length is not multiple of 3\n"
-                                    if not gffNote == "":
-                                        gffNote = "note= The coding sequence length is not multiple of 3"
+                                    notes += "Insertions/deletions lead to broken codons\n"
+                                    if not gffNote == "" :
+                                        gffNote = "note= insertions/deletions lead to broken codons."
                                     else:
-                                        gffNote += ". The coding sequence length is not multiple of 3"
+                                        gffNote +="Insertions/deletions lead to broken codons."
+
+
+
 
                                 if cdsGood == True:  # CDS passed quality check
+                                    notes += "\n"+ locus+" - after refinement \n"+"Good CDS!"
+                                    warnFile.write(notes+"\n")
                                     if exon[locus][0][2]=="+":   #************* Positive strand
-                                        gffFile.write(assemblyName+"\texonerate\t"+"gene"+"\t"+str(int(exon[locus][0][0]))+"\t"+str(int(exon[locus][-1][1]))+"\t.\t"+str(gene[locus][2])+"\t.\tID="+locus+"_gene;Name="+locus+";Product="+locus+"\n")
-                                        gffFile.write(assemblyName+"\texonerate\t"+"mRNA"+"\t"+str(int(exon[locus][0][0]))+"\t"+str(int(exon[locus][-1][1]))+"\t.\t"+str(gene[locus][2])+"\t.\tID="+locus+"_mRNA;Parent="+locus+"_gene;Name="+locus+".1;Product="+locus+"\n")
+                                        gffFile.write(assemblyName+"\texonerate\t"+"gene"+"\t"+str(int(gene[locus][0]))+"\t"+str(int(gene[locus][1])+3)+"\t.\t"+str(gene[locus][2])+"\t.\tID="+locus+"_gene;Name="+locus+";Product="+locus+"\n")
+                                        gffFile.write(assemblyName+"\texonerate\t"+"mRNA"+"\t"+str(int(gene[locus][0]))+"\t"+str(int(gene[locus][1])+3)+"\t.\t"+str(gene[locus][2])+"\t.\tID="+locus+"_mRNA;Parent="+locus+"_gene;Name="+locus+".1;Product="+locus+"\n")
                                         numExon = 1
                                         for item in exon[locus]:
-                                            if item == exon[locus][-1]: #If this is the last exon include the stop codon in the coordinates
+                                            if item == exon[locus][-1]:
                                                 gffFile.write(assemblyName+"\texonerate\t"+"CDS"+"\t"+str(item[0])+"\t"+str(int(item[1])+3)+"\t.\t"+str(item[2])+"\t.\tID="+locus+"_cds"+str(numExon)+";Parent="+locus+"_mRNA;Name="+locus+".1;Product="+locus+"\n")
                                             else:
                                                 gffFile.write(assemblyName+"\texonerate\t"+"CDS"+"\t"+str(item[0])+"\t"+str(item[1])+"\t.\t"+str(item[2])+"\t.\tID="+locus+"_cds"+str(numExon)+";Parent="+locus+"_mRNA;Name="+locus+".1;Product="+locus+"\n")
@@ -880,11 +780,11 @@ class Toplevel1:
 
 
                                     else: # *********************** Negative Strand
-                                        gffFile.write(assemblyName+"\texonerate\t"+"gene"+"\t"+str(int(exon[locus][-1][1])+3)+"\t"+str(int(exon[locus][0][0]))+"\t.\t"+str(gene[locus][2])+"\t.\t"+str(gene[locus][2])+"\t.\tID="+locus+"_gene;Name="+locus+";Product="+locus+"\n")
-                                        gffFile.write(assemblyName+"\texonerate\t"+"mRNA"+"\t"+str(int(exon[locus][-1][1])+3)+"\t"+str(int(exon[locus][0][0]))+"\t.\t"+str(gene[locus][2])+"\t.\tID="+locus+"_mRNA;Parent="+locus+"_gene;Name="+locus+".1;Product="+locus+"\n")
+                                        gffFile.write(assemblyName+"\texonerate\t"+"gene"+"\t"+str(int(gene[locus][0])-3)+"\t"+str(int(gene[locus][1]))+"\t.\t"+str(gene[locus][2])+"\t.\tID="+locus+"_gene;Name="+locus+";Product="+locus+"\n")
+                                        gffFile.write(assemblyName+"\texonerate\t"+"mRNA"+"\t"+str(int(gene[locus][0])-3)+"\t"+str(int(gene[locus][1]))+"\t.\t"+str(gene[locus][2])+"\t.\tID="+locus+"_mRNA;Parent="+locus+"_gene;Name="+locus+".1;Product="+locus+"\n")
                                         numExon = 1
                                         for item in exon[locus]:
-                                            if item == exon[locus][0]:# and len(exon[locus]) == 1: #If this is the first exon include the stop codon in the coordinates
+                                            if item == exon[locus][0]:# and len(exon[locus]) == 1:
                                                 gffFile.write(assemblyName+"\texonerate\t"+"CDS"+"\t"+str(int(item[0])-3)+"\t"+str(item[1])+"\t.\t"+str(item[2])+"\t.\tID="+locus+"_cds"+str(numExon)+";Parent="+locus+"_mRNA;Name="+locus+".1;Product="+locus+"\n")
                                             else:
                                                 gffFile.write(assemblyName+"\texonerate\t"+"CDS"+"\t"+str(item[0])+"\t"+str(item[1])+"\t.\t"+str(item[2])+"\t.\tID="+locus+"_cds"+str(numExon)+";Parent="+locus+"_mRNA;Name="+locus+".1;Product="+locus+"\n")
@@ -896,7 +796,7 @@ class Toplevel1:
                                     warnFile.write(notes+"\n")
                                     gffNote += "Pseudo "
                                     if exon[locus][0][2]=="+":   #************* Positive strand
-                                        gffFile.write(assemblyName+"\texonerate\t"+"gene"+"\t"+str(int(gene[locus][0]))+"\t"+str(int(gene[locus][1])+3)+"\t.\t"+str(gene[locus][2])+"\t.\tID="+locus+"_gene;Name="+locus+";Product="+locus+"\t"+gffNote+"-gene\n")
+                                        gffFile.write(assemblyName+"\texonerate\t"+"gene"+"\t"+str(int(gene[locus][0]))+"\t"+str(int(gene[locus][1])+3)+"\t.\t"+str(gene[locus][2])+"\t.\tID="+locus+"_gene;Name="+locus+";Product="+locus+";"+gffNote+"-gene\n")
                                         gffFile.write(assemblyName+"\texonerate\t"+"misc_feature"+"\t"+str(int(gene[locus][0]))+"\t"+str(int(gene[locus][1])+3)+"\t.\t"+str(gene[locus][2])+"\t.\tID="+locus+"_mRNA;Parent="+locus+"_gene;Name="+locus+".1;Product="+locus+";"+gffNote+"-mRNA\n")
                                         numExon = 1
                                         for item in exon[locus]:
@@ -911,148 +811,29 @@ class Toplevel1:
                                         for item in exon[locus]:
                                             gffFile.write(assemblyName+"\texonerate\t"+"misc_feature"+"\t"+str(item[0])+"\t"+str(item[1])+"\t.\t"+str(item[2])+"\t.\tID="+locus+"_cds"+str(numExon)+";Parent="+locus+"_mRNA;Name="+locus+".1;Product="+locus+";"+gffNote+"-CDS\n")
                                             numExon += 1
-
-                                    
 
                                     cdsFile.write(">"+locus+" " +gffNote+"-CDS\n"+cdsSeq+"\n")
 
                             else:
-                                warnFile.write("An incomplete ORF for gene "+locus+" after prediction refinement!\n")
-                                if notes == "":
-                                    notes = "An incomplete ORF for gene "+locus+" after prediction refinement!\n"
-                                else:
-                                    notes += "An imcoplete ORF has been found for gene "+locus+" after prediction refinement!\n"
-                                gffNote = ""
-                                #  ******************* Check CDS integrity
-                                cdsGood = True
-                                plausablePrediction = True
-                                for a in range(0, len(cdsSeq)-3, +3):
-                                    if cdsSeq[a:a+3] == "TAA" or cdsSeq[a:a+3] == "TGA" or cdsSeq[a:a+3] == "TAG":
-                                        # Check if the shorter sequence is compatible with one of the models
-                                        newProtLen = float(a)/3.0
-                                        plausablePrediction = False
-                                        for protein in protSeqs:
-                                            if newProtLen / float(len(protSeqs[protein].seq)) >= 0.9:
-                                                plausablePrediction = True
-                                                # Check it if the strand is positive
-                                                if exon[locus][0][2] == "+":
-                                                    newmRNALength = 0
-                                                    newExonSet = {}
-                                                    if not locus in newExonSet:
-                                                        newExonSet[locus] = []
-                                                    for item in exon[locus]:
-                                                        if int(item[1])-int(item[0]) + newmRNALength > a+3:
-                                                            newExonSet[locus].append(
-                                                                (int(item[0]), int(item[0]) + a - newmRNALength - 1, item[2]))
-                                                            exon[locus] = newExonSet[locus]
-                                                            gene[locus] = (int(gene[locus][0]), int(
-                                                                item[0]) + a - newmRNALength - 1, gene[locus][2])
-                                                            break
-                                                        else:
-                                                            newmRNALength += int(
-                                                                item[1]) - int(item[0])
-                                                            newExonSet[locus].append(
-                                                                (int(item[0]), int(item[1]), item[2]))
-                                                    cdsSeq = cdsSeq[:a+3]
-                                                else:  # Check it if the strand is negative
-                                                    newmRNALength = 0
-                                                    newExonSet = {}
-                                                    if not locus in newExonSet:
-                                                        newExonSet[locus] = []
-                                                    for a in range(len(exon[locus])-1, -1, -1):
-                                                        if int(exon[locus][a][1])-int(exon[locus][a][0]) + newmRNALength > a+3:
-                                                            newExonSet[locus].append(
-                                                                (int(exon[locus][a][1]) - a + newmRNALength, int(exon[locus][a][1]), exon[locus][a][2]))
-                                                            #print "Previous exon locus",exon[locus]
-                                                            exon[locus] = newExonSet[locus]
-                                                            #print "after exon locus",exon[locus]
-                                                            #print gene[locus]
-                                                            #gene[locus] = (int(exon[locus][a][1]) - a  + newmRNALength, int(gene[locus][1]), gene[locus][2])
-                                                            break
-
-                                                        else:
-                                                            newmRNALength = int(
-                                                                exon[locus][a][1]) - int(exon[locus][a][0])
-                                                            newExonSet[locus].append(
-                                                                (int(exon[locus][a][0]), int(exon[locus][a][1]), exon[locus][a][2]))
-                                                    cdsSeq = cdsSeq[:a+3]
-                                                    #print exon[locus][0][1]
-                                                    exon[locus][0] = (
-                                                        exon[locus][0][0], exon[locus][0][1]-6, exon[locus][0][2])
-                                                    #print exon[locus][0][1]
-                                                break
-                                if plausablePrediction==False:
-                                    cdsGood = False
-                                    gffNote = "note=Stop codon interrupts coding sequence. "
-                                    notes += "- The coding sequence is interrupted by a stop codon\n"
-                                    break
-
-                                if not len(cdsSeq) % 3 == 0:
-                                    cdsGood = False
-                                    notes += "- The coding sequence length is not multiple of 3\n"
-                                    if not gffNote == "":
-                                        gffNote = "note= The coding sequence length is not multiple of 3"
-                                    else:
-                                        gffNote += ". The coding sequence length is not multiple of 3"
-
-                                if cdsGood == True:  # CDS passed quality check
-                                    if exon[locus][0][2]=="+":   #************* Positive strand
-                                        gffFile.write(assemblyName+"\texonerate\t"+"gene"+"\t"+str(int(exon[locus][0][0]))+"\t"+str(int(exon[locus][-1][1]))+"\t.\t"+str(gene[locus][2])+"\t.\tID="+locus+"_gene;Name="+locus+";Product="+locus+"\n")
-                                        gffFile.write(assemblyName+"\texonerate\t"+"mRNA"+"\t"+str(int(exon[locus][0][0]))+"\t"+str(int(exon[locus][-1][1]))+"\t.\t"+str(gene[locus][2])+"\t.\tID="+locus+"_mRNA;Parent="+locus+"_gene;Name="+locus+".1;Product="+locus+"\n")
-                                        numExon = 1
-                                        for item in exon[locus]:
-                                            if item == exon[locus][-1]: #If this is the last exon include the stop codon in the coordinates
-                                                gffFile.write(assemblyName+"\texonerate\t"+"misc_feature"+"\t"+str(item[0])+"\t"+str(int(item[1])+3)+"\t.\t"+str(item[2])+"\t.\tID="+locus+"_cds"+str(numExon)+";Parent="+locus+"_mRNA;Name="+locus+".1;Product="+locus+"\n")
-                                            else:
-                                                gffFile.write(assemblyName+"\texonerate\t"+"misc_feature"+"\t"+str(item[0])+"\t"+str(item[1])+"\t.\t"+str(item[2])+"\t.\tID="+locus+"_cds"+str(numExon)+";Parent="+locus+"_mRNA;Name="+locus+".1;Product="+locus+"\n")
-                                            numExon += 1
+                                gffNote = "Possible pseudogene"
+                                if exon[locus][0][2]=="+":   #************* Positive strand
+                                    gffFile.write(assemblyName+"\texonerate\t"+"gene"+"\t"+str(int(gene[locus][0]))+"\t"+str(int(gene[locus][1])+3)+"\t.\t"+str(gene[locus][2])+"\t.\tID="+locus+"_gene;Name="+locus+";Product="+locus+";"+gffNote+"-gene\n")
+                                    gffFile.write(assemblyName+"\texonerate\t"+"misc_feature"+"\t"+str(int(gene[locus][0]))+"\t"+str(int(gene[locus][1])+3)+"\t.\t"+str(gene[locus][2])+"\t.\tID="+locus+"_mRNA;Parent="+locus+"_gene;Name="+locus+".1;Product="+locus+";"+gffNote+"-mRNA\n")
+                                    numExon = 1
+                                    for item in exon[locus]:
+                                        gffFile.write(assemblyName+"\texonerate\t"+"misc_feature"+"\t"+str(item[0])+"\t"+str(item[1])+"\t.\t"+str(item[2])+"\t.\tID="+locus+"_cds"+str(numExon)+";Parent="+locus+"_mRNA;Name="+locus+".1;Product="+locus+";"+gffNote+"-CDS\n")
+                                        numExon += 1
 
 
-                                    else: # *********************** Negative Strand
-                                        gffFile.write(assemblyName+"\texonerate\t"+"gene"+"\t"+str(int(exon[locus][-1][1])+3)+"\t"+str(int(exon[locus][0][0]))+"\t.\t"+str(gene[locus][2])+"\t.\t"+str(gene[locus][2])+"\t.\tID="+locus+"_gene;Name="+locus+";Product="+locus+"\n")
-                                        gffFile.write(assemblyName+"\texonerate\t"+"mRNA"+"\t"+str(int(exon[locus][-1][1])+3)+"\t"+str(int(exon[locus][0][0]))+"\t.\t"+str(gene[locus][2])+"\t.\tID="+locus+"_mRNA;Parent="+locus+"_gene;Name="+locus+".1;Product="+locus+"\n")
-                                        numExon = 1
-                                        for item in exon[locus]:
-                                            if item == exon[locus][0]:# and len(exon[locus]) == 1: #If this is the first exon include the stop codon in the coordinates
-                                                gffFile.write(assemblyName+"\texonerate\t"+"misc_feature"+"\t"+str(int(item[0])-3)+"\t"+str(item[1])+"\t.\t"+str(item[2])+"\t.\tID="+locus+"_cds"+str(numExon)+";Parent="+locus+"_mRNA;Name="+locus+".1;Product="+locus+"\n")
-                                            else:
-                                                gffFile.write(assemblyName+"\texonerate\t"+"misc_feature"+"\t"+str(item[0])+"\t"+str(item[1])+"\t.\t"+str(item[2])+"\t.\tID="+locus+"_cds"+str(numExon)+";Parent="+locus+"_mRNA;Name="+locus+".1;Product="+locus+"\n")
-                                            numExon += 1
+                                else: # *********************** Negative Strand
+                                    gffFile.write(assemblyName+"\texonerate\t"+"gene"+"\t"+str(int(gene[locus][0])-3)+"\t"+str(int(gene[locus][1]))+"\t.\t"+str(gene[locus][2])+"\t.\tID="+locus+"_gene;Name="+locus+";Product="+locus+";"+gffNote+"-gene\n")
+                                    gffFile.write(assemblyName+"\texonerate\t"+"misc_feature"+"\t"+str(int(gene[locus][0])-3)+"\t"+str(int(gene[locus][1]))+"\t.\t"+str(gene[locus][2])+"\t.\tID="+locus+"_mRNA;Parent="+locus+"_gene;Name="+locus+".1;Product="+locus+";"+gffNote+"-mRNA\n")
+                                    numExon = 1
+                                    for item in exon[locus]:
+                                        gffFile.write(assemblyName+"\texonerate\t"+"misc_feature"+"\t"+str(item[0])+"\t"+str(item[1])+"\t.\t"+str(item[2])+"\t.\tID="+locus+"_cds"+str(numExon)+";Parent="+locus+"_mRNA;Name="+locus+".1;Product="+locus+";"+gffNote+"-CDS\n")
+                                        numExon += 1
 
-                                    cdsFile.write(">"+locus+" +\n"+cdsSeq+"\n")
-
-                                else: # CDS DID NOT passed quality check
-                                    warnFile.write(notes+"\n")
-                                    gffNote += "Pseudo "
-                                    if exon[locus][0][2]=="+":   #************* Positive strand
-                                        gffFile.write(assemblyName+"\texonerate\t"+"gene"+"\t"+str(int(gene[locus][0]))+"\t"+str(int(gene[locus][1])+3)+"\t.\t"+str(gene[locus][2])+"\t.\tID="+locus+"_gene;Name="+locus+";Product="+locus+"\t"+gffNote+"-gene\n")
-                                        gffFile.write(assemblyName+"\texonerate\t"+"misc_feature"+"\t"+str(int(gene[locus][0]))+"\t"+str(int(gene[locus][1])+3)+"\t.\t"+str(gene[locus][2])+"\t.\tID="+locus+"_mRNA;Parent="+locus+"_gene;Name="+locus+".1;Product="+locus+";"+gffNote+"-mRNA\n")
-                                        numExon = 1
-                                        for item in exon[locus]:
-                                            gffFile.write(assemblyName+"\texonerate\t"+"misc_feature"+"\t"+str(item[0])+"\t"+str(item[1])+"\t.\t"+str(item[2])+"\t.\tID="+locus+"_cds"+str(numExon)+";Parent="+locus+"_mRNA;Name="+locus+".1;Product="+locus+";"+gffNote+"-CDS\n")
-                                            numExon += 1
-
-
-                                    else: # *********************** Negative Strand
-                                        gffFile.write(assemblyName+"\texonerate\t"+"gene"+"\t"+str(int(gene[locus][0])-3)+"\t"+str(int(gene[locus][1]))+"\t.\t"+str(gene[locus][2])+"\t.\tID="+locus+"_gene;Name="+locus+";Product="+locus+";"+gffNote+"-gene\n")
-                                        gffFile.write(assemblyName+"\texonerate\t"+"misc_feature"+"\t"+str(int(gene[locus][0])-3)+"\t"+str(int(gene[locus][1]))+"\t.\t"+str(gene[locus][2])+"\t.\tID="+locus+"_mRNA;Parent="+locus+"_gene;Name="+locus+".1;Product="+locus+";"+gffNote+"-mRNA\n")
-                                        numExon = 1
-                                        for item in exon[locus]:
-                                            gffFile.write(assemblyName+"\texonerate\t"+"misc_feature"+"\t"+str(item[0])+"\t"+str(item[1])+"\t.\t"+str(item[2])+"\t.\tID="+locus+"_cds"+str(numExon)+";Parent="+locus+"_mRNA;Name="+locus+".1;Product="+locus+";"+gffNote+"-CDS\n")
-                                            numExon += 1
-
-                                    
-
-                                    cdsFile.write(">"+locus+" " +gffNote+"-CDS\n"+cdsSeq+"\n")    
-
-
-
-
-
-
-
-
-
+                                cdsFile.write(">"+locus+" " +gffNote+"-CDS\n"+cdsSeq+"\n")
 
 
 
@@ -1102,7 +883,7 @@ class Toplevel1:
             [('selected', _compcolor), ('active',_ana2color)])
 
         w=900
-        h=400
+        h=450
         ws = root.winfo_screenwidth() # width of the screen
         hs = root.winfo_screenheight() # height of the screen
         # calculate x and y coordinates for the Tk root window
@@ -1111,9 +892,9 @@ class Toplevel1:
 
         top.geometry('%dx%d+%d+%d' % (w, h, x, y))
         top.title("Annotation tool")
-        top.configure(highlightcolor="black")
+        top.configure(highlightcolor="black",background="white")
 
-        self.inputFileLabel = tk.Label(top)
+        self.inputFileLabel = tk.Label(top,highlightthickness=0,background="white",borderwidth=0,foreground="#204949")
         self.inputFileLabel.configure(text="Input file")
         self.inputFileLabel.place(x=20,y=20,width=70,height=20)
 
@@ -1121,12 +902,12 @@ class Toplevel1:
         self.inputFileEntry.place(x=20,y=40,width=750,height=30)
         self.inputFileEntry.insert(0,"Please select a genomes list....")
 
-        self.inputFileButton = tk.Button(top,command=openInputFile)
+        self.inputFileButton = tk.Button(top,command=openInputFile,background="#204949",foreground="white")
         self.inputFileButton.place(x=780,y=40,width=100,height=30)
         self.inputFileButton.configure(text="Open file")
 
 
-        self.outputFolderLabel = tk.Label(top)
+        self.outputFolderLabel = tk.Label(top,highlightthickness=0,background="white",borderwidth=0,foreground="#204949")
         self.outputFolderLabel.configure(text="Output folder")
         self.outputFolderLabel.place(x=20,y=100,width=90,height=20)
 
@@ -1134,32 +915,38 @@ class Toplevel1:
         self.outputFolderEntry.place(x=20,y=120,width=750,height=30)
         self.outputFolderEntry.insert(0,"Please select an output folder....")
 
-        self.outputFolderButton = tk.Button(top,command=openOutputFolder)
+        self.outputFolderButton = tk.Button(top,command=openOutputFolder,background="#204949",foreground="white")
         self.outputFolderButton.place(x=780,y=120,width=100,height=30)
         self.outputFolderButton.configure(text="Open folder")
 
 
 
-        self.runButton = tk.Button(top,command=mainAnnotationAlgorithm)
-        self.runButton.place(x=780,y=300,width=100,height=30)
+        self.runButton = tk.Button(top,command=mainAnnotationAlgorithm,background="#204949",foreground="white")
+        self.runButton.place(x=720,y=400,width=160,height=30)
         self.runButton.configure(text="Run")
 
-        self.runButton = tk.Button(top,command=exitProgram)
-        self.runButton.place(x=780,y=350,width=100,height=30)
-        self.runButton.configure(text="Exit")
+        #self.runButton = tk.Button(top,command=exitProgram,highlightthickness=0,background="white",borderwidth=0,foreground="#204949")
+        #self.runButton.place(x=780,y=350,width=100,height=30)
+        #self.runButton.configure(text="Exit")
 
-        self.logFileLabel = tk.Label(top)
+        self.logFileLabel = tk.Label(top,highlightthickness=0,background="white",borderwidth=0,foreground="#204949")
         self.logFileLabel.place(x=20,y=180,height=20,width=100)
         self.logFileLabel.configure(text="Log window")
 
         self.logFrame = tk.Frame(top)
-        self.logFrame.place(x=20, y=200, height=180, width=750)
+        self.logFrame.place(x=20, y=200, height=230, width=670)
         self.logFrame.configure(relief='groove')
         self.logFrame.configure(borderwidth="2")
         self.logArea = tk.Text(top,state='disabled')
-        self.logArea.place(x=25,y=205,height=170, width=740)
+        self.logArea.place(x=25,y=205,height=220, width=660)
         self.logArea.configure(background="white",borderwidth=5)
         self.logArea.configure(selectbackground="#c4c4c4")
+
+	image = Image.open(installationDirectory+"resources/imagesInterface/IconsFinal/Annotation.jpg")
+        photo1 =ImageTk.PhotoImage(image)
+        logoLabel = tk.Label(top, compound=tk.TOP,height=200,width=200,image=photo1,borderwidth=0,highlightthickness=0)
+        logoLabel.place(x=700,y=190)
+        logoLabel.image = photo1
 
 
 
