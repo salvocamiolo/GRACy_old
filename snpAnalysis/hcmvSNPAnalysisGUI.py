@@ -130,7 +130,7 @@ class Toplevel1:
                         sampleTempFolder = sampleName+"_4864985345_tempFolder"
                         os.system("mkdir -p "+sampleTempFolder)
                         os.system(installationDirectory+"resources/bowtie2-build "+referenceFile+" ./"+sampleTempFolder+"/reference -q")
-                        
+
                         print "Analising sample",sampleName
                         self.logArea.configure(state='normal')
                         self.logArea.insert(tk.END, "Analising sample"+sampleName+"....\n")
@@ -256,8 +256,9 @@ class Toplevel1:
                         self.logArea.see(tk.END)
                         self.logArea.configure(state='disabled')
                         self.logArea.update()
-                        os.system("java -jar  "+installationDirectory+"resources/GenomeAnalysisTK.jar -T  HaplotypeCaller -R "+referenceFile+" -I "+sampleTempFolder+"/"+sampleName+"_markedDuplicates.bam  -o "+sampleTempFolder+"/"+sampleName+"_output.vcf -A StrandAlleleCountsBySample")
-                        os.system("mv "+sampleTempFolder+"/"+sampleName+"_output.vcf "+sampleTempFolder+"/"+sampleName+"_indels.vcf")
+                        #os.system("java -jar "+installationDirectory+"resources/picard.jar CreateSequenceDictionary R= "pfal.fa O= pfal.fa.dict")
+                        #os.system("java -jar  "+installationDirectory+"resources/GenomeAnalysisTK.jar -T  HaplotypeCaller -R "+referenceFile+" -I "+sampleTempFolder+"/"+sampleName+"_markedDuplicates.bam  -o "+sampleTempFolder+"/"+sampleName+"_output.vcf -A StrandAlleleCountsBySample")
+                        #os.system("mv "+sampleTempFolder+"/"+sampleName+"_output.vcf "+sampleTempFolder+"/"+sampleName+"_indels.vcf")
 
 
                         os.system("mv "+sampleTempFolder+"/"+sampleName+"_alignment_sorted.bam "+outputFolder+"/")
@@ -268,7 +269,7 @@ class Toplevel1:
                         #os.system("rm vcfFilesToExamine *.dict *.fai *trimming_report.txt")
                         os.system("ls "+sampleTempFolder+"/*_snpEffect.txt > "+sampleTempFolder+"/file2Plot")
                         os.system("python "+installationDirectory+"snpAnalysis/buildTable.py "+sampleTempFolder+"/file2Plot")
-                        os.system("mv  "+sampleTempFolder+"/*_snpEffect.txt "+sampleTempFolder+"/*_snpFreq.txt "+sampleTempFolder+"/snpTable.txt "+outputFolder+"/" )
+                        os.system("mv  "+sampleTempFolder+"/*_snpEffect.txt "+sampleTempFolder+"/*_snpFreq.txt "+sampleTempFolder+"/snpTable.txt "+sampleTempFolder+"/*.vcf "+outputFolder+"/" )
                         os.system("mv "+sampleTempFolder+"/* ./"+outputFolder+"/")
                         os.system("rm -rf "+sampleTempFolder)
 
@@ -464,7 +465,7 @@ class Toplevel1:
         self.logArea.place(x=25,y=285,height=210, width=650)
         self.logArea.configure(background="white",borderwidth=5)
         self.logArea.configure(selectbackground="#c4c4c4")
-	
+
 	image = Image.open(installationDirectory+"resources/imagesInterface/IconsFinal/SNPcalling.jpg")
         photo1 =ImageTk.PhotoImage(image)
         logoLabel = tk.Label(top, compound=tk.TOP,height=200,width=200,image=photo1,borderwidth=0,highlightthickness=0)

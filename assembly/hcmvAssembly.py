@@ -203,7 +203,8 @@ class Toplevel1:
                     logFile.write("De novo assembly started at "+now.strftime("%H:%M")+"\n")
                     print "\nPerforming denovo assembly......."
                     os.system("interleave-reads.py 1_cleanReads/qualityFiltered_1.fq 1_cleanReads/qualityFiltered_2.fq -o paired.fq")
-                    os.system("normalize-by-median.py  -k 17 -C 200 -M 16e9 -p  -o - paired.fq > paired_normalized.fq")
+                    availableMemory = self.memoryEntry.get()
+                    os.system("normalize-by-median.py  -k 17 -C 200 -M "+availableMemory+"e9 -p  -o - paired.fq > paired_normalized.fq")
                     os.system("python "+installationDirectory+"assembly/scripts/splitIntervealed.py paired_normalized.fq")
                     os.system("mv newRead_1.fastq ./1_cleanReads/"+projectName+"_hq_1.fastq")
                     os.system("mv newRead_2.fastq ./1_cleanReads/"+projectName+"_hq_2.fastq")
@@ -1055,16 +1056,24 @@ class Toplevel1:
         self.verboseChkValue = tk.BooleanVar()
         self.verboseChkValue.set(False)
         self.verboseCheckButton = tk.Checkbutton(top,variable=self.verboseChkValue,highlightthickness=0,background="white",borderwidth=0,foreground="#204949")
-        self.verboseCheckButton.place(x=300,y=90,height=20,width=230)
+        self.verboseCheckButton.place(x=320,y=92,height=20,width=230)
         self.verboseCheckButton.configure(text="Do no delete intermediate files")
 
         self.threadsEntry = tk.Entry(top)
-        self.threadsEntry.place(x=20,y=80,width=30,height=30)
+        self.threadsEntry.place(x=140,y=85,width=30,height=30)
         self.threadsEntry.insert(0,"8")
 
         self.threadsLabel = tk.Label(top,highlightthickness=0,background="white",borderwidth=0,foreground="#204949")
-        self.threadsLabel.configure(text="Number of threads")
-        self.threadsLabel.place(x=60,y=90,width=130,height=20)
+        self.threadsLabel.configure(text="Number of threads:")
+        self.threadsLabel.place(x=20,y=90,width=120,height=20)
+
+        self.memoryLabel = tk.Label(top,highlightthickness=0,background="white",borderwidth=0,foreground="#204949")
+        self.memoryLabel.configure(text="Memory(Gb):")
+        self.memoryLabel.place(x=190,y=90,width=90,height=20)
+
+        self.memoryEntry = tk.Entry(top)
+        self.memoryEntry.place(x=280,y=85,width=30,height=30)
+        self.memoryEntry.insert(0,"16")
 
 
         self.logFileLabel = tk.Label(top,highlightthickness=0,background="white",borderwidth=0,foreground="#204949")

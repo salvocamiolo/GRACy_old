@@ -13,6 +13,8 @@ except ImportError:
 import Tkinter, Tkconstants, tkFileDialog
 import sys
 from Bio import SeqIO
+from Bio.Seq import Seq
+from Bio import pairwise2
 import biomodule as bm
 from PIL import ImageTk, Image
 
@@ -349,7 +351,7 @@ class Toplevel1:
                                                 foundStartCodon = True
                                                 notes += "- Start codon refined  "+str(a)+" codons downstream\n"
                                                 numCodonRefines = a
-                                                break 
+                                                break
                                         if newStart == "TGA" or newStart == "TAA" or newStart=="TAG":
                                             foundStartCodon = False
                                             notes += "- Found a stop codon while searching for start codon downstream! \nStart codon could not be found downstream\n"
@@ -401,7 +403,7 @@ class Toplevel1:
                                                 str(a)+" codon(s) downstream\n"
                                             break
 
-                            
+
 
                         if foundStartCodon == True and foundStopCodon == True and numCodonRefines <5 and abs(len(cdsSeq)/3 - len(sequence)) <10: # Write gff and cds file ********************
                             #warnFile.write("A valid ORF for gene "+locus+" after prediction refinement\n")
@@ -418,8 +420,10 @@ class Toplevel1:
                                     # Check if the shorter sequence is compatible with one of the models
                                     newProtLen = float(a)/3.0
                                     plausablePrediction = False
+                                    newProt = Seq(cdsSeq[:a+3]).translate()
                                     for protein in protSeqs:
-                                        if newProtLen / float(len(protSeqs[protein].seq)) >= 0.9:
+                                        score = pairwise2.align.localxx(newProt, protSeqs[protein].seq,score_only=True)
+                                        if score / float(len(protSeqs[protein].seq)) >= 0.8:
                                             plausablePrediction = True
                                             if exon[locus][0][2]=="+":  #Check it if the strand is positive
                                                 newmRNALength = 0
@@ -463,14 +467,14 @@ class Toplevel1:
                                             plausablePrediction = False
 
                                     if plausablePrediction == False:
-                                        break         
+                                        break
 
 
                             if plausablePrediction == False:
                                 cdsGood = False
                                 gffNote = "note=Stop codon interrupts coding sequence. "
                                 notes += "- The coding sequence is interrupted by a stop codon\n"
-                                
+
 
                             if not len(cdsSeq)%3 == 0:
                                 cdsGood = False
@@ -513,7 +517,7 @@ class Toplevel1:
                                 gffNote += "Pseudo "
                                 if exon[locus][0][2]=="+":   #************* Positive strand
                                     gffFile.write(assemblyName+"\texonerate\t"+"gene"+"\t"+str(int(gene[locus][0]))+"\t"+str(int(gene[locus][1])+3)+"\t.\t"+str(gene[locus][2])+"\t.\tID="+locus+"_gene;Name="+locus+";Product="+locus+"\t"+gffNote+"-gene\n")
-                                    gffFile.write(assemblyName+"\texonerate\t"+"misc_feature"+"\t"+str(int(gene[locus][0]))+"\t"+str(int(gene[locus][1])+3)+"\t.\t"+str(gene[locus][2])+"\t.\tID="+locus+"_mRNA;Parent="+locus+"_gene;Name="+locus+".1;Product="+locus+";"+gffNote+"-mRNA\n")
+                                    gffFile.write(assemblyName+"\texonerate\t"+"mRNA"+"\t"+str(int(gene[locus][0]))+"\t"+str(int(gene[locus][1])+3)+"\t.\t"+str(gene[locus][2])+"\t.\tID="+locus+"_mRNA;Parent="+locus+"_gene;Name="+locus+".1;Product="+locus+";"+gffNote+"-mRNA\n")
                                     numExon = 1
                                     for item in exon[locus]:
                                         gffFile.write(assemblyName+"\texonerate\t"+"misc_feature"+"\t"+str(item[0])+"\t"+str(item[1])+"\t.\t"+str(item[2])+"\t.\tID="+locus+"_cds"+str(numExon)+";Parent="+locus+"_mRNA;Name="+locus+".1;Product="+locus+";"+gffNote+"-CDS\n")
@@ -522,14 +526,14 @@ class Toplevel1:
 
                                 else: # *********************** Negative Strand
                                     gffFile.write(assemblyName+"\texonerate\t"+"gene"+"\t"+str(int(gene[locus][0])-3)+"\t"+str(int(gene[locus][1]))+"\t.\t"+str(gene[locus][2])+"\t.\tID="+locus+"_gene;Name="+locus+";Product="+locus+";"+gffNote+"-gene\n")
-                                    gffFile.write(assemblyName+"\texonerate\t"+"misc_feature"+"\t"+str(int(gene[locus][0])-3)+"\t"+str(int(gene[locus][1]))+"\t.\t"+str(gene[locus][2])+"\t.\tID="+locus+"_mRNA;Parent="+locus+"_gene;Name="+locus+".1;Product="+locus+";"+gffNote+"-mRNA\n")
+                                    gffFile.write(assemblyName+"\texonerate\t"+"mRNA"+"\t"+str(int(gene[locus][0])-3)+"\t"+str(int(gene[locus][1]))+"\t.\t"+str(gene[locus][2])+"\t.\tID="+locus+"_mRNA;Parent="+locus+"_gene;Name="+locus+".1;Product="+locus+";"+gffNote+"-mRNA\n")
                                     numExon = 1
                                     for item in exon[locus]:
                                         gffFile.write(assemblyName+"\texonerate\t"+"misc_feature"+"\t"+str(item[0])+"\t"+str(item[1])+"\t.\t"+str(item[2])+"\t.\tID="+locus+"_cds"+str(numExon)+";Parent="+locus+"_mRNA;Name="+locus+".1;Product="+locus+";"+gffNote+"-CDS\n")
                                         numExon += 1
 
                                 cdsFile.write(">"+locus+" +\n"+cdsSeq+"\n")
-                        
+
                             warnFile.write(notes+"\n")
 
 
@@ -623,14 +627,14 @@ class Toplevel1:
                                 cdsSeq += bm.reverseComplement(
                                     genomeSeq[int(exon[locus][a][0])-4:int(exon[locus][a][0])-1])
 
-                            
+
 
                             # Check CDS integrity *********************************************************
                             foundStartCodon = True
                             foundStopCodon = True
                             if not cdsSeq[:3] == "ATG" or not (cdsSeq[-3:] == "TGA" or cdsSeq[-3:] == "TAA" or cdsSeq[-3:] == "TAG"):
 
-                                
+
                                 notes += "Either the start or the stop codon was not found. Searching nearby....\n"
 
                                 # Look for ATG at the beginning of the sequence or closely ********************
@@ -778,15 +782,15 @@ class Toplevel1:
                                             #print "New Stop codons"
                                             newStop = bm.reverseComplement(
                                                 genomeSeq[int(exon[locus][0][0])-1-a*3-3:int(exon[locus][0][0])-1-a*3])
-                                            print newStop
+
                                             if newStop == "TAA" or newStop == "TGA" or newStop == "TAG":
                                                 notes += "Valid stop codon found downstream!\n"
-                                                
+
                                                 exon[locus][0] = (
                                                     int(exon[locus][0][0])-a*3, exon[locus][0][1], exon[locus][0][2])
                                                 gene[locus] = (
                                                     int(exon[locus][0][0])-a*3, int(gene[locus][1]), gene[locus][2])
-                                                
+
                                                 cdsSeq = ""
                                                 for b in range(len(exon[locus])-1, -1, -1):
                                                     cdsSeq += bm.reverseComplement(
@@ -801,7 +805,7 @@ class Toplevel1:
 
                             # Write gff and cds file ********************
                             if foundStartCodon == True and foundStopCodon == True:
-                               
+
                                 warnFile.write("A valid ORF for gene "+locus+" after prediction refinement!\n")
                                 if notes == "":
                                     notes = "A valid ORF for gene "+locus+" after prediction refinement!\n"
@@ -818,8 +822,10 @@ class Toplevel1:
                                         # Check if the shorter sequence is compatible with one of the models
                                         newProtLen = float(a)/3.0
                                         plausablePrediction = False
+                                        newProt = Seq(cdsSeq[:a+3]).translate()
                                         for protein in protSeqs:
-                                            if newProtLen / float(len(protSeqs[protein].seq)) >= 0.9:
+                                            score = pairwise2.align.localxx(newProt, protSeqs[protein].seq,score_only=True)
+                                            if score / float(len(protSeqs[protein].seq)) >= 0.8:
                                                 plausablePrediction = True
                                                 # Check it if the strand is positive
                                                 if exon[locus][0][2] == "+":
@@ -872,8 +878,8 @@ class Toplevel1:
                                                 plausablePrediction = False
 
                                         if plausablePrediction == False:
-                                            break 
-                                    
+                                            break
+
 
 
 
@@ -891,7 +897,7 @@ class Toplevel1:
                                         gffNote = "note= The coding sequence length is not multiple of 3"
                                     else:
                                         gffNote += ". The coding sequence length is not multiple of 3"
-                                
+
                                 if cdsGood == True:  # CDS passed quality check
                                     if exon[locus][0][2]=="+":   #************* Positive strand
                                         gffFile.write(assemblyName+"\texonerate\t"+"gene"+"\t"+str(int(exon[locus][0][0]))+"\t"+str(int(exon[locus][-1][1]))+"\t.\t"+str(gene[locus][2])+"\t.\tID="+locus+"_gene;Name="+locus+";Product="+locus+"\n")
@@ -919,12 +925,12 @@ class Toplevel1:
                                     cdsFile.write(">"+locus+" +\n"+cdsSeq+"\n")
 
                                 else: # CDS DID NOT passed quality check
-                                    
+
                                     warnFile.write(notes+"\n")
                                     gffNote += "Pseudo "
                                     if exon[locus][0][2]=="+":   #************* Positive strand
                                         gffFile.write(assemblyName+"\texonerate\t"+"gene"+"\t"+str(int(gene[locus][0]))+"\t"+str(int(gene[locus][1])+3)+"\t.\t"+str(gene[locus][2])+"\t.\tID="+locus+"_gene;Name="+locus+";Product="+locus+"\t"+gffNote+"-gene\n")
-                                        gffFile.write(assemblyName+"\texonerate\t"+"misc_feature"+"\t"+str(int(gene[locus][0]))+"\t"+str(int(gene[locus][1])+3)+"\t.\t"+str(gene[locus][2])+"\t.\tID="+locus+"_mRNA;Parent="+locus+"_gene;Name="+locus+".1;Product="+locus+";"+gffNote+"-mRNA\n")
+                                        gffFile.write(assemblyName+"\texonerate\t"+"mRNA"+"\t"+str(int(gene[locus][0]))+"\t"+str(int(gene[locus][1])+3)+"\t.\t"+str(gene[locus][2])+"\t.\tID="+locus+"_mRNA;Parent="+locus+"_gene;Name="+locus+".1;Product="+locus+";"+gffNote+"-mRNA\n")
                                         numExon = 1
                                         for item in exon[locus]:
                                             gffFile.write(assemblyName+"\texonerate\t"+"misc_feature"+"\t"+str(item[0])+"\t"+str(item[1])+"\t.\t"+str(item[2])+"\t.\tID="+locus+"_cds"+str(numExon)+";Parent="+locus+"_mRNA;Name="+locus+".1;Product="+locus+";"+gffNote+"-CDS\n")
@@ -933,13 +939,13 @@ class Toplevel1:
 
                                     else: # *********************** Negative Strand
                                         gffFile.write(assemblyName+"\texonerate\t"+"gene"+"\t"+str(int(gene[locus][0])-3)+"\t"+str(int(gene[locus][1]))+"\t.\t"+str(gene[locus][2])+"\t.\tID="+locus+"_gene;Name="+locus+";Product="+locus+";"+gffNote+"-gene\n")
-                                        gffFile.write(assemblyName+"\texonerate\t"+"misc_feature"+"\t"+str(int(gene[locus][0])-3)+"\t"+str(int(gene[locus][1]))+"\t.\t"+str(gene[locus][2])+"\t.\tID="+locus+"_mRNA;Parent="+locus+"_gene;Name="+locus+".1;Product="+locus+";"+gffNote+"-mRNA\n")
+                                        gffFile.write(assemblyName+"\texonerate\t"+"mRNA"+"\t"+str(int(gene[locus][0])-3)+"\t"+str(int(gene[locus][1]))+"\t.\t"+str(gene[locus][2])+"\t.\tID="+locus+"_mRNA;Parent="+locus+"_gene;Name="+locus+".1;Product="+locus+";"+gffNote+"-mRNA\n")
                                         numExon = 1
                                         for item in exon[locus]:
                                             gffFile.write(assemblyName+"\texonerate\t"+"misc_feature"+"\t"+str(item[0])+"\t"+str(item[1])+"\t.\t"+str(item[2])+"\t.\tID="+locus+"_cds"+str(numExon)+";Parent="+locus+"_mRNA;Name="+locus+".1;Product="+locus+";"+gffNote+"-CDS\n")
                                             numExon += 1
 
-                                    
+
 
                                     cdsFile.write(">"+locus+" " +gffNote+"-CDS\n"+cdsSeq+"\n")
 
@@ -958,8 +964,10 @@ class Toplevel1:
                                         # Check if the shorter sequence is compatible with one of the models
                                         newProtLen = float(a)/3.0
                                         plausablePrediction = False
+                                        newProt = Seq(cdsSeq[:a+3]).translate()
                                         for protein in protSeqs:
-                                            if newProtLen / float(len(protSeqs[protein].seq)) >= 0.9:
+                                            score = pairwise2.align.localxx(newProt, protSeqs[protein].seq,score_only=True)
+                                            if score / float(len(protSeqs[protein].seq)) >= 0.8:
                                                 plausablePrediction = True
                                                 # Check it if the strand is positive
                                                 if exon[locus][0][2] == "+":
@@ -1012,7 +1020,7 @@ class Toplevel1:
                                     cdsGood = False
                                     gffNote = "note=Stop codon interrupts coding sequence. "
                                     notes += "- The coding sequence is interrupted by a stop codon\n"
-                                    
+
 
                                 if not len(cdsSeq) % 3 == 0:
                                     cdsGood = False
@@ -1053,7 +1061,7 @@ class Toplevel1:
                                     gffNote += "Pseudo "
                                     if exon[locus][0][2]=="+":   #************* Positive strand
                                         gffFile.write(assemblyName+"\texonerate\t"+"gene"+"\t"+str(int(gene[locus][0]))+"\t"+str(int(gene[locus][1])+3)+"\t.\t"+str(gene[locus][2])+"\t.\tID="+locus+"_gene;Name="+locus+";Product="+locus+"\t"+gffNote+"-gene\n")
-                                        gffFile.write(assemblyName+"\texonerate\t"+"misc_feature"+"\t"+str(int(gene[locus][0]))+"\t"+str(int(gene[locus][1])+3)+"\t.\t"+str(gene[locus][2])+"\t.\tID="+locus+"_mRNA;Parent="+locus+"_gene;Name="+locus+".1;Product="+locus+";"+gffNote+"-mRNA\n")
+                                        gffFile.write(assemblyName+"\texonerate\t"+"mRNA"+"\t"+str(int(gene[locus][0]))+"\t"+str(int(gene[locus][1])+3)+"\t.\t"+str(gene[locus][2])+"\t.\tID="+locus+"_mRNA;Parent="+locus+"_gene;Name="+locus+".1;Product="+locus+";"+gffNote+"-mRNA\n")
                                         numExon = 1
                                         for item in exon[locus]:
                                             gffFile.write(assemblyName+"\texonerate\t"+"misc_feature"+"\t"+str(item[0])+"\t"+str(item[1])+"\t.\t"+str(item[2])+"\t.\tID="+locus+"_cds"+str(numExon)+";Parent="+locus+"_mRNA;Name="+locus+".1;Product="+locus+";"+gffNote+"-CDS\n")
@@ -1062,15 +1070,15 @@ class Toplevel1:
 
                                     else: # *********************** Negative Strand
                                         gffFile.write(assemblyName+"\texonerate\t"+"gene"+"\t"+str(int(gene[locus][0])-3)+"\t"+str(int(gene[locus][1]))+"\t.\t"+str(gene[locus][2])+"\t.\tID="+locus+"_gene;Name="+locus+";Product="+locus+";"+gffNote+"-gene\n")
-                                        gffFile.write(assemblyName+"\texonerate\t"+"misc_feature"+"\t"+str(int(gene[locus][0])-3)+"\t"+str(int(gene[locus][1]))+"\t.\t"+str(gene[locus][2])+"\t.\tID="+locus+"_mRNA;Parent="+locus+"_gene;Name="+locus+".1;Product="+locus+";"+gffNote+"-mRNA\n")
+                                        gffFile.write(assemblyName+"\texonerate\t"+"mRNA"+"\t"+str(int(gene[locus][0])-3)+"\t"+str(int(gene[locus][1]))+"\t.\t"+str(gene[locus][2])+"\t.\tID="+locus+"_mRNA;Parent="+locus+"_gene;Name="+locus+".1;Product="+locus+";"+gffNote+"-mRNA\n")
                                         numExon = 1
                                         for item in exon[locus]:
                                             gffFile.write(assemblyName+"\texonerate\t"+"misc_feature"+"\t"+str(item[0])+"\t"+str(item[1])+"\t.\t"+str(item[2])+"\t.\tID="+locus+"_cds"+str(numExon)+";Parent="+locus+"_mRNA;Name="+locus+".1;Product="+locus+";"+gffNote+"-CDS\n")
                                             numExon += 1
 
-                                    
 
-                                    cdsFile.write(">"+locus+" " +gffNote+"-CDS\n"+cdsSeq+"\n")    
+
+                                    cdsFile.write(">"+locus+" " +gffNote+"-CDS\n"+cdsSeq+"\n")
 
 
 
@@ -1102,6 +1110,141 @@ class Toplevel1:
 
 
                     os.system("mv "+suffixName+"* "+outputFolder)
+
+
+
+
+                    ##refine gff file
+                    geneInfo = {}
+                    mRNAInfo = {}
+                    cdsInfo = {}
+                    cdsExons = {}
+                    geneCoord = {}
+                    geneDirection = {}
+                    exonCoordAll = {}
+
+                    inputFileGFF = suffixName+"_annotation.gff"
+
+                    infileGFF = open(inputFileGFF)
+                    line = infileGFF.readline()
+                    fields = line.split("\t")
+                    genomeName = fields[0]
+                    infileGFF.close()
+
+                    infileGFF = open(inputFileGFF)
+                    while True:
+                        line = infileGFF.readline().rstrip()
+                        if not line:
+                            break
+                        fields = line.split("\t")
+
+
+                        if fields[2] == "gene":
+                            infoField = fields[-1]
+                            if  infoField[:4]=="note":
+                                infoField = fields[-2]
+                            locus = ((infoField.split("ID="))[-1].split("_"))[0]
+                            if not locus in geneInfo:
+                                geneInfo[locus] = infoField
+
+                            if not locus in geneDirection:
+                                geneDirection[locus]  = (fields[5],fields[6],fields[7])
+
+
+
+                        if fields[2] == "mRNA":
+                            infoField = fields[-1]
+                            if infoField[:4]=="note":
+                                infoField = fields[-2]
+                            locus = ((infoField.split("ID="))[-1].split("_"))[0]
+                            if not locus in mRNAInfo:
+                                mRNAInfo[locus] = infoField
+
+
+                        if fields[2] == "CDS":
+                            infoField = fields[-1]
+                            if infoField[:4]=="note":
+                                infoField = fields[-2]
+                            locus = ((infoField.split("ID="))[-1].split("_"))[0]
+
+                            if not locus in cdsInfo:
+                                cdsInfo[locus] = []
+                            if int(fields[3]) > int(fields[4]):
+                                temp =  fields[3]
+                                fields[3] = fields[4]
+                                fields[4] = temp
+
+                            if not locus in exonCoordAll:
+                                exonCoordAll[locus] = []
+                            exonCoordAll[locus].append(int(fields[3]))
+                            exonCoordAll[locus].append(int(fields[4]))
+
+                            newCDSLine = ""
+                            for a in fields:
+                                newCDSLine +=a+"\t"
+
+                            cdsInfo[locus].append(newCDSLine)
+
+
+
+                        if fields[2] == "misc_feature":
+                            infoField = fields[-1]
+                            if infoField[:4]=="note":
+                                infoField = fields[-2]
+                            locus = ((infoField.split("ID="))[-1].split("_"))[0]
+
+
+                            if not locus in cdsInfo:
+                                cdsInfo[locus] = []
+                            if int(fields[3]) > int(fields[4]):
+                                temp =  fields[3]
+                                fields[3] = fields[4]
+                                fields[4] = temp
+
+                            if not locus in exonCoordAll:
+                                exonCoordAll[locus] = []
+                            exonCoordAll[locus].append(int(fields[3]))
+                            exonCoordAll[locus].append(int(fields[4]))
+
+                            newCDSLine = ""
+                            for a in fields:
+                                newCDSLine +=a+"\t"
+
+                            cdsInfo[locus].append(newCDSLine)
+
+
+
+
+
+                    for cds in exonCoordAll:
+                        geneCoord[cds] = (min(exonCoordAll[cds]),max(exonCoordAll[cds]))
+
+                    #rewrite the gfffile
+                    outfile = open("temp140875.gff","w")
+                    for locus in geneCoord:
+                        outfile.write(genomeName+"\tGRACy\tgene\t"+str(geneCoord[locus][0])+"\t"+str(geneCoord[locus][1])+"\t")
+                        for item in geneDirection[locus]:
+                            outfile.write(item+"\t")
+                        outfile.write(geneInfo[locus]+"\n")
+
+                        if not "misc_feature" in cdsInfo[locus][0]:
+                            outfile.write(genomeName+"\tGRACy\tmRNA\t"+str(geneCoord[locus][0])+"\t"+str(geneCoord[locus][1])+"\t")
+                            for item in geneDirection[locus]:
+                                outfile.write(item+"\t")
+                            outfile.write(mRNAInfo[locus]+"\n")
+
+                        for cds in cdsInfo[locus]:
+                            outfile.write(cds+"\n")
+
+
+
+                    outfile.close()
+                    os.system("mv temp140875.gff "+suffixName+"_annotation.gff")
+                    infileGFF.close()
+
+
+
+
 
             self.logArea.configure(state='normal')
             self.logArea.insert(tk.END, "\n\nAnnotations completed!\n")

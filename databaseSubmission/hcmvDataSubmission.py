@@ -104,12 +104,12 @@ class Toplevel1:
                 #IMPORTANT! To change username and password in GRACy
                 project_xml.close()
                 if self.testSubmissionchkValue.get()==True:
-                    print "curl -u "+self.usernameEntry.get()+":"+self.passwordEntry.get()+" -F \"SUBMISSION=@submission.xml\" -F \"PROJECT=@project.xml\" \"https://wwwdev.ebi.ac.uk/ena/submit/drop-box/submit/\" >projectReceipt"
+                    #print "curl -u "+self.usernameEntry.get()+":"+self.passwordEntry.get()+" -F \"SUBMISSION=@submission.xml\" -F \"PROJECT=@project.xml\" \"https://wwwdev.ebi.ac.uk/ena/submit/drop-box/submit/\" >projectReceipt"
                     os.system("curl -u "+self.usernameEntry.get()+":"+self.passwordEntry.get()+" -F \"SUBMISSION=@submission.xml\" -F \"PROJECT=@project.xml\" \"https://wwwdev.ebi.ac.uk/ena/submit/drop-box/submit/\" >projectReceipt")
                 else:
                     print "This is not a test. Do you wish to continue?"
                     sys.stdin.read(1)
-                    print "curl -u "+self.usernameEntry.get()+":"+self.passwordEntry.get()+" -F \"SUBMISSION=@submission.xml\" -F \"PROJECT=@project.xml\" \"https://www.ebi.ac.uk/ena/submit/drop-box/submit/\" >projectReceipt"
+                    #print "curl -u "+self.usernameEntry.get()+":"+self.passwordEntry.get()+" -F \"SUBMISSION=@submission.xml\" -F \"PROJECT=@project.xml\" \"https://www.ebi.ac.uk/ena/submit/drop-box/submit/\" >projectReceipt"
                     os.system("curl -u "+self.usernameEntry.get()+":"+self.passwordEntry.get()+" -F \"SUBMISSION=@submission.xml\" -F \"PROJECT=@project.xml\" \"https://www.ebi.ac.uk/ena/submit/drop-box/submit/\" >projectReceipt")
                 receiptFile = open("projectReceipt")
 
@@ -322,13 +322,15 @@ class Toplevel1:
                             self.logArea.update()
 
                             if self.testSubmissionchkValue.get()==True:
-                                os.system("java -jar "+installationDirectory+"databaseSubmission/webin-cli-1.8.6.jar -context reads -userName "+self.usernameEntry.get()+" -password "+self.passwordEntry.get()+"  -manifest "+sampleName+"_manifestFile.txt -test -validate >fastqReceipt")
+                                os.system("java -Xmx2048m -jar "+installationDirectory+"databaseSubmission/webin-cli-2.2.0.jar  -context reads -userName "+self.usernameEntry.get()+" -password "+self.passwordEntry.get()+"  -manifest "+sampleName+"_manifestFile.txt -test -submit >fastqReceipt")
                             else:
                                 print "This is not a test. Do you wish to continue?"
                                 sys.stdin.read(1)
-                                os.system("java -jar "+installationDirectory+"databaseSubmission/webin-cli-1.8.6.jar -context reads -userName "+self.usernameEntry.get()+" -password "+self.passwordEntry.get()+"  -manifest "+sampleName+"_manifestFile.txt -submit >fastqReceipt")
-                            os.system("rm -f "+fq1+" "+fq2)
-
+                                os.system("java -Xmx2048m -jar "+installationDirectory+"databaseSubmission/webin-cli-2.2.0.jar -context reads -userName "+self.usernameEntry.get()+" -password "+self.passwordEntry.get()+"  -manifest "+sampleName+"_manifestFile.txt -submit >fastqReceipt")
+                            #os.system("rm -f "+fq1+" "+fq2)
+                            #print "Waiting ENA output...."
+                            #time.sleep(10)
+                            os.system("grep . fastqReceipt > tempF ; mv tempF fastqReceipt")
                             receiptFile = open("fastqReceipt")
                             while True:
                                 line = receiptFile.readline().rstrip()
@@ -484,7 +486,7 @@ class Toplevel1:
         self.passwordLabel.configure(text="Password")
         self.passwordLabel.place(x=680,y=140,width=75,height=20)
 
-        self.passwordEntry = tk.Entry(top,justify='right')
+        self.passwordEntry = tk.Entry(top,justify='right', show="*")
         self.passwordEntry.place(x=680,y=160,width=200,height=30)
         self.passwordEntry.insert(0,"")
 
