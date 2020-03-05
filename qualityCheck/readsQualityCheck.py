@@ -359,10 +359,10 @@ class Toplevel1:
                         if len(self.adapter1Entry.get())>5 and len(self.adapter2Entry.get())>5:
                             adpt1 = self.adapter1Entry.get()
                             adpt2 = self.adapter2Entry.get()
-                            os.system(installationDirectory+"resources/trim_galore --path_to_cutadapt "+installationDirectory+"resource/cutadapt" -paired -a "+adpt1+" -a2 "+adpt2+" tempReads_140875_1.fastq tempReads_140875_2.fastq ")
+                            os.system(installationDirectory+"resources/trim_galore  -paired -a "+adpt1+" -a2 "+adpt2+" tempReads_140875_1.fastq tempReads_140875_2.fastq ")
 
                         else:
-                            os.system(installationDirectory+"resources/trim_galore --path_to_cutadapt "+installationDirectory+"resource/cutadapt" -paired tempReads_140875_1.fastq tempReads_140875_2.fastq ")
+                            os.system(installationDirectory+"resources/trim_galore  -paired tempReads_140875_1.fastq tempReads_140875_2.fastq ")
 
                         step+=1
                         self.progressbar['value']= int( (step*progressBarIncrement) )
