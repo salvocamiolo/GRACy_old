@@ -442,7 +442,7 @@ class Toplevel1:
                                 if not gr in numMatchedKmers:
                                     numMatchedKmers[gr] = 0
 
-                                command = installationDirectory+"resources/jellyfish query mer_counts_merged.jf "
+                                command = installationDirectory+"resources/jellifish query mer_counts_merged.jf "
                                 for querySeq in specificKmerGroup[gr]:
                                     command += querySeq
                                     command += " "
