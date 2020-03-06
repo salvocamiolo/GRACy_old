@@ -98,7 +98,7 @@ while True:
 
     #Qualiti filetering fastq 2
     print "Quality filtering for file ",sample.reads2
-    comand = "prinseq -fastq " + sample.reads2 + " -out_format 3 -min_qual_mean " + str(sample.minQualMean)
+    comand = installationDirectory+"resources/prinseq -fastq " + sample.reads2 + " -out_format 3 -min_qual_mean " + str(sample.minQualMean)
     if not sample.trimLeft == "no":
         comand += " -trim_left " + str(sample.trimLeft)
 
