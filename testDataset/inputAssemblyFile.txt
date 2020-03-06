@@ -1,1 +1,0 @@
-/home3/scc20x/Software/mySoftware/GRACy/testDataset/test_assembly.conf
