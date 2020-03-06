@@ -599,14 +599,14 @@ class Toplevel1:
 
                     os.system("mkdir -p 5_refineAssembly")
                     os.system("cp ./4_createConsensus/"+projectName+"_genome.fasta ./5_refineAssembly/finalScaffold.fasta")
-                    os.system("cp /home3/scc20x/Software/mySoftware/GRACy/assembly/scripts/joinScaffolds_careful.py ./5_refineAssembly/")
-                    os.system("cp /home3/scc20x/Software/mySoftware/GRACy/assembly/scripts/joinScaffolds.py ./5_refineAssembly/")
-                    os.system("cp /home3/scc20x/Software/mySoftware/GRACy/assembly/scripts/joinScaffolds_trivial.py ./5_refineAssembly/")
-                    os.system("cp /home3/scc20x/Software/mySoftware/GRACy/assembly/scripts/refineAssembly.py ./5_refineAssembly/")
-                    os.system("cp /home3/scc20x/Software/mySoftware/GRACy/assembly/scripts/biomodule.py ./5_refineAssembly/")
-                    os.system("cp /home3/scc20x/Software/mySoftware/GRACy/assembly/scripts/maskLowCoverage.py ./5_refineAssembly/")
-                    os.system("cp /home3/scc20x/Software/mySoftware/GRACy/assembly/scripts/cleanSoftAndUnmapped.py ./5_refineAssembly/")
-                    os.system("cp /home3/scc20x/Software/mySoftware/GRACy/assembly/scripts/sequence_a.fasta ./5_refineAssembly/")
+                    os.system("cp "+installationDirectory+"assembly/scripts/joinScaffolds_careful.py ./5_refineAssembly/")
+                    os.system("cp "+installationDirectory+"assembly/scripts/joinScaffolds.py ./5_refineAssembly/")
+                    os.system("cp "+installationDirectory+"assembly/scripts/joinScaffolds_trivial.py ./5_refineAssembly/")
+                    os.system("cp "+installationDirectory+"assembly/scripts/refineAssembly.py ./5_refineAssembly/")
+                    os.system("cp "+installationDirectory+"assembly/scripts/biomodule.py ./5_refineAssembly/")
+                    os.system("cp "+installationDirectory+"assembly/scripts/maskLowCoverage.py ./5_refineAssembly/")
+                    os.system("cp "+installationDirectory+"assembly/scripts/cleanSoftAndUnmapped.py ./5_refineAssembly/")
+                    os.system("cp "+installationDirectory+"assembly/scripts/sequence_a.fasta ./5_refineAssembly/")
                     os.chdir("5_refineAssembly")
 
 
