@@ -1,8 +1,0 @@
-*.swp
-*.pyc
-*.o
-*.so
-bin/Sibelia
-bin/ragout-maf2synteny
-bin/ragout-overlap
-build
